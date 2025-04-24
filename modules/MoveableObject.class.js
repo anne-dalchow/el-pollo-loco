@@ -1,4 +1,5 @@
 
+
 export default class MoveableObject {
  constructor(posX,posY,img){
   this.posX = posX;
@@ -8,4 +9,5 @@ export default class MoveableObject {
  moveRight(){
   console.log("moving right")
  }
+ moveLeft(){}
 }
