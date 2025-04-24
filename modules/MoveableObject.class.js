@@ -1,21 +1,18 @@
-
 export default class MoveableObject {
- posX = 120;
- posY = 250;
- img;
- height = 150;
- width = 100;
+  posX;
+  posY;
+  img;
+  height;
+  width;
 
- loadImg(path) {
-  this.img = new Image();
-  this.img.src = path;
-}
+  loadImg(path) {
+    this.img = new Image();
+    this.img.src = path;
+  }
 
- moveRight(){
-  console.log("moving right")
- }
+  moveRight() {
+    console.log("moving right");
+  }
 
- moveLeft(){
-  
- }
+  moveLeft() {}
 }
