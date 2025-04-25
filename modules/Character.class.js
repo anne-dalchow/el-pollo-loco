@@ -1,16 +1,25 @@
 import MoveableObject from "./MoveableObject.class.js";
 
-export default class Character extends MoveableObject{
- constructor() {
-  super();
-  this.loadImg('assets/img/2_character_pepe/2_walk/W-21.png');
-  this.height = 280;
-  this.width = 150;
-  this.posX = 80;
-  this.posY = 160;
-}
+export default class Character extends MoveableObject {
+  height = 280;
+  width = 150;
+  posX = 80;
+  posY = 160;
 
- jump(){
-  console.log("pepe jumps")
- };
+  constructor() {
+    super();
+    this.loadImg("assets/img/2_character_pepe/2_walk/W-21.png");
+    this.loadImages([
+      "assets/img/2_character_pepe/2_walk/W-21.png",
+      "assets/img/2_character_pepe/2_walk/W-22.png",
+      "assets/img/2_character_pepe/2_walk/W-23.png",
+      "assets/img/2_character_pepe/2_walk/W-24.png",
+      "assets/img/2_character_pepe/2_walk/W-25.png",
+      "assets/img/2_character_pepe/2_walk/W-26.png"
+    ]);
+  }
+
+  jump() {
+    console.log("pepe jumps");
+  }
 }
