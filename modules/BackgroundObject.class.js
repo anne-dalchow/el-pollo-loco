@@ -1,10 +1,11 @@
 import MoveableObject from "./MoveableObject.class.js";
 
 export default class BackgroundObject extends MoveableObject {
+  width = 800;
+  height = 450;
+
   constructor(imagePath, posX, posY) {
     super().loadImg(imagePath);
-    this.width = 800;
-    this.height = 450;
     this.posX = posX;
     this.posY = posY !== undefined ? posY : 480 - this.height;
   }
