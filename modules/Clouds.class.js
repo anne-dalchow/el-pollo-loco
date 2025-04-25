@@ -9,6 +9,6 @@ export default class Clouds extends MoveableObject {
     super();
     this.loadImg("assets/img/5_background/layers/4_clouds/1.png");
     this.posX = Math.random() * 800;
-    this.animate(0.15);
+    this.moveLeft(0.15,-350);
   }
 }

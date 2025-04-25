@@ -9,4 +9,5 @@ export default class BackgroundObject extends MoveableObject {
     this.posX = posX;
     this.posY = posY !== undefined ? posY : 480 - this.height;
   }
+
 }

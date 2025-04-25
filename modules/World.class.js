@@ -5,7 +5,7 @@ import BackgroundObject from "./BackgroundObject.class.js";
 
 export default class World {
   character = new Character();
-  enemies = [new Chicken(), new Chicken(), new Chicken()];
+  enemies = [new Chicken(), new Chicken(), new Chicken(), new Chicken()];
   clouds = [new Clouds(), new Clouds()];
   BackgroundObjects = [
     new BackgroundObject("assets/img/5_background/layers/air.png", 0, 0),
