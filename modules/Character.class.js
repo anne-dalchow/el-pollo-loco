@@ -20,6 +20,4 @@ export default class Character extends MoveableObject {
     this.loadImages(this.IMAGES_WALKING);
     this.walkingAnimation();
   }
-
-
 }

@@ -24,17 +24,25 @@ export default class World {
   ];
 
   canvas;
-
   ctx;
 
-  constructor(canvas) {
+  constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
+    this.keyboard = keyboard; // Steuerung wird gespeichert
     this.draw(); // startet Loop
   }
 
+  lastRightPressed = false;
+
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  
+    if (this.keyboard.right && !this.lastRightPressed) {
+      console.log("Rechte Pfeiltaste wird gedrückt!");
+    }
+  
+    this.lastRightPressed = this.keyboard.right;
 
     this.addObjectsToMap(this.BackgroundObjects);
     this.addObjectsToMap(this.clouds);
