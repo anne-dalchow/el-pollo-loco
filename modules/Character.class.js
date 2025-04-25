@@ -14,12 +14,12 @@ export default class Character extends MoveableObject {
     "assets/img/2_character_pepe/2_walk/W-26.png",
   ];
 
-
   constructor() {
     super();
     this.loadImg("assets/img/2_character_pepe/2_walk/W-21.png");
     this.loadImages(this.IMAGES_WALKING);
-
     this.walkingAnimation();
   }
+
+
 }
