@@ -12,10 +12,8 @@ function init() {
 }
 
 window.addEventListener("keydown", (e) => {
-  console.log(e);
   if (e.key === "ArrowUp") {
     window.keyboard.up = true;
-    console.log("keydown", window.keyboard);
   }
   if (e.key === "ArrowLeft") {
     window.keyboard.left = true;
@@ -23,7 +21,6 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") {
     window.keyboard.right = true;
   }
-  console.log(window.keyboard);
 });
 
 
@@ -37,5 +34,4 @@ window.addEventListener("keyup", (e) => {
  if (e.key === "ArrowRight") {
    window.keyboard.right = false;
  }
- console.log(window.keyboard);
 });

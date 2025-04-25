@@ -37,22 +37,4 @@ export default class MoveableObject {
     };
     requestAnimationFrame(animate);
   }
-
-  walkingAnimation() {
-    const animate = () => {
-      let i = this.currentImage % this.IMAGES_WALKING.length;       // let i = 0,1,2,3,4,5,0,1,2,3,4,5,....
-      let path = this.IMAGES_WALKING[i];
-      this.img = this.imageCache[path]; // Bild aus dem Cache holen
-      this.currentImage++;
-
-      /**
-       * Walking Animation: gezielte Verzögerung (600ms), um jedes Bild für eine bestimmte Zeit anzuzeigen -> deshalb setTimeout zusammen mit requestAnimationFrame, um Bildwechsel nach der gewünschten Zeit zu steuern.
-       */
-      setTimeout(() => {
-        requestAnimationFrame(animate);
-      }, 100);
-    };
-
-    requestAnimationFrame(animate);
-  }
 }
