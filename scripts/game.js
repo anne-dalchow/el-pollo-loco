@@ -12,7 +12,7 @@ function init() {
 }
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowUp") {
+  if (e.key === " ") {
     window.keyboard.up = true;
   }
   if (e.key === "ArrowLeft") {
@@ -21,11 +21,14 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowRight") {
     window.keyboard.right = true;
   }
+  if (e.key === "Shift") {
+    window.keyboard.shift = true;
+  }
 });
 
 
 window.addEventListener("keyup", (e) => {
- if (e.key === "ArrowUp") {
+ if (e.key === " ") {
    window.keyboard.up = false;
  }
  if (e.key === "ArrowLeft") {
@@ -34,4 +37,7 @@ window.addEventListener("keyup", (e) => {
  if (e.key === "ArrowRight") {
    window.keyboard.right = false;
  }
+ if (e.key === "Shift") {
+  window.keyboard.shift = false;
+}
 });
