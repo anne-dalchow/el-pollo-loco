@@ -14,43 +14,59 @@ export default class Character extends MoveableObject {
     "assets/img/2_character_pepe/2_walk/W-26.png",
   ];
 
-  constructor(keyboard) {
+  constructor(world, keyboard) {
     super();
     this.loadImg("assets/img/2_character_pepe/2_walk/W-21.png");
     this.loadImages(this.IMAGES_WALKING);
-    // this.walkingAnimation();
     this.keyboard = keyboard;
-    this.isWalking = false; // Flagge für laufende Animation
+    this.world = world
+    this.isWalking = false;
+  }
+
+  startWalkingAnimation() {
+    this.walkingAnimation();
+    this.isWalking = true;
   }
 
   move() {
-    if (this.keyboard.right) {
-      this.posX += 5;
-
-      // Animation starten, wenn sie noch nicht läuft
-      if (!this.isWalking) {
-        this.walkingAnimation(); // Animation starten
-        this.isWalking = true;   // Animation als laufend markieren
-      }
-    } else if (this.keyboard.left) {
-      this.posX -= 5;
-
-      // Animation starten, wenn sie noch nicht läuft
-      if (!this.isWalking) {
-        this.walkingAnimation(); // Animation starten
-        this.isWalking = true;   // Animation als laufend markieren
-      }
-    } else {
-      // Stoppen der Animation, wenn keine Pfeiltaste gedrückt wird
-      if (this.isWalking) {
-        this.isWalking = false; 
-      }
+    let movingHorizontally = false;
+  
+    switch (true) {
+      case this.keyboard.shift && this.keyboard.right && this.posX < this.world.level.levelEndPosX:
+        this.posX += 10;
+        movingHorizontally = true;
+        this.otherDirection = false;
+        break;
+      case this.keyboard.shift && this.keyboard.left && this.posX > 0:
+        this.posX -= 10;
+        movingHorizontally = true;
+        this.otherDirection = true;
+        break;
+      case this.keyboard.right && this.posX < this.world.level.levelEndPosX:
+        this.posX += 5;
+        movingHorizontally = true;
+        this.otherDirection = false;
+        break;
+      case this.keyboard.left && this.posX > 0:
+        this.posX -= 5;
+        movingHorizontally = true;
+        this.otherDirection = true;
+        break;
     }
 
-    if (this.keyboard.up) {
-      this.posY -= 5;
+    this.world.camera_x = -this.posX + 100;
+  
+    if (movingHorizontally) {
+      if (!this.isWalking) {
+        this.startWalkingAnimation();
+      }
+    } else if (this.isWalking) {
+      this.isWalking = false;
     }
   }
+
+
+  
 
   walkingAnimation() {
     const animate = () => {
@@ -60,7 +76,8 @@ export default class Character extends MoveableObject {
       this.currentImage++;
 
       setTimeout(() => {
-        if (this.isWalking) { // Animation nur fortsetzen, wenn der Charakter läuft
+        if (this.isWalking) {
+          // Animation nur fortsetzen, wenn der Charakter läuft
           requestAnimationFrame(animate);
         }
       }, 100);
