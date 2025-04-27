@@ -1,50 +1,34 @@
 import Character from "./Character.class.js";
-import Chicken from "./Chicken.class.js";
-import Clouds from "./Clouds.class.js";
-import BackgroundObject from "./BackgroundObject.class.js";
+import { level1 } from "../levels/level1.js";
 
 export default class World {
-  // character = new Character(this.keyboard);
-  enemies = [new Chicken(), new Chicken(), new Chicken(), new Chicken()];
-  clouds = [new Clouds(), new Clouds()];
-  BackgroundObjects = [
-    new BackgroundObject("assets/img/5_background/layers/air.png", 0, 0),
-    new BackgroundObject(
-      "assets/img/5_background/layers/3_third_layer/1.png",
-      0
-    ),
-    new BackgroundObject(
-      "assets/img/5_background/layers/2_second_layer/1.png",
-      0
-    ),
-    new BackgroundObject(
-      "assets/img/5_background/layers/1_first_layer/1.png",
-      0
-    ),
-  ];
 
+  level = level1;
   canvas;
   ctx;
+  camera_x = 0;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard; // Steuerung wird gespeichert
-    this.character = new Character(this.keyboard);
+    this.character = new Character(this, this.keyboard);
+
     this.draw(); // startet Loop
   }
 
-
-
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  
-    this.addObjectsToMap(this.BackgroundObjects);
-    this.addObjectsToMap(this.clouds);
-    this.addObjectsToMap(this.enemies);
+    this.character.move();
+
+    this.ctx.translate(this.camera_x, 0);
+
+    this.addObjectsToMap(this.level.backgroundObjects);
+    this.addObjectsToMap(this.level.clouds);
+    this.addObjectsToMap(this.level.enemies);
     this.addToMap(this.character);
 
-    this.character.move();
+    this.ctx.translate(-this.camera_x, 0);
 
     requestAnimationFrame(() => this.draw());
   }
@@ -56,6 +40,24 @@ export default class World {
   }
 
   addToMap(mo) {
+    if (mo.otherDirection) {
+      this.flipImage(mo);
+    }
     this.ctx.drawImage(mo.img, mo.posX, mo.posY, mo.width, mo.height);
+    if (mo.otherDirection) {
+      this.flipImageBack(mo);
+    }
+  }
+
+  flipImage(mo) {
+    this.ctx.save();
+    this.ctx.translate(mo.width, 0);
+    this.ctx.scale(-1, 1);
+    mo.posX = mo.posX * -1;
+  }
+
+  flipImageBack(mo) {
+    mo.posX = mo.posX * -1;
+    this.ctx.restore();
   }
 }
