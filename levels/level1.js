@@ -3,9 +3,10 @@ import Chicken from "../modules/Chicken.class.js";
 import BackgroundObject from "../modules/BackgroundObject.class.js";
 import { layers } from "./backgroundLevel1.js";
 import Clouds from "../modules/Clouds.class.js";
+import Endboss from "../modules/Endboss.class.js";
 
 export const level1 = new Level(
- [new Chicken(), new Chicken(), new Chicken(), new Chicken()],
+ [new Chicken(), new Chicken(), new Chicken(), new Chicken(), new Endboss()],
  [new Clouds(), new Clouds()],
  
  layers.map(layer => 
