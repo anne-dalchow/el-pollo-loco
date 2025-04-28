@@ -1,7 +1,7 @@
 import MoveableObject from "./MoveableObject.class.js";
 
 export default class Chicken extends MoveableObject {
-  posY = 350;
+  posY = 340;
   width = 80;
   height = 80;
   IMAGES_WALKING = [
@@ -12,21 +12,19 @@ export default class Chicken extends MoveableObject {
 
   constructor() {
     super();
+    let randomSpeed = 0.5 + Math.random() * 0.5;
+
     this.loadImg("assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
-    this.posX = 250 + Math.random() * 500;
-    const randomSpeed = 0.5 + Math.random()* 0.5;
     this.loadImages(this.IMAGES_WALKING);
+    this.posX = 250 + Math.random() * 500;
+
     this.chickenWalkAnimation();
     this.moveLeft(randomSpeed, -60);
   }
 
   chickenWalkAnimation() {
     const animate = () => {
-      let i = this.currentImage % this.IMAGES_WALKING.length;       // let i = 0,1,2,3,4,5,0,1,2,3,4,5,....
-      let path = this.IMAGES_WALKING[i];
-      this.img = this.imageCache[path]; // Bild aus dem Cache holen
-      this.currentImage++;
-
+      this.playAnimation(this.IMAGES_WALKING);
       /**
        * Walking Animation: gezielte Verzögerung (600ms), um jedes Bild für eine bestimmte Zeit anzuzeigen -> deshalb setTimeout zusammen mit requestAnimationFrame, um Bildwechsel nach der gewünschten Zeit zu steuern.
        */
@@ -35,6 +33,20 @@ export default class Chicken extends MoveableObject {
       }, 100);
     };
 
+    requestAnimationFrame(animate);
+  }
+
+  moveLeft(speed, end) {
+    const animate = () => {
+      if (this.posX > end) {
+        this.posX -= speed;
+      } else {
+        this.posX = 800;
+      }
+
+      /**animate-Funktion: konstante Bewegung ohne zeitliche Verzögerung -> daher ohne Pausen/setTimeout */
+      requestAnimationFrame(animate);
+    };
     requestAnimationFrame(animate);
   }
 }
