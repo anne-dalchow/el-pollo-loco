@@ -1,42 +1,60 @@
-export default class MoveableObject {
-  posX;
-  posY;
+import DrawableObject from "./DrawableObject.class.js";
 
-  height;
-  width;
-  img;
-  imageCache = {};
-  currentImage = 0;
-
+export default class MoveableObject extends DrawableObject {
   otherDirection = false;
+  speedY = 0;
+  acceleration = 2.5;
+  energy = 100;
+  lastHit = 0;
 
-  loadImg(path) {
-    this.img = new Image();
-    this.img.src = path;
+  playAnimation(images) {
+    let i = this.currentImage % images.length; // let i = 0,1,2,3,4,5,0,1,2,3,4,5,....
+    let path = images[i];
+    this.img = this.imageCache[path]; // Bild aus dem Cache holen
+    this.currentImage++;
   }
 
-  /**
-   * @param {Array} arr - ['img/image1.png','img/image1.png',....] Load the image array, create a new Image object, assign the image path to its src property, and add it to the imageCache. Each image is loaded by creating a new Image object, setting its src to the corresponding path, and storing it in the imageCache for later use.
-   */
-
-  loadImages(arr) {
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
-    });
+  isColliding(mo) {
+    return (
+      this.posX + this.width > mo.posX &&
+      this.posY + this.height > mo.posY &&
+      this.posX < mo.posX &&
+      this.posY < mo.posY + mo.height
+    );
   }
-  moveLeft(speed, end) {
-    const animate = () => {
-      if (this.posX > end) {
-        this.posX -= speed;
+
+  hit() {
+    this.energy -= 5;
+    if (this.energy < 0) {
+      this.energy = 0;
+    } else {
+      this.lastHit = new Date().getTime();
+    }
+  }
+
+  isHurt() {
+    let timepassed = new Date().getTime() - this.lastHit;
+    timepassed = timepassed / 1000; // difference in sec
+    return timepassed < 1;
+  }
+
+  isDead() {
+    return this.energy == 0;
+  }
+
+  applyGravity() {
+    setInterval(() => {
+      if (this.isAboveGround() || this.speedY > 0) {
+        this.posY -= this.speedY;
+        this.speedY -= this.acceleration;
       } else {
-        this.posX = 800;
+        this.speedY = 0; // Stoppe die Geschwindigkeit, wenn am Boden
+        this.posY = 145; // Setze auf Bodenhöhe zurück, falls leicht darunter
       }
-      
-      /**animate-Funktion: konstante Bewegung ohne zeitliche Verzögerung -> daher ohne Pausen/setTimeout */
-      requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
+    }, 1000 / 25);
+  }
+
+  isAboveGround() {
+    return this.posY < 145;
   }
 }
