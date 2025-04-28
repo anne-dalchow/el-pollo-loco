@@ -7,7 +7,6 @@ window.addEventListener("load", init);
 
 function init() {
   canvas = document.getElementById("canvas");
-
   window.world = new World(canvas, window.keyboard);
 }
 
@@ -26,18 +25,17 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-
 window.addEventListener("keyup", (e) => {
- if (e.key === " ") {
-   window.keyboard.up = false;
- }
- if (e.key === "ArrowLeft") {
-   window.keyboard.left = false;
- }
- if (e.key === "ArrowRight") {
-   window.keyboard.right = false;
- }
- if (e.key === "Shift") {
-  window.keyboard.shift = false;
-}
+  if (e.key === " ") {
+    window.keyboard.up = false;
+  }
+  if (e.key === "ArrowLeft") {
+    window.keyboard.left = false;
+  }
+  if (e.key === "ArrowRight") {
+    window.keyboard.right = false;
+  }
+  if (e.key === "Shift") {
+    window.keyboard.shift = false;
+  }
 });
