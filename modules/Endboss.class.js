@@ -19,7 +19,7 @@ export default class Endboss extends MoveableObject {
     super();
     this.loadImg("assets/img/4_enemie_boss_chicken/2_alert/G5.png");
     this.loadImages(this.IMAGES_WALKING);
-    this.posX = 700;
+    this.posX = 799 * 6;
 
     this.endbossWalkAnimation();
     // this.moveLeft(randomSpeed, -60);
