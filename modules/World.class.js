@@ -3,42 +3,94 @@ import { level1 } from "../levels/level1.js";
 import StatusBar from "./StatusBar.class.js";
 import CoinBar from "./CoinBar.class.js";
 import BottleBar from "./BottleBar.class.js";
+import ThrowableObject from "./ThrowableObject.class.js";
 
 export default class World {
   level = level1;
   canvas;
   ctx;
   camera_x = 0;
+  healthBar = new StatusBar();
+  coinBar = new CoinBar();
+  bottleBar = new BottleBar();
+  throwableObjects = [];
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
-    this.keyboard = keyboard; // Steuerung wird gespeichert
+    this.keyboard = keyboard;
     this.character = new Character(this, this.keyboard);
-    this.healthBar = new StatusBar();
-    this.coinBar = new CoinBar();
-    this.bottleBar = new BottleBar();
-
     this.draw(); // startet Loop
-    this.checkCollisions();
+    this.run();
   }
 
-  checkCollisions() {
+  run() {
     setInterval(() => {
-      this.level.enemies.forEach((enemy) => {
-        if (this.character.isColliding(enemy)) {
+      this.checkCaracterCollision();
+      this.checkThrowObjects();
+      this.checkBottleHitsEnemy();
+      this.removeObjects();
+    }, 200);
+  }
+
+  isTopHit(impactObject, target) {
+    return (
+      impactObject.speedY < 0 &&
+      impactObject.posY + impactObject.height >= target.posY &&
+      impactObject.posY < target.posY
+    );
+  }
+
+  checkCaracterCollision() {
+    this.level.enemies.forEach((enemy) => {
+      if (this.character.isColliding(enemy) && !enemy.isDead) {
+        if (this.isTopHit(this.character, enemy)) {
+          enemy.die();
+          this.character.speedY = -10;
+        } else {
           this.character.hit();
           this.healthBar.setPercentage(this.character.energy);
         }
-      });
-    }, 200);
+      }
+    });
   }
+
+  checkThrowObjects() {
+    if (this.keyboard.d) {
+      let bottle = new ThrowableObject();
+      bottle.posX = this.character.posX + 80;
+      bottle.posY = this.character.posY + 100;
+      this.throwableObjects.push(bottle);
+    }
+  }
+
+  checkBottleHitsEnemy() {
+    this.throwableObjects.forEach((bottle) => {
+      this.level.enemies.forEach((enemy) => {
+        if (bottle.isColliding(enemy) && !enemy.isDead) {
+          console.log("Flasche trifft Gegner!");
+
+          enemy.die();
+          bottle.markForRemoval = true;
+        }
+      });
+    });
+  }
+
+  removeObjects() {
+    this.level.enemies = this.level.enemies.filter(
+      (enemy) => !enemy.markForRemoval
+    );
+    this.throwableObjects = this.throwableObjects.filter(
+      (bottle) => !bottle.markForRemoval
+    );
+  }
+
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.character.move();
 
     this.ctx.translate(this.camera_x, 0);
-
     this.addObjectsToMap(this.level.backgroundObjects);
 
     this.ctx.translate(-this.camera_x, 0);
@@ -46,10 +98,12 @@ export default class World {
     this.addToMap(this.healthBar);
     this.addToMap(this.coinBar);
     this.addToMap(this.bottleBar);
+    // ---------- Space for fixed Objects ----------
     this.ctx.translate(this.camera_x, 0);
 
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.enemies);
+    this.addObjectsToMap(this.throwableObjects);
     this.addToMap(this.character);
 
     this.ctx.translate(-this.camera_x, 0);
@@ -67,10 +121,8 @@ export default class World {
     if (mo.otherDirection) {
       this.flipImage(mo);
     }
-
     mo.draw(this.ctx);
     mo.drawFrame(this.ctx);
-
     if (mo.otherDirection) {
       this.flipImageBack(mo);
     }
