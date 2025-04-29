@@ -14,7 +14,8 @@ export default class DrawableObject {
   drawFrame(ctx) {
     if (
       this.constructor.name === "Character" ||
-      this.constructor.name === "Chicken"
+      this.constructor.name === "Chicken" ||
+      this.constructor.name === "ThrowableObject"
     ) {
       ctx.beginPath();
       ctx.lineWidth = "5";
