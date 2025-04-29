@@ -9,6 +9,7 @@ export default class Character extends MoveableObject {
   width = 150;
   posX = 80;
   posY = 145;
+
   IMAGES_WALKING = [
     "assets/img/2_character_pepe/2_walk/W-21.png",
     "assets/img/2_character_pepe/2_walk/W-22.png",
@@ -58,6 +59,11 @@ export default class Character extends MoveableObject {
     this.world = world;
     this.isWalking = false;
     this.isJumping = false;
+    this.hurtSoundPlayed = false;
+    this.walkingSound = new Audio("assets/audio/walking.mp3");
+    this.jumpingSound = new Audio("assets/audio/jump.wav");
+    this.hurtSound = new Audio("assets/audio/hurt.ogg");
+    this.walkingSound.loop = true;
   }
   move() {
     this.handleMovementInput();
@@ -69,28 +75,49 @@ export default class Character extends MoveableObject {
 
     if (this.keyboard.up && !this.isAboveGround()) {
       this.speedY = JUMP_SPEED;
-    } else if (
-      this.keyboard.shift &&
-      this.keyboard.right &&
-      this.posX < this.world.level.levelEndPosX
-    ) {
-      this.moveRight(RUN_SPEED);
-      this.movingHorizontally = true;
-    } else if (this.keyboard.shift && this.keyboard.left && this.posX > 0) {
-      this.moveLeft(RUN_SPEED);
-      this.movingHorizontally = true;
-    } else if (
-      this.keyboard.right &&
-      this.posX < this.world.level.levelEndPosX
-    ) {
-      this.moveRight(MOVE_SPEED);
-      this.movingHorizontally = true;
-    } else if (this.keyboard.left && this.posX > 0) {
-      this.moveLeft(MOVE_SPEED);
-      this.movingHorizontally = true;
+      this.jumpingSound.currentTime = 0; // springt immer von vorn an
+      this.jumpingSound.play();
+    } else {
+      const speed = this.keyboard.shift ? RUN_SPEED : MOVE_SPEED;
+
+      if (this.keyboard.right && this.posX < this.world.level.levelEndPosX) {
+        this.moveRight(speed);
+        this.movingHorizontally = true;
+      } else if (this.keyboard.left && this.posX > 0) {
+        this.moveLeft(speed);
+        this.movingHorizontally = true;
+      }
     }
 
+    this.playStepSounds();
     this.world.camera_x = -this.posX + 100;
+  }
+
+  playStepSounds() {
+    this.walkingSound.volume = 1;
+    this.walkingSound.playbackRate = 2;
+
+    if (this.movingHorizontally && !this.isAboveGround()) {
+      if (this.walkingSound.paused) {
+        this.walkingSound.play();
+      }
+    } else {
+      if (!this.walkingSound.paused) {
+        this.walkingSound.pause();
+      }
+    }
+  }
+
+  startBackgroundSound() {
+    if (!this.backgroundSound) {
+      this.backgroundSound = new Audio("assets/audio/background.wav");
+      this.backgroundSound.loop = true;
+      this.backgroundSound.volume = 0.2;
+    }
+
+    this.backgroundSound.play().catch((e) => {
+      console.warn("Hintergrundsound konnte nicht gestartet werden:", e);
+    });
   }
 
   handleAnimation() {
@@ -98,6 +125,11 @@ export default class Character extends MoveableObject {
       this.playAnimation(this.IMAGES_DEAD);
     } else if (this.isHurt()) {
       this.playAnimation(this.IMAGES_HURT);
+
+      if (!this.hurtSoundPlayed) {
+        this.hurtSound.play();
+        this.hurtSoundPlayed = true;
+      }
     } else if (this.isAboveGround()) {
       if (!this.isJumping) {
         this.jumpingAnimation();
@@ -111,6 +143,11 @@ export default class Character extends MoveableObject {
         this.isWalking = false;
         this.isJumping = false;
       }
+    }
+
+    // Reset der Flag, wenn Charakter nicht mehr verletzt ist
+    if (!this.isHurt()) {
+      this.hurtSoundPlayed = false;
     }
   }
 
