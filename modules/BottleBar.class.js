@@ -19,7 +19,7 @@ export default class BottleBar extends DrawableObject {
     this.loadImages(this.IMAGES_BOTTLE);
     this.posX = 180;
     this.posY = 10;
-    this.setPercentage(100);
+    this.setPercentage(0);
   }
 
   setPercentage(percentage) {
