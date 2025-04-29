@@ -19,7 +19,7 @@ export default class CoinBar extends DrawableObject {
     this.loadImages(this.IMAGES_COINS);
     this.posX = 620;
     this.posY = 10;
-    this.setPercentage(100);
+    this.setPercentage(0);
   }
 
   setPercentage(percentage) {
