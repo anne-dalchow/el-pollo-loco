@@ -2,13 +2,19 @@ import World from "../modules/World.class.js";
 import Keyboard from "../modules/Keyboard.class.js";
 
 let canvas;
+let gameStarted = false;
 window.keyboard = new Keyboard();
-window.addEventListener("load", init);
 
-function init() {
+window.addEventListener("load", () => {
   canvas = document.getElementById("canvas");
-  window.world = new World(canvas, window.keyboard);
-}
+});
+window.addEventListener("keydown", () => {
+  if (!gameStarted) {
+    gameStarted = true;
+    window.world = new World(canvas, window.keyboard);
+    window.world.startGameSounds(); // Hintergrundsound hier starten
+  }
+});
 
 window.addEventListener("keydown", (e) => {
   if (e.key === " ") {

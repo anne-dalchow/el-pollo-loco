@@ -23,7 +23,9 @@ export default class World {
     this.draw(); // startet Loop
     this.run();
   }
-
+  startGameSounds() {
+    this.character.startBackgroundSound();
+  }
   run() {
     setInterval(() => {
       this.checkCaracterCollision();
@@ -31,6 +33,16 @@ export default class World {
       this.checkBottleHitsEnemy();
       this.removeObjects();
     }, 200);
+  }
+
+  checkThrowObjects() {
+    if (this.keyboard.d) {
+      let bottle = new ThrowableObject(
+        this.character.posX + 80,
+        this.character.posY + 100
+      );
+      this.throwableObjects.push(bottle);
+    }
   }
 
   isTopHit(impactObject, target) {
@@ -55,21 +67,10 @@ export default class World {
     });
   }
 
-  checkThrowObjects() {
-    if (this.keyboard.d) {
-      let bottle = new ThrowableObject();
-      bottle.posX = this.character.posX + 80;
-      bottle.posY = this.character.posY + 100;
-      this.throwableObjects.push(bottle);
-    }
-  }
-
   checkBottleHitsEnemy() {
     this.throwableObjects.forEach((bottle) => {
       this.level.enemies.forEach((enemy) => {
         if (bottle.isColliding(enemy) && !enemy.isDead) {
-          console.log("Flasche trifft Gegner!");
-
           enemy.die();
           bottle.markForRemoval = true;
         }

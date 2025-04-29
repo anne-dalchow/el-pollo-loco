@@ -16,10 +16,10 @@ export default class MoveableObject extends DrawableObject {
 
   isColliding(mo) {
     return (
+      this.posX < mo.posX + mo.width &&
       this.posX + this.width > mo.posX &&
-      this.posY + this.height > mo.posY &&
-      this.posX < mo.posX &&
-      this.posY < mo.posY + mo.height
+      this.posY < mo.posY + mo.height &&
+      this.posY + this.height > mo.posY
     );
   }
 
@@ -34,7 +34,7 @@ export default class MoveableObject extends DrawableObject {
 
   isHurt() {
     let timepassed = new Date().getTime() - this.lastHit;
-    timepassed = timepassed / 1000; // difference in sec
+    timepassed = timepassed / 1000;
     return timepassed < 1;
   }
 
