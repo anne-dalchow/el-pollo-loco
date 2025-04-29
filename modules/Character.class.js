@@ -59,9 +59,14 @@ export default class Character extends MoveableObject {
     this.isWalking = false;
     this.isJumping = false;
   }
-
   move() {
-    let movingHorizontally = false;
+    this.handleMovementInput();
+    this.handleAnimation();
+  }
+
+  handleMovementInput() {
+    this.movingHorizontally = false;
+
     if (this.keyboard.up && !this.isAboveGround()) {
       this.speedY = JUMP_SPEED;
     } else if (
@@ -70,29 +75,25 @@ export default class Character extends MoveableObject {
       this.posX < this.world.level.levelEndPosX
     ) {
       this.moveRight(RUN_SPEED);
-      movingHorizontally = true;
+      this.movingHorizontally = true;
     } else if (this.keyboard.shift && this.keyboard.left && this.posX > 0) {
       this.moveLeft(RUN_SPEED);
-      movingHorizontally = true;
+      this.movingHorizontally = true;
     } else if (
       this.keyboard.right &&
       this.posX < this.world.level.levelEndPosX
     ) {
       this.moveRight(MOVE_SPEED);
-      movingHorizontally = true;
+      this.movingHorizontally = true;
     } else if (this.keyboard.left && this.posX > 0) {
       this.moveLeft(MOVE_SPEED);
-      movingHorizontally = true;
+      this.movingHorizontally = true;
     }
 
     this.world.camera_x = -this.posX + 100;
+  }
 
-    /**
-     * 1.Am Leben, oder Tod?
-     * 2.'Bin ich über dem Boden?'
-          Wenn ja, "Springen".
-          Wenn nein, Laufen oder Stehen.
-     */
+  handleAnimation() {
     if (this.isDead()) {
       this.playAnimation(this.IMAGES_DEAD);
     } else if (this.isHurt()) {
@@ -101,7 +102,7 @@ export default class Character extends MoveableObject {
       if (!this.isJumping) {
         this.jumpingAnimation();
       }
-    } else if (movingHorizontally) {
+    } else if (this.movingHorizontally) {
       if (!this.isWalking) {
         this.startAnimation();
       }
@@ -125,10 +126,8 @@ export default class Character extends MoveableObject {
 
   startAnimation() {
     if (this.isAboveGround()) {
-      // Wenn der Charakter in der Luft ist, starte die Sprunganimation
       this.jumpingAnimation();
     } else {
-      // Andernfalls starte die Geh-Animation
       this.walkingAnimation();
     }
     this.isWalking = true;
@@ -137,7 +136,7 @@ export default class Character extends MoveableObject {
   walkingAnimation() {
     const animate = () => {
       if (this.isAboveGround()) {
-        return; // Wenn der Charakter in der Luft ist, breche ab
+        return;
       }
       this.playAnimation(this.IMAGES_WALKING);
 
@@ -160,7 +159,7 @@ export default class Character extends MoveableObject {
         if (this.isAboveGround()) {
           requestAnimationFrame(animate);
         } else {
-          this.isJumping = false; // Wenn wieder am Boden, Sprungstatus beenden
+          this.isJumping = false;
         }
       }, 1000 / 15);
     };
