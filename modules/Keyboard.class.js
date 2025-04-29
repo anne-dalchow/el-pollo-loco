@@ -4,5 +4,6 @@ export default class Keyboard {
     this.right = false;
     this.up = false;
     this.shift = false;
+    this.d = false;
   }
 }
