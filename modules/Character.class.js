@@ -89,6 +89,7 @@ export default class Character extends MoveableObject {
     this.isWalking = false;
     this.isJumping = false;
     this.hurtSoundPlayed = false;
+    this.jumpKeyPressed = false;
 
     this.walkingSound = new Audio("assets/audio/walking.mp3");
     this.jumpingSound = new Audio("assets/audio/jump.wav");
@@ -103,20 +104,27 @@ export default class Character extends MoveableObject {
   handleMovementInput() {
     this.movingHorizontally = false;
 
-    if (this.keyboard.up && !this.isAboveGround()) {
+    if (this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed) {
       this.speedY = JUMP_SPEED;
-      this.jumpingSound.currentTime = 0; // springt immer von vorn an
+      this.jumpingSound.currentTime = 0;
       this.jumpingSound.play();
-    } else {
-      const speed = this.keyboard.shift ? RUN_SPEED : MOVE_SPEED;
+      this.jumpKeyPressed = true;
+    }
 
-      if (this.keyboard.right && this.posX < this.world.level.levelEndPosX) {
-        this.moveRight(speed);
-        this.movingHorizontally = true;
-      } else if (this.keyboard.left && this.posX > 0) {
-        this.moveLeft(speed);
-        this.movingHorizontally = true;
-      }
+    // Rücksetzen des Sprung-Flags beim Loslassen der Taste
+    if (!this.keyboard.up) {
+      this.jumpKeyPressed = false;
+    }
+
+    // horizontale Bewegung prüfen
+    const speed = this.keyboard.shift ? RUN_SPEED : MOVE_SPEED;
+
+    if (this.keyboard.right && this.posX < this.world.level.levelEndPosX) {
+      this.moveRight(speed);
+      this.movingHorizontally = true;
+    } else if (this.keyboard.left && this.posX > 0) {
+      this.moveLeft(speed);
+      this.movingHorizontally = true;
     }
 
     this.playStepSounds();
