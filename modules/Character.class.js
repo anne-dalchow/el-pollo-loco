@@ -10,6 +10,32 @@ export default class Character extends MoveableObject {
   posX = 80;
   posY = 145;
 
+  IMAGES_IDLE = [
+    "assets/img/2_character_pepe/1_idle/idle/I-1.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-2.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-3.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-4.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-5.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-6.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-7.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-8.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-9.png",
+    "assets/img/2_character_pepe/1_idle/idle/I-10.png",
+  ];
+
+  IMAGES_LONG_IDLE = [
+    "assets/img/2_character_pepe/1_idle/long_idle/I-11.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-12.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-13.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-14.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-15.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-16.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-17.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-18.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-19.png",
+    "assets/img/2_character_pepe/1_idle/long_idle/I-20.png",
+  ];
+
   IMAGES_WALKING = [
     "assets/img/2_character_pepe/2_walk/W-21.png",
     "assets/img/2_character_pepe/2_walk/W-22.png",
@@ -49,7 +75,9 @@ export default class Character extends MoveableObject {
 
   constructor(world, keyboard) {
     super();
-    this.loadImg("assets/img/2_character_pepe/2_walk/W-21.png");
+    this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
+    this.loadImages(this.IMAGES_IDLE);
+    this.loadImages(this.IMAGES_LONG_IDLE);
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_JUMP);
     this.loadImages(this.IMAGES_DEAD);
@@ -57,6 +85,7 @@ export default class Character extends MoveableObject {
     this.applyGravity();
     this.keyboard = keyboard;
     this.world = world;
+    this.isIdle = false;
     this.isWalking = false;
     this.isJumping = false;
     this.hurtSoundPlayed = false;
@@ -143,8 +172,9 @@ export default class Character extends MoveableObject {
         this.isWalking = false;
         this.isJumping = false;
       }
-    }
 
+      this.idleAnimation(); // Nur starten, wenn alles andere nicht zutrifft
+    }
     // Reset der Flag, wenn Charakter nicht mehr verletzt ist
     if (!this.isHurt()) {
       this.hurtSoundPlayed = false;
@@ -162,12 +192,102 @@ export default class Character extends MoveableObject {
   }
 
   startAnimation() {
+    this.idleAnimation();
     if (this.isAboveGround()) {
       this.jumpingAnimation();
     } else {
       this.walkingAnimation();
     }
     this.isWalking = true;
+  }
+
+  idleAnimation() {
+    if (this.idleInterval || this.longIdleInterval) return; // Verhindern, dass beide gleichzeitig laufen
+
+    this.isIdle = true;
+    this.playAnimation(this.IMAGES_IDLE);
+
+    // Idle-Animation abspielen
+    this.idleInterval = setInterval(() => {
+      if (
+        !this.isAboveGround() &&
+        !this.isWalking &&
+        !this.isJumping &&
+        !this.isHurt() &&
+        !this.isDead()
+      ) {
+        this.playAnimation(this.IMAGES_IDLE);
+      } else {
+        this.clearIdleAnimation(); // stoppt Idle, wenn sich der Charakter bewegt oder eine andere Aktion stattfindet
+      }
+    }, 1000 / 10);
+
+    // Nach 3 Sekunden Long-Idle starten, wenn keine Bewegung stattfindet
+    this.idleTimeout = setTimeout(() => {
+      if (
+        !this.isAboveGround() &&
+        !this.isWalking &&
+        !this.isJumping &&
+        !this.isHurt() &&
+        !this.isDead()
+      ) {
+        this.startLongIdleAnimation();
+      }
+    }, 3000);
+  }
+
+  startLongIdleAnimation() {
+    // Verhindern, dass Long-Idle gestartet wird, wenn bereits eine Idle-Animation läuft
+    if (this.longIdleInterval) return;
+
+    this.clearIdleAnimation(); // Clear any previous idle animations
+    this.playAnimation(this.IMAGES_LONG_IDLE);
+
+    this.longIdleInterval = setInterval(() => {
+      if (
+        !this.isAboveGround() &&
+        !this.isWalking &&
+        !this.isJumping &&
+        !this.isHurt() &&
+        !this.isDead()
+      ) {
+        this.playAnimation(this.IMAGES_LONG_IDLE);
+      } else {
+        this.clearIdleAnimation(); // stoppt Long-Idle, wenn sich der Charakter bewegt oder eine andere Aktion stattfindet
+      }
+    }, 1000 / 10);
+  }
+
+  clearIdleAnimation() {
+    if (this.idleInterval) {
+      clearInterval(this.idleInterval);
+      this.idleInterval = null;
+    }
+    if (this.idleTimeout) {
+      clearTimeout(this.idleTimeout);
+      this.idleTimeout = null;
+    }
+    if (this.longIdleInterval) {
+      clearInterval(this.longIdleInterval);
+      this.longIdleInterval = null;
+    }
+    this.isIdle = false;
+  }
+
+  clearIdleAnimation() {
+    if (this.idleInterval) {
+      clearInterval(this.idleInterval);
+      this.idleInterval = null;
+    }
+    if (this.idleTimeout) {
+      clearTimeout(this.idleTimeout);
+      this.idleTimeout = null;
+    }
+    if (this.longIdleInterval) {
+      clearInterval(this.longIdleInterval);
+      this.longIdleInterval = null;
+    }
+    this.isIdle = false;
   }
 
   walkingAnimation() {

@@ -37,10 +37,16 @@ export default class World {
 
   checkThrowObjects() {
     if (this.keyboard.d) {
+      // Stoppe die Idle-Animation des Charakters, wenn er die Flasche wirft
+      this.character.clearIdleAnimation();
+
+      // Erstelle und werfe die Flasche
       let bottle = new ThrowableObject(
         this.character.posX + 80,
         this.character.posY + 100
       );
+
+      // Füge die geworfene Flasche zur Liste der "throwableObjects" hinzu
       this.throwableObjects.push(bottle);
     }
   }
