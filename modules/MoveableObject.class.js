@@ -6,9 +6,30 @@ export default class MoveableObject extends DrawableObject {
   acceleration = 2.5;
   energy = 100;
   lastHit = 0;
+  imageCache = {};
+  currentImage = 0;
+  walkInterval = null;
+  gravityInterval = null;
+
+  startWalkAnimation(images) {
+    this.walkInterval = setInterval(() => {
+      if (this.isDead()) {
+        this.stopWalkAnimation(); // direkt hier abbrechen
+      } else {
+        this.playAnimation(images);
+      }
+    }, 100);
+  }
+
+  stopWalkAnimation() {
+    if (this.walkInterval) {
+      clearInterval(this.walkInterval);
+      this.walkInterval = null;
+    }
+  }
 
   playAnimation(images) {
-    let i = this.currentImage % images.length; // let i = 0,1,2,3,4,5,0,1,2,3,4,5,....
+    let i = this.currentImage % images.length;
     let path = images[i];
     this.img = this.imageCache[path]; // Bild aus dem Cache holen
     this.currentImage++;
@@ -43,15 +64,22 @@ export default class MoveableObject extends DrawableObject {
   }
 
   applyGravity() {
-    setInterval(() => {
+    this.gravityInterval = setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
         this.posY -= this.speedY;
         this.speedY -= this.acceleration;
       } else {
-        this.speedY = 0; // Stoppe die Geschwindigkeit, wenn am Boden
-        this.posY = 145; // Setze auf Bodenhöhe zurück, falls leicht darunter
+        this.speedY = 0;
+        this.posY = 145;
       }
     }, 1000 / 25);
+  }
+
+  stopGravity() {
+    if (this.gravityInterval) {
+      clearInterval(this.gravityInterval);
+      this.gravityInterval = null;
+    }
   }
 
   isAboveGround() {

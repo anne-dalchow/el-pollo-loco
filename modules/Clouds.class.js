@@ -12,16 +12,12 @@ export default class Clouds extends MoveableObject {
     this.moveLeft(0.15, -350);
   }
   moveLeft(speed, end) {
-    const animate = () => {
+    this.moveInterval = setInterval(() => {
       if (this.posX > end) {
         this.posX -= speed;
       } else {
         this.posX = 800;
       }
-
-      /**animate-Funktion: konstante Bewegung ohne zeitliche Verzögerung -> daher ohne Pausen/setTimeout */
-      requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
+    }, 1000 / 60);
   }
 }

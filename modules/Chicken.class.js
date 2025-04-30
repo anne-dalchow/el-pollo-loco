@@ -27,34 +27,27 @@ export default class Chicken extends MoveableObject {
   }
 
   chickenWalkAnimation() {
-    const animate = () => {
+    this.walkInterval = setInterval(() => {
       if (!this.isDead) {
         this.playAnimation(this.IMAGES_WALKING);
-        /**
-         * Walking Animation: gezielte Verzögerung (600ms), um jedes Bild für eine bestimmte Zeit anzuzeigen -> deshalb setTimeout zusammen mit requestAnimationFrame, um Bildwechsel nach der gewünschten Zeit zu steuern.
-         */
-        setTimeout(() => {
-          requestAnimationFrame(animate);
-        }, 100);
+      } else {
+        clearInterval(this.walkInterval);
       }
-    };
-
-    requestAnimationFrame(animate);
+    }, 100);
   }
 
   moveLeft(speed, end) {
-    const animate = () => {
+    this.moveInterval = setInterval(() => {
       if (!this.isDead) {
         if (this.posX > end) {
           this.posX -= speed;
         } else {
           this.posX = 800;
         }
-        /**animate-Funktion: konstante Bewegung ohne zeitliche Verzögerung -> daher ohne Pausen/setTimeout */
-        requestAnimationFrame(animate);
+      } else {
+        clearInterval(this.moveInterval);
       }
-    };
-    requestAnimationFrame(animate);
+    }, 1000 / 60);
   }
 
   die() {

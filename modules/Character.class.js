@@ -171,36 +171,23 @@ export default class Character extends MoveableObject {
   }
 
   walkingAnimation() {
-    const animate = () => {
-      if (this.isAboveGround()) {
-        return;
+    this.walkInterval = setInterval(() => {
+      if (!this.isAboveGround() && this.isWalking) {
+        this.playAnimation(this.IMAGES_WALKING);
+      } else {
+        clearInterval(this.walkInterval);
       }
-      this.playAnimation(this.IMAGES_WALKING);
-
-      setTimeout(() => {
-        if (this.isWalking) {
-          requestAnimationFrame(animate);
-        }
-      }, 1000 / 15);
-    };
-
-    requestAnimationFrame(animate);
+    }, 1000 / 15);
   }
 
   jumpingAnimation() {
     this.isJumping = true;
-    const animate = () => {
+    this.jumpInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_JUMP);
-
-      setTimeout(() => {
-        if (this.isAboveGround()) {
-          requestAnimationFrame(animate);
-        } else {
-          this.isJumping = false;
-        }
-      }, 1000 / 15);
-    };
-
-    requestAnimationFrame(animate);
+      if (!this.isAboveGround()) {
+        clearInterval(this.jumpInterval);
+        this.isJumping = false;
+      }
+    }, 1000 / 15);
   }
 }
