@@ -84,7 +84,7 @@ export default class MoveableObject extends DrawableObject {
 
   isAboveGround() {
     if (this.constructor.name === "ThrowableObject") {
-      return this.posY < 500;
+      return true;
     } else {
       return this.posY < 145;
     }

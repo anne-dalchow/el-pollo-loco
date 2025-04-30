@@ -14,12 +14,17 @@ export default class World {
   coinBar = new CoinBar();
   bottleBar = new BottleBar();
   throwableObjects = [];
+  maxBottles = 10;
+  currentBottles = 0;
+  groundObjects = [];
+  collectBottleSound = new Audio("assets/audio/collect.wav");
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.character = new Character(this, this.keyboard);
+    this.groundObjects = this.level.bottles;
     this.draw(); // startet Loop
     this.run();
   }
@@ -31,23 +36,26 @@ export default class World {
       this.checkCaracterCollision();
       this.checkThrowObjects();
       this.checkBottleHitsEnemy();
+      this.checkBottleHitsGround();
       this.removeObjects();
     }, 200);
   }
 
   checkThrowObjects() {
-    if (this.keyboard.d) {
-      // Stoppe die Idle-Animation des Charakters, wenn er die Flasche wirft
+    if (this.keyboard.d && this.currentBottles > 0) {
       this.character.clearIdleAnimation();
 
-      // Erstelle und werfe die Flasche
       let bottle = new ThrowableObject(
         this.character.posX + 80,
-        this.character.posY + 100
+        this.character.posY + 100,
+        true
       );
 
-      // Füge die geworfene Flasche zur Liste der "throwableObjects" hinzu
       this.throwableObjects.push(bottle);
+      this.currentBottles--;
+      this.bottleBar.setPercentage(
+        (this.currentBottles / this.maxBottles) * 100
+      );
     }
   }
 
@@ -84,6 +92,31 @@ export default class World {
     });
   }
 
+  checkBottleHitsGround() {
+    this.groundObjects.forEach((bottle, index) => {
+      if (this.character.isColliding(bottle)) {
+        // Flasche einsammeln: von groundObjects entfernen
+        this.groundObjects.splice(index, 1);
+
+        // Erhöhe den Flaschenbestand nur, wenn Limit nicht überschritten
+        if (this.currentBottles < this.maxBottles) {
+          this.currentBottles++;
+          this.bottleBar.setPercentage(
+            (this.currentBottles / this.maxBottles) * 100
+          );
+        }
+
+        this.collectBottleSound.volume = 0.1;
+        this.collectBottleSound.play().catch((e) => {
+          console.warn(
+            "Collect-Bottle-Sound konnte nicht abgespielt werden:",
+            e
+          );
+        });
+      }
+    });
+  }
+
   removeObjects() {
     this.level.enemies = this.level.enemies.filter(
       (enemy) => !enemy.markForRemoval
@@ -99,6 +132,7 @@ export default class World {
 
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
+    this.addObjectsToMap(this.groundObjects);
 
     this.ctx.translate(-this.camera_x, 0);
     // ---------- Space for fixed Objects ----------
@@ -109,8 +143,11 @@ export default class World {
     this.ctx.translate(this.camera_x, 0);
 
     this.addObjectsToMap(this.level.clouds);
+    this.addObjectsToMap(this.level.bottles);
+    this.addObjectsToMap(this.level.coins);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
+
     this.addToMap(this.character);
 
     this.ctx.translate(-this.camera_x, 0);

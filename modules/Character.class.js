@@ -89,6 +89,7 @@ export default class Character extends MoveableObject {
     this.isWalking = false;
     this.isJumping = false;
     this.hurtSoundPlayed = false;
+
     this.walkingSound = new Audio("assets/audio/walking.mp3");
     this.jumpingSound = new Audio("assets/audio/jump.wav");
     this.hurtSound = new Audio("assets/audio/hurt.ogg");
@@ -220,7 +221,7 @@ export default class Character extends MoveableObject {
       } else {
         this.clearIdleAnimation(); // stoppt Idle, wenn sich der Charakter bewegt oder eine andere Aktion stattfindet
       }
-    }, 1000 / 10);
+    }, 1000 / 5);
 
     // Nach 3 Sekunden Long-Idle starten, wenn keine Bewegung stattfindet
     this.idleTimeout = setTimeout(() => {
@@ -233,7 +234,7 @@ export default class Character extends MoveableObject {
       ) {
         this.startLongIdleAnimation();
       }
-    }, 3000);
+    }, 5000);
   }
 
   startLongIdleAnimation() {
@@ -255,23 +256,7 @@ export default class Character extends MoveableObject {
       } else {
         this.clearIdleAnimation(); // stoppt Long-Idle, wenn sich der Charakter bewegt oder eine andere Aktion stattfindet
       }
-    }, 1000 / 10);
-  }
-
-  clearIdleAnimation() {
-    if (this.idleInterval) {
-      clearInterval(this.idleInterval);
-      this.idleInterval = null;
-    }
-    if (this.idleTimeout) {
-      clearTimeout(this.idleTimeout);
-      this.idleTimeout = null;
-    }
-    if (this.longIdleInterval) {
-      clearInterval(this.longIdleInterval);
-      this.longIdleInterval = null;
-    }
-    this.isIdle = false;
+    }, 1000 / 5);
   }
 
   clearIdleAnimation() {
