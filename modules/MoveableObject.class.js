@@ -11,6 +11,15 @@ export default class MoveableObject extends DrawableObject {
   walkInterval = null;
   gravityInterval = null;
 
+  isColliding(mo, offsetX = 0, offsetY = 0) {
+    return (
+      this.posX + offsetX < mo.posX + mo.width &&
+      this.posX + this.width - offsetX > mo.posX &&
+      this.posY + offsetY < mo.posY + mo.height &&
+      this.posY + this.height > mo.posY
+    );
+  }
+
   startWalkAnimation(images) {
     this.walkInterval = setInterval(() => {
       if (this.isDead()) {
@@ -33,15 +42,6 @@ export default class MoveableObject extends DrawableObject {
     let path = images[i];
     this.img = this.imageCache[path]; // Bild aus dem Cache holen
     this.currentImage++;
-  }
-
-  isColliding(mo) {
-    return (
-      this.posX < mo.posX + mo.width &&
-      this.posX + this.width > mo.posX &&
-      this.posY < mo.posY + mo.height &&
-      this.posY + this.height > mo.posY
-    );
   }
 
   hit() {
@@ -70,7 +70,7 @@ export default class MoveableObject extends DrawableObject {
         this.speedY -= this.acceleration;
       } else {
         this.speedY = 0;
-        this.posY = 145;
+        this.posY = 195;
       }
     }, 1000 / 25);
   }
@@ -86,7 +86,7 @@ export default class MoveableObject extends DrawableObject {
     if (this.constructor.name === "ThrowableObject") {
       return true;
     } else {
-      return this.posY < 145;
+      return this.posY < 195;
     }
   }
 }

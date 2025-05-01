@@ -89,7 +89,7 @@ export default class World {
 
   checkCaracterCollision() {
     this.level.enemies.forEach((enemy) => {
-      if (this.character.isColliding(enemy) && !enemy.isDead) {
+      if (this.character.isColliding(enemy, 40, 60) && !enemy.isDead) {
         if (this.isTopHit(this.character, enemy)) {
           enemy.die();
           this.character.speedY = -10;
@@ -113,7 +113,7 @@ export default class World {
   }
   checkCollectableItems() {
     this.level.coins.forEach((coin, index) => {
-      if (this.character.isColliding(coin)) {
+      if (this.character.isColliding(coin, 40, 60)) {
         this.level.coins.splice(index, 1);
         this.currentCoins++;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
@@ -128,7 +128,7 @@ export default class World {
 
   checkBottleHitsGround() {
     this.groundObjects.forEach((bottle, index) => {
-      if (this.character.isColliding(bottle)) {
+      if (this.character.isColliding(bottle, 40, 60)) {
         // Flasche einsammeln: von groundObjects entfernen
         this.groundObjects.splice(index, 1);
 
@@ -199,7 +199,7 @@ export default class World {
       this.flipImage(mo);
     }
     mo.draw(this.ctx);
-    mo.drawFrame(this.ctx);
+    // mo.drawFrame(this.ctx);
     if (mo.otherDirection) {
       this.flipImageBack(mo);
     }
