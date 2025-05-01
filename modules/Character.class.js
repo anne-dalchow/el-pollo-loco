@@ -6,7 +6,7 @@ const RUN_SPEED = 10;
 
 export default class Character extends MoveableObject {
   height = 280;
-  width = 150;
+  width = 180;
   posX = 80;
   posY = 145;
 
@@ -96,6 +96,7 @@ export default class Character extends MoveableObject {
     this.hurtSound = new Audio("assets/audio/hurt.ogg");
     this.walkingSound.loop = true;
   }
+
   move() {
     this.handleMovementInput();
     this.handleAnimation();
@@ -104,6 +105,13 @@ export default class Character extends MoveableObject {
   handleMovementInput() {
     this.movingHorizontally = false;
 
+    this.handleJumpInput();
+    this.handleHorizontalMovement();
+    this.playStepSounds();
+    this.world.camera_x = -this.posX + 100;
+  }
+
+  handleJumpInput() {
     if (this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed) {
       this.speedY = JUMP_SPEED;
       this.jumpingSound.currentTime = 0;
@@ -111,12 +119,12 @@ export default class Character extends MoveableObject {
       this.jumpKeyPressed = true;
     }
 
-    // Rücksetzen des Sprung-Flags beim Loslassen der Taste
     if (!this.keyboard.up) {
       this.jumpKeyPressed = false;
     }
+  }
 
-    // horizontale Bewegung prüfen
+  handleHorizontalMovement() {
     const speed = this.keyboard.shift ? RUN_SPEED : MOVE_SPEED;
 
     if (this.keyboard.right && this.posX < this.world.level.levelEndPosX) {
@@ -126,9 +134,6 @@ export default class Character extends MoveableObject {
       this.moveLeft(speed);
       this.movingHorizontally = true;
     }
-
-    this.playStepSounds();
-    this.world.camera_x = -this.posX + 100;
   }
 
   playStepSounds() {
@@ -158,33 +163,63 @@ export default class Character extends MoveableObject {
     });
   }
 
+  hurtSoundHandler() {
+    if (!this.hurtSoundPlayed) {
+      this.hurtSound.play();
+      this.hurtSoundPlayed = true;
+    }
+  }
+
+  triggerJumpingState() {
+    if (!this.isJumping) {
+      this.jumpingAnimation();
+      this.isJumping = true;
+      this.isWalking = false;
+      this.isIdle = false;
+    }
+  }
+
+  triggerWalkingState() {
+    if (!this.isWalking) {
+      this.walkingAnimation();
+      this.isWalking = true;
+      this.isIdle = false;
+    }
+  }
+
+  triggerIdleState() {
+    if (!this.isIdle) {
+      this.idleAnimation();
+      this.isIdle = true;
+      this.isWalking = false;
+    }
+  }
+
   handleAnimation() {
     if (this.isDead()) {
       this.playAnimation(this.IMAGES_DEAD);
-    } else if (this.isHurt()) {
-      this.playAnimation(this.IMAGES_HURT);
-
-      if (!this.hurtSoundPlayed) {
-        this.hurtSound.play();
-        this.hurtSoundPlayed = true;
-      }
-    } else if (this.isAboveGround()) {
-      if (!this.isJumping) {
-        this.jumpingAnimation();
-      }
-    } else if (this.movingHorizontally) {
-      if (!this.isWalking) {
-        this.startAnimation();
-      }
-    } else {
-      if (this.isWalking || this.isJumping) {
-        this.isWalking = false;
-        this.isJumping = false;
-      }
-
-      this.idleAnimation(); // Nur starten, wenn alles andere nicht zutrifft
+      return;
     }
-    // Reset der Flag, wenn Charakter nicht mehr verletzt ist
+
+    if (this.isHurt()) {
+      this.playAnimation(this.IMAGES_HURT);
+      this.hurtSoundHandler();
+      return;
+    }
+
+    if (this.isAboveGround()) {
+      this.triggerJumpingState();
+    } else {
+      if (this.keyboard.right || this.keyboard.left) {
+        this.triggerWalkingState();
+      } else {
+        this.triggerIdleState();
+      }
+
+      this.isJumping = false;
+    }
+
+    // Reset Hurt-Sound-Flag, wenn nicht mehr verletzt
     if (!this.isHurt()) {
       this.hurtSoundPlayed = false;
     }

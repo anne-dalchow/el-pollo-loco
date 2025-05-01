@@ -7,15 +7,14 @@ window.keyboard = new Keyboard();
 
 window.addEventListener("load", () => {
   canvas = document.getElementById("canvas");
-  window.world = new World(canvas, window.keyboard); // <- World direkt erzeugen!
-  // Noch NICHT run() oder startGameSounds() aufrufen
+  window.world = new World(canvas, window.keyboard);
 });
 
 window.addEventListener("keydown", () => {
   if (!gameStarted) {
     gameStarted = true;
-    window.world.startGame(); // <- Methode zum Spielstart aufrufen
-    window.world.startGameSounds(); // Sound starten
+    window.world.startGame();
+    window.world.startGameSounds();
   }
 });
 

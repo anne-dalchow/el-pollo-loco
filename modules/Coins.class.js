@@ -16,7 +16,7 @@ export default class Coins extends MoveableObject {
 
   constructor() {
     super();
-    this.posY = Math.random() * 250;
+    this.posY = 50 + Math.random() * 250;
     this.posX = 50 + Math.random() * 3000;
     this.height = 35;
     this.width = 30;
