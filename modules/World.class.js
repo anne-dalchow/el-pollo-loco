@@ -17,7 +17,13 @@ export default class World {
   maxBottles = 10;
   currentBottles = 0;
   groundObjects = [];
+  maxCoins = 15;
+  currentCoins = 0;
+  coins = [];
+  collectCoinSound = new Audio("assets/audio/coin.wav");
   collectBottleSound = new Audio("assets/audio/collect.wav");
+
+  gameRunning = false;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -25,18 +31,32 @@ export default class World {
     this.keyboard = keyboard;
     this.character = new Character(this, this.keyboard);
     this.groundObjects = this.level.bottles;
+
     this.draw(); // startet Loop
     this.run();
+  }
+
+  startGame() {
+    this.gameRunning = true;
+    this.run();
+
+    this.level.enemies.forEach((enemy) => {
+      if (typeof enemy.startMoving === "function") {
+        enemy.startMoving();
+      }
+    });
   }
   startGameSounds() {
     this.character.startBackgroundSound();
   }
   run() {
     setInterval(() => {
+      if (!this.gameRunning) return; // Vorzeitig abbrechen, wenn Spiel noch nicht gestartet
       this.checkCaracterCollision();
       this.checkThrowObjects();
       this.checkBottleHitsEnemy();
       this.checkBottleHitsGround();
+      this.checkCollectableItems();
       this.removeObjects();
     }, 200);
   }
@@ -91,6 +111,20 @@ export default class World {
       });
     });
   }
+  checkCollectableItems() {
+    this.level.coins.forEach((coin, index) => {
+      if (this.character.isColliding(coin)) {
+        this.level.coins.splice(index, 1);
+        this.currentCoins++;
+        this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
+
+        this.collectCoinSound.volume = 0.2;
+        this.collectCoinSound.play().catch((e) => {
+          console.warn("Collect-Coin-Sound konnte nicht abgespielt werden:", e);
+        });
+      }
+    });
+  }
 
   checkBottleHitsGround() {
     this.groundObjects.forEach((bottle, index) => {
@@ -98,13 +132,10 @@ export default class World {
         // Flasche einsammeln: von groundObjects entfernen
         this.groundObjects.splice(index, 1);
 
-        // Erhöhe den Flaschenbestand nur, wenn Limit nicht überschritten
-        if (this.currentBottles < this.maxBottles) {
-          this.currentBottles++;
-          this.bottleBar.setPercentage(
-            (this.currentBottles / this.maxBottles) * 100
-          );
-        }
+        this.currentBottles++;
+        this.bottleBar.setPercentage(
+          (this.currentBottles / this.maxBottles) * 100
+        );
 
         this.collectBottleSound.volume = 0.1;
         this.collectBottleSound.play().catch((e) => {
@@ -128,7 +159,9 @@ export default class World {
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.character.move();
+    if (this.gameRunning) {
+      this.character.move(); // Nur bewegen, wenn Spiel läuft
+    }
 
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);

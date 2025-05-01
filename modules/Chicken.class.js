@@ -21,7 +21,10 @@ export default class Chicken extends MoveableObject {
     this.loadImg("assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
     this.posX = 250 + Math.random() * 3600;
+  }
 
+  startMoving() {
+    let randomSpeed = 0.5 + Math.random() * 0.5;
     this.chickenWalkAnimation();
     this.moveLeft(randomSpeed, -60);
   }
