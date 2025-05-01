@@ -10,23 +10,22 @@ window.addEventListener("load", () => {
   window.world = new World(canvas, window.keyboard);
 });
 
-window.addEventListener("keydown", () => {
+window.addEventListener("keydown", (e) => {
   if (!gameStarted) {
     gameStarted = true;
+    document.getElementById("startscreen").style.display = "none";
     window.world.startGame();
     window.world.startGameSounds();
   }
-});
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === " ") {
-    window.keyboard.up = true;
-  }
   if (e.key === "ArrowLeft") {
     window.keyboard.left = true;
   }
   if (e.key === "ArrowRight") {
     window.keyboard.right = true;
+  }
+  if (e.key === " ") {
+    window.keyboard.up = true;
   }
   if (e.key === "Shift") {
     window.keyboard.shift = true;
@@ -37,14 +36,14 @@ window.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("keyup", (e) => {
-  if (e.key === " ") {
-    window.keyboard.up = false;
-  }
   if (e.key === "ArrowLeft") {
     window.keyboard.left = false;
   }
   if (e.key === "ArrowRight") {
     window.keyboard.right = false;
+  }
+  if (e.key === " ") {
+    window.keyboard.up = false;
   }
   if (e.key === "Shift") {
     window.keyboard.shift = false;
