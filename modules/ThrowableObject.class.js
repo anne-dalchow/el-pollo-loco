@@ -14,8 +14,8 @@ export default class ThrowableObject extends MoveableObject {
     super();
     this.posX = x;
     this.posY = y;
-    this.height = 50;
-    this.width = 50;
+    this.height = 60;
+    this.width = 60;
     this.loadImg("assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
 

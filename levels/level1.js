@@ -41,7 +41,7 @@ for (let i = 1; i <= numberOfCoins; i++) {
 for (let i = 1; i <= numberOfBottles; i++) {
   const basePos = i * distancePerBottle;
   const randomOffset = (Math.random() - 0.5) * 300;
-  const bottle = new ThrowableObject(basePos + randomOffset, 360); // Bodenhöhe z.B. 380
+  const bottle = new ThrowableObject(basePos + randomOffset, 370);
   bottles.push(bottle);
 }
 

@@ -19,6 +19,8 @@ export default class World {
   groundObjects = [];
   maxCoins = 15;
   currentCoins = 0;
+  //TODO Score for endscreen - show score
+  currentScore = 0;
   coins = [];
   collectCoinSound = new Audio("assets/audio/coin.wav");
   collectBottleSound = new Audio("assets/audio/collect.wav");
@@ -31,8 +33,9 @@ export default class World {
     this.keyboard = keyboard;
     this.character = new Character(this, this.keyboard);
     this.groundObjects = this.level.bottles;
+    this.canThrow = true;
 
-    this.draw(); // startet Loop
+    this.draw();
     this.run();
   }
 
@@ -51,7 +54,7 @@ export default class World {
   }
   run() {
     setInterval(() => {
-      if (!this.gameRunning) return; // Vorzeitig abbrechen, wenn Spiel noch nicht gestartet
+      if (!this.gameRunning) return;
       this.checkCaracterCollision();
       this.checkThrowObjects();
       this.checkBottleHitsEnemy();
@@ -62,7 +65,9 @@ export default class World {
   }
 
   checkThrowObjects() {
-    if (this.keyboard.d && this.currentBottles > 0) {
+    if (this.keyboard.d && this.canThrow && this.currentBottles > 0) {
+      this.canThrow = false;
+
       this.character.clearIdleAnimation();
 
       let bottle = new ThrowableObject(
@@ -76,6 +81,10 @@ export default class World {
       this.bottleBar.setPercentage(
         (this.currentBottles / this.maxBottles) * 100
       );
+    }
+
+    if (!this.keyboard.d) {
+      this.canThrow = true;
     }
   }
 
@@ -111,11 +120,13 @@ export default class World {
       });
     });
   }
+
   checkCollectableItems() {
     this.level.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin, 40, 60)) {
         this.level.coins.splice(index, 1);
         this.currentCoins++;
+        this.currentScore = this.currentCoins * 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
 
         this.collectCoinSound.volume = 0.2;

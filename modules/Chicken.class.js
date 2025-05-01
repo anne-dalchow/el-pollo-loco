@@ -1,7 +1,7 @@
 import MoveableObject from "./MoveableObject.class.js";
 
 export default class Chicken extends MoveableObject {
-  posY = 340;
+  posY = 350;
   width = 80;
   height = 80;
   IMAGES_WALKING = [

@@ -16,7 +16,7 @@ export default class Character extends MoveableObject {
   height = 230;
   width = 150;
   posX = 80;
-  posY = 195;
+  posY = 210;
 
   constructor(world, keyboard) {
     super();
@@ -26,6 +26,7 @@ export default class Character extends MoveableObject {
     this.IMAGES_JUMP = IMAGES_JUMP;
     this.IMAGES_DEAD = IMAGES_DEAD;
     this.IMAGES_HURT = IMAGES_HURT;
+
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
     this.loadImages(this.IMAGES_IDLE);
     this.loadImages(this.IMAGES_LONG_IDLE);
@@ -33,7 +34,9 @@ export default class Character extends MoveableObject {
     this.loadImages(this.IMAGES_JUMP);
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
+
     this.applyGravity();
+
     this.keyboard = keyboard;
     this.world = world;
     this.isIdle = false;
@@ -45,7 +48,9 @@ export default class Character extends MoveableObject {
     this.walkingSound = new Audio("assets/audio/walking.mp3");
     this.jumpingSound = new Audio("assets/audio/jump.wav");
     this.hurtSound = new Audio("assets/audio/hurt.ogg");
+    this.snoringSound = new Audio("assets/audio/snoring.wav");
     this.walkingSound.loop = true;
+    this.snoringSound.loop = true;
   }
 
   move() {
@@ -109,6 +114,32 @@ export default class Character extends MoveableObject {
     } else {
       if (!this.walkingSound.paused) {
         this.walkingSound.pause();
+      }
+    }
+  }
+
+  isInactive() {
+    return (
+      !this.isAboveGround() &&
+      !this.isWalking &&
+      !this.isJumping &&
+      !this.isHurt() &&
+      !this.isDead()
+    );
+  }
+
+  playSnoringSounds() {
+    this.snoringSound.volume = 0.8;
+    this.snoringSound.playbackRate = 1.5;
+
+    if (this.isInactive()) {
+      if (this.snoringSound.paused) {
+        this.snoringSound.play();
+      }
+    } else {
+      if (!this.snoringSound.paused) {
+        this.snoringSound.pause();
+        this.snoringSound.currentTime = 0; // wichtig!
       }
     }
   }
@@ -202,58 +233,38 @@ export default class Character extends MoveableObject {
   }
 
   idleAnimation() {
-    if (this.idleInterval || this.longIdleInterval) return; // Verhindern, dass beide gleichzeitig laufen
+    if (this.idleInterval || this.longIdleInterval) return;
 
     this.isIdle = true;
     this.playAnimation(this.IMAGES_IDLE);
 
-    // Idle-Animation abspielen
     this.idleInterval = setInterval(() => {
-      if (
-        !this.isAboveGround() &&
-        !this.isWalking &&
-        !this.isJumping &&
-        !this.isHurt() &&
-        !this.isDead()
-      ) {
+      if (this.isInactive()) {
         this.playAnimation(this.IMAGES_IDLE);
       } else {
-        this.clearIdleAnimation(); // stoppt Idle, wenn sich der Charakter bewegt oder eine andere Aktion stattfindet
+        this.clearIdleAnimation();
       }
     }, 1000 / 5);
 
-    // Nach 3 Sekunden Long-Idle starten, wenn keine Bewegung stattfindet
     this.idleTimeout = setTimeout(() => {
-      if (
-        !this.isAboveGround() &&
-        !this.isWalking &&
-        !this.isJumping &&
-        !this.isHurt() &&
-        !this.isDead()
-      ) {
+      if (this.isInactive()) {
         this.startLongIdleAnimation();
       }
     }, 5000);
   }
 
   startLongIdleAnimation() {
-    // Verhindern, dass Long-Idle gestartet wird, wenn bereits eine Idle-Animation läuft
     if (this.longIdleInterval) return;
 
-    this.clearIdleAnimation(); // Clear any previous idle animations
+    this.clearIdleAnimation();
     this.playAnimation(this.IMAGES_LONG_IDLE);
+    this.playSnoringSounds();
 
     this.longIdleInterval = setInterval(() => {
-      if (
-        !this.isAboveGround() &&
-        !this.isWalking &&
-        !this.isJumping &&
-        !this.isHurt() &&
-        !this.isDead()
-      ) {
+      if (this.isInactive()) {
         this.playAnimation(this.IMAGES_LONG_IDLE);
       } else {
-        this.clearIdleAnimation(); // stoppt Long-Idle, wenn sich der Charakter bewegt oder eine andere Aktion stattfindet
+        this.clearIdleAnimation();
       }
     }, 1000 / 5);
   }
@@ -271,6 +282,11 @@ export default class Character extends MoveableObject {
       clearInterval(this.longIdleInterval);
       this.longIdleInterval = null;
     }
+    if (!this.snoringSound.paused) {
+      this.snoringSound.pause();
+      this.snoringSound.currentTime = 0;
+    }
+
     this.isIdle = false;
   }
 

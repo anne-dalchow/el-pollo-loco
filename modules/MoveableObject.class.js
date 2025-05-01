@@ -70,7 +70,7 @@ export default class MoveableObject extends DrawableObject {
         this.speedY -= this.acceleration;
       } else {
         this.speedY = 0;
-        this.posY = 195;
+        this.posY = 210;
       }
     }, 1000 / 25);
   }
@@ -86,7 +86,7 @@ export default class MoveableObject extends DrawableObject {
     if (this.constructor.name === "ThrowableObject") {
       return true;
     } else {
-      return this.posY < 195;
+      return this.posY < 210;
     }
   }
 }

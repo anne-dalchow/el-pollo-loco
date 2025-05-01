@@ -30,16 +30,15 @@ export default class Coins extends MoveableObject {
 
   constructor() {
     super();
-    this.posY = 50 + Math.random() * 250;
+    this.posY = 80 + Math.random() * 300;
     this.posX = 50 + Math.random() * 3000;
     this.height = 33;
-    this.width = 28; // Standard-Breite
-    this.loadImg(this.IMAGES_COINS[0]); // Startbild laden
+    this.width = 28;
+    this.loadImg(this.IMAGES_COINS[0]);
     this.loadImages(this.IMAGES_COINS);
     this.coinAnimation();
   }
 
-  // Anpassung der Breite je nach Bild
   adjustWidth(currentImage) {
     const currentFile = currentImage.split("/").pop(); // Bildname extrahieren
     this.width = COIN_FRAME_WIDTHS[currentFile] || 28; // Standardbreite, wenn nicht gefunden
