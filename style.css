@@ -1,9 +1,72 @@
-body{
- display: flex;
- flex-flow: column wrap;
- align-items: center;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-canvas{
- background-color: rgb(27, 27, 27);
+body {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  gap: 50px;
+  height: 100vh;
+  justify-content: center;
+}
+
+canvas {
+  background-color: rgb(27, 27, 27);
+  position: relative;
+  z-index: 1;
+}
+
+#game-container {
+  position: relative;
+  width: 800px;
+  height: 480px;
+}
+
+#startscreen img {
+  max-width: 800px;
+  max-height: 480px;
+  object-fit: contain;
+}
+
+#startscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  background-color: rgb(153, 68, 8);
+}
+
+#startscreen-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute; /* Absolute Positionierung innerhalb von #startscreen */
+}
+
+.blink {
+  color: rgb(0, 0, 0);
+  font-size: 24px;
+  margin: 20px;
+  animation: blink-animation 2s ease-in-out infinite;
+  text-shadow: 0 0 10px #ce9822;
+  opacity: 1;
+}
+
+@keyframes blink-animation {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
