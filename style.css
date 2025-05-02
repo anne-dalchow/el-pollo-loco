@@ -1,34 +1,53 @@
+@font-face {
+  font-family: "Zabars";
+  src: url("assets/fonts/Zabars.ttf") format("truetype");
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Zabars";
+  letter-spacing: 3px;
 }
 
 body {
+  min-height: 100vh;
   display: flex;
   flex-flow: column wrap;
   align-items: center;
-  gap: 50px;
-  height: 100vh;
   justify-content: center;
+  gap: 50px;
+  background-image: url("assets/img/5_background/backgroundFullScreen.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+h1 {
+  font-size: 80px;
+  color: rgb(161, 78, 0);
+  text-shadow: 2px 2px rgb(105, 51, 0);
+  letter-spacing: 8px;
 }
 
 canvas {
   background-color: rgb(27, 27, 27);
   position: relative;
   z-index: 1;
+  border-radius: 15px;
 }
 
 #game-container {
   position: relative;
   width: 800px;
   height: 480px;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.8));
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 #startscreen img {
   max-width: 800px;
-  max-height: 480px;
   object-fit: contain;
 }
 

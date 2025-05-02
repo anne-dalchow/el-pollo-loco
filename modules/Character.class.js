@@ -59,6 +59,13 @@ export default class Character extends MoveableObject {
   }
 
   handleMovementInput() {
+    if (this.world.characterFrozen) {
+      this.keyboard.left = false;
+      this.keyboard.right = false;
+      this.keyboard.up = false;
+      return;
+    }
+
     this.movingHorizontally = false;
 
     this.handleJumpInput();
@@ -68,6 +75,7 @@ export default class Character extends MoveableObject {
   }
 
   handleJumpInput() {
+    if (this.world.characterFrozen) return;
     if (this.canJump()) {
       this.speedY = JUMP_SPEED;
       this.jumpingSound.currentTime = 0;
@@ -80,6 +88,7 @@ export default class Character extends MoveableObject {
     }
   }
   canJump() {
+    if (this.world.characterFrozen) return false;
     return this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed;
   }
 
@@ -129,6 +138,7 @@ export default class Character extends MoveableObject {
   }
 
   playSnoringSounds() {
+    if (this.world.characterFrozen) return;
     this.snoringSound.volume = 0.8;
     this.snoringSound.playbackRate = 1.5;
 
@@ -139,7 +149,7 @@ export default class Character extends MoveableObject {
     } else {
       if (!this.snoringSound.paused) {
         this.snoringSound.pause();
-        this.snoringSound.currentTime = 0; // wichtig!
+        this.snoringSound.currentTime = 0;
       }
     }
   }
@@ -188,10 +198,12 @@ export default class Character extends MoveableObject {
   }
 
   handleAnimation() {
+    if (this.world.characterFrozen) return;
     if (this.isDead()) {
       this.playAnimation(this.IMAGES_DEAD);
       return;
     }
+
     if (this.isHurt()) {
       this.playAnimation(this.IMAGES_HURT);
       this.hurtSoundHandler();
@@ -233,7 +245,12 @@ export default class Character extends MoveableObject {
   }
 
   idleAnimation() {
-    if (this.idleInterval || this.longIdleInterval) return;
+    if (
+      this.idleInterval ||
+      this.longIdleInterval ||
+      this.world.characterFrozen
+    )
+      return;
 
     this.isIdle = true;
     this.playAnimation(this.IMAGES_IDLE);
@@ -250,11 +267,11 @@ export default class Character extends MoveableObject {
       if (this.isInactive()) {
         this.startLongIdleAnimation();
       }
-    }, 5000);
+    }, 15000);
   }
 
   startLongIdleAnimation() {
-    if (this.longIdleInterval) return;
+    if (this.longIdleInterval || this.world.characterFrozen) return;
 
     this.clearIdleAnimation();
     this.playAnimation(this.IMAGES_LONG_IDLE);

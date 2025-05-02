@@ -46,7 +46,7 @@ for (let i = 1; i <= numberOfBottles; i++) {
 }
 
 export const level1 = new Level(
-  [...chickens, new Endboss()],
+  [...chickens],
   [new Clouds(), new Clouds()],
   layers.map((layer) => new BackgroundObject(layer.path, layer.offsetX, 0)),
   coins,

@@ -4,6 +4,7 @@ import StatusBar from "./StatusBar.class.js";
 import CoinBar from "./CoinBar.class.js";
 import BottleBar from "./BottleBar.class.js";
 import ThrowableObject from "./ThrowableObject.class.js";
+import Endboss from "./Endboss.class.js";
 
 export default class World {
   level = level1;
@@ -24,7 +25,7 @@ export default class World {
   coins = [];
   collectCoinSound = new Audio("assets/audio/coin.wav");
   collectBottleSound = new Audio("assets/audio/collect.wav");
-
+  characterFrozen = false;
   gameRunning = false;
 
   constructor(canvas, keyboard) {
@@ -34,6 +35,11 @@ export default class World {
     this.character = new Character(this, this.keyboard);
     this.groundObjects = this.level.bottles;
     this.canThrow = true;
+
+    this.endboss = new Endboss();
+    this.endboss.visible = false;
+    this.level.enemies.push(this.endboss);
+    this.endbossTriggerd = false;
 
     this.draw();
     this.run();
@@ -55,12 +61,30 @@ export default class World {
   run() {
     setInterval(() => {
       if (!this.gameRunning) return;
-      this.checkCaracterCollision();
-      this.checkThrowObjects();
-      this.checkBottleHitsEnemy();
-      this.checkBottleHitsGround();
-      this.checkCollectableItems();
+
+      if (!this.characterFrozen) {
+        this.checkCaracterCollision();
+        this.checkThrowObjects();
+        this.checkBottleHitsEnemy();
+        this.checkBottleHitsGround();
+        this.checkCollectableItems();
+      }
+
       this.removeObjects();
+
+      if (!this.endbossTriggerd && this.character.posX > 3000) {
+        this.endboss.visible = true;
+        this.endbossTriggerd = true;
+        console.log("Endboss sichtbar gemacht!");
+      }
+      if (this.endboss.visible && !this.endboss.triggered) {
+        this.endboss.startAnimationEndboss(
+          this.character,
+          this.camera_x,
+          this.canvas,
+          this
+        );
+      }
     }, 200);
   }
 
