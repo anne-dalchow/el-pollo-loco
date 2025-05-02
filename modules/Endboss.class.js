@@ -70,7 +70,7 @@ export default class Endboss extends MoveableObject {
         this.endbossSound.play().catch((e) => {
           console.warn("Endboss-Sound konnte nicht gestartet werden:", e);
         });
-
+        character.stopAllAnimationsAndSounds();
         this.freezeCharacter(world);
       }
     }, 90);
@@ -80,10 +80,20 @@ export default class Endboss extends MoveableObject {
     setTimeout(() => {
       world.characterFrozen = false;
       this.startFight();
-    }, 1000);
+    }, 10000);
   }
   startFight() {
+    this.showFightBanner();
     console.log("Der Kampf beginnt!");
+  }
+
+  showFightBanner() {
+    const fightBanner = document.getElementById("fight-banner");
+    fightBanner.style.animation = "fight-blink 1s ease-in-out";
+
+    setTimeout(() => {
+      fightBanner.style.animation = "none";
+    }, 2000);
   }
 
   endbossWalkAnimation() {

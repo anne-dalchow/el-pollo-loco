@@ -89,3 +89,38 @@ canvas {
     opacity: 0;
   }
 }
+
+#fight-banner {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  letter-spacing: 5px;
+  font-weight: bold;
+  color: red;
+  text-shadow: 3px 3px 10px black;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  animation: none;
+}
+
+@keyframes fight-blink {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}

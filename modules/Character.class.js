@@ -327,4 +327,30 @@ export default class Character extends MoveableObject {
       }
     }, 1000 / 15);
   }
+
+  stopAllAnimationsAndSounds() {
+    // Alle Animationen stoppen
+    if (this.idleInterval) clearInterval(this.idleInterval);
+    if (this.longIdleInterval) clearInterval(this.longIdleInterval);
+    if (this.idleTimeout) clearTimeout(this.idleTimeout);
+    if (this.walkInterval) clearInterval(this.walkInterval);
+    if (this.jumpInterval) clearInterval(this.jumpInterval);
+
+    this.idleInterval = null;
+    this.longIdleInterval = null;
+    this.idleTimeout = null;
+    this.walkInterval = null;
+    this.jumpInterval = null;
+
+    // Sounds stoppen
+    if (this.walkingSound && !this.walkingSound.paused) {
+      this.walkingSound.pause();
+      this.walkingSound.currentTime = 0;
+    }
+    if (this.snoringSound && !this.snoringSound.paused) {
+      this.snoringSound.pause();
+      this.snoringSound.currentTime = 0;
+    }
+    this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
+  }
 }

@@ -23,8 +23,7 @@ export default class World {
   //TODO Score for endscreen - show score
   currentScore = 0;
   coins = [];
-  collectCoinSound = new Audio("assets/audio/coin.wav");
-  collectBottleSound = new Audio("assets/audio/collect.wav");
+
   characterFrozen = false;
   gameRunning = false;
 
@@ -55,13 +54,14 @@ export default class World {
       }
     });
   }
+
   startGameSounds() {
     this.character.startBackgroundSound();
   }
+
   run() {
     setInterval(() => {
       if (!this.gameRunning) return;
-
       if (!this.characterFrozen) {
         this.checkCaracterCollision();
         this.checkThrowObjects();
@@ -69,23 +69,24 @@ export default class World {
         this.checkBottleHitsGround();
         this.checkCollectableItems();
       }
-
+      this.triggerEndboss();
       this.removeObjects();
-
-      if (!this.endbossTriggerd && this.character.posX > 3000) {
-        this.endboss.visible = true;
-        this.endbossTriggerd = true;
-        console.log("Endboss sichtbar gemacht!");
-      }
-      if (this.endboss.visible && !this.endboss.triggered) {
-        this.endboss.startAnimationEndboss(
-          this.character,
-          this.camera_x,
-          this.canvas,
-          this
-        );
-      }
     }, 200);
+  }
+
+  triggerEndboss() {
+    if (!this.endbossTriggerd && this.character.posX > 3000) {
+      this.endboss.visible = true;
+      this.endbossTriggerd = true;
+    }
+    if (this.endboss.visible && !this.endboss.triggered) {
+      this.endboss.startAnimationEndboss(
+        this.character,
+        this.camera_x,
+        this.canvas,
+        this
+      );
+    }
   }
 
   checkThrowObjects() {
@@ -153,6 +154,7 @@ export default class World {
         this.currentScore = this.currentCoins * 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
 
+        this.collectCoinSound = new Audio("assets/audio/coin.wav");
         this.collectCoinSound.volume = 0.2;
         this.collectCoinSound.play().catch((e) => {
           console.warn("Collect-Coin-Sound konnte nicht abgespielt werden:", e);
@@ -172,6 +174,7 @@ export default class World {
           (this.currentBottles / this.maxBottles) * 100
         );
 
+        this.collectBottleSound = new Audio("assets/audio/collect.wav");
         this.collectBottleSound.volume = 0.1;
         this.collectBottleSound.play().catch((e) => {
           console.warn(
