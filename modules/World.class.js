@@ -39,6 +39,7 @@ export default class World {
     this.endboss.visible = false;
     this.level.enemies.push(this.endboss);
     this.endbossTriggerd = false;
+    this.backgroundSound = null;
 
     this.draw();
     this.run();
@@ -56,7 +57,14 @@ export default class World {
   }
 
   startGameSounds() {
-    this.character.startBackgroundSound();
+    if (!this.backgroundSound) {
+      this.backgroundSound = new Audio("assets/audio/background.wav");
+      this.backgroundSound.loop = true;
+      this.backgroundSound.volume = 0.2;
+    }
+    this.backgroundSound.play().catch((e) => {
+      console.warn("Hintergrundsound konnte nicht gestartet werden:", e);
+    });
   }
 
   run() {
@@ -80,12 +88,7 @@ export default class World {
       this.endbossTriggerd = true;
     }
     if (this.endboss.visible && !this.endboss.triggered) {
-      this.endboss.startAnimationEndboss(
-        this.character,
-        this.camera_x,
-        this.canvas,
-        this
-      );
+      this.endboss.startAnimationEndboss(this.character, this);
     }
   }
 

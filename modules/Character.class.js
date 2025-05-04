@@ -8,10 +8,6 @@ import {
 } from "../levels/characterImages.js";
 import MoveableObject from "./MoveableObject.class.js";
 
-const JUMP_SPEED = 30;
-const MOVE_SPEED = 5;
-const RUN_SPEED = 10;
-
 export default class Character extends MoveableObject {
   height = 230;
   width = 150;
@@ -67,33 +63,57 @@ export default class Character extends MoveableObject {
     }
 
     this.movingHorizontally = false;
-
     this.handleJumpInput();
     this.handleHorizontalMovement();
     this.playStepSounds();
     this.world.camera_x = -this.posX + 100;
   }
 
-  handleJumpInput() {
+  handleAnimation() {
     if (this.world.characterFrozen) return;
-    if (this.canJump()) {
-      this.speedY = JUMP_SPEED;
-      this.jumpingSound.currentTime = 0;
-      this.jumpingSound.play();
-      this.jumpKeyPressed = true;
+
+    if (this.isDead()) {
+      this.playAnimation(this.IMAGES_DEAD);
+      return;
     }
 
-    if (!this.keyboard.up) {
-      this.jumpKeyPressed = false;
+    if (this.isHurt()) {
+      this.playAnimation(this.IMAGES_HURT);
+      this.playHurtSound();
+      return;
+    }
+
+    if (this.isAboveGround()) {
+      this.triggerJumpingState();
+    } else {
+      if (this.keyboard.right || this.keyboard.left) {
+        this.triggerWalkingState();
+      } else {
+        this.triggerIdleState();
+      }
+      this.isJumping = false;
+    }
+
+    if (!this.isHurt()) {
+      this.hurtSoundPlayed = false;
     }
   }
-  canJump() {
-    if (this.world.characterFrozen) return false;
-    return this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed;
+
+  startAnimation() {
+    this.idleAnimation();
+
+    if (this.isAboveGround()) {
+      this.jumpingAnimation();
+    } else {
+      this.walkingAnimation();
+    }
+
+    this.isWalking = true;
   }
 
+  // -------------Walking----------------------- //
   handleHorizontalMovement() {
-    const speed = this.keyboard.shift ? RUN_SPEED : MOVE_SPEED;
+    const speed = 5;
 
     if (this.canMoveRight()) {
       this.moveRight(speed);
@@ -104,13 +124,94 @@ export default class Character extends MoveableObject {
     }
   }
 
+  /**
+   * @returns {boolean} true, if moving right is possible
+   */
   canMoveRight() {
     return this.keyboard.right && this.posX < this.world.level.levelEndPosX;
   }
 
+  /**
+   * @returns {boolean} true, if moving left is possible
+   */
   canMoveLeft() {
     return this.keyboard.left && this.posX > 0;
   }
+
+  /**
+   * @param {number} speed - The distance to move right
+   */
+  moveRight(speed) {
+    this.posX += speed;
+    this.otherDirection = false;
+  }
+
+  /**
+   * @param {number} speed - The distance to move left
+   */
+  moveLeft(speed) {
+    this.posX -= speed;
+    this.otherDirection = true;
+  }
+
+  triggerWalkingState() {
+    if (!this.isWalking) {
+      this.walkingAnimation();
+      this.isWalking = true;
+      this.isIdle = false;
+    }
+  }
+
+  walkingAnimation() {
+    this.walkInterval = setInterval(() => {
+      if (!this.isAboveGround() && this.isWalking) {
+        this.playAnimation(this.IMAGES_WALKING);
+      } else {
+        clearInterval(this.walkInterval);
+      }
+    }, 1000 / 15);
+  }
+
+  // --------------Jumping---------------------- //
+  handleJumpInput() {
+    if (this.world.characterFrozen) return;
+    if (this.canJump()) {
+      this.speedY = 30;
+      this.jumpingSound.currentTime = 0;
+      this.jumpingSound.play();
+      this.jumpKeyPressed = true;
+    }
+
+    if (!this.keyboard.up) {
+      this.jumpKeyPressed = false;
+    }
+  }
+
+  canJump() {
+    if (this.world.characterFrozen) return false;
+    return this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed;
+  }
+
+  triggerJumpingState() {
+    if (!this.isJumping) {
+      this.jumpingAnimation();
+      this.isJumping = true;
+      this.isWalking = false;
+      this.isIdle = false;
+    }
+  }
+
+  jumpingAnimation() {
+    this.isJumping = true;
+    this.jumpInterval = setInterval(() => {
+      this.playAnimation(this.IMAGES_JUMP);
+      if (!this.isAboveGround()) {
+        clearInterval(this.jumpInterval);
+        this.isJumping = false;
+      }
+    }, 1000 / 15);
+  }
+  // --------------------------------- //
 
   playStepSounds() {
     this.walkingSound.volume = 1;
@@ -125,16 +226,6 @@ export default class Character extends MoveableObject {
         this.walkingSound.pause();
       }
     }
-  }
-
-  isInactive() {
-    return (
-      !this.isAboveGround() &&
-      !this.isWalking &&
-      !this.isJumping &&
-      !this.isHurt() &&
-      !this.isDead()
-    );
   }
 
   playSnoringSounds() {
@@ -154,39 +245,24 @@ export default class Character extends MoveableObject {
     }
   }
 
-  startBackgroundSound() {
-    if (!this.backgroundSound) {
-      this.backgroundSound = new Audio("assets/audio/background.wav");
-      this.backgroundSound.loop = true;
-      this.backgroundSound.volume = 0.2;
-    }
-    this.backgroundSound.play().catch((e) => {
-      console.warn("Hintergrundsound konnte nicht gestartet werden:", e);
-    });
-  }
-
-  hurtSoundHandler() {
+  playHurtSound() {
     if (!this.hurtSoundPlayed) {
       this.hurtSound.play();
       this.hurtSoundPlayed = true;
     }
   }
 
-  triggerJumpingState() {
-    if (!this.isJumping) {
-      this.jumpingAnimation();
-      this.isJumping = true;
-      this.isWalking = false;
-      this.isIdle = false;
-    }
-  }
-
-  triggerWalkingState() {
-    if (!this.isWalking) {
-      this.walkingAnimation();
-      this.isWalking = true;
-      this.isIdle = false;
-    }
+  /**
+   * @returns {boolean} true, if the character is inactive
+   */
+  isInactive() {
+    return (
+      !this.isAboveGround() &&
+      !this.isWalking &&
+      !this.isJumping &&
+      !this.isHurt() &&
+      !this.isDead()
+    );
   }
 
   triggerIdleState() {
@@ -195,53 +271,6 @@ export default class Character extends MoveableObject {
       this.isIdle = true;
       this.isWalking = false;
     }
-  }
-
-  handleAnimation() {
-    if (this.world.characterFrozen) return;
-    if (this.isDead()) {
-      this.playAnimation(this.IMAGES_DEAD);
-      return;
-    }
-
-    if (this.isHurt()) {
-      this.playAnimation(this.IMAGES_HURT);
-      this.hurtSoundHandler();
-      return;
-    }
-    if (this.isAboveGround()) {
-      this.triggerJumpingState();
-    } else {
-      if (this.keyboard.right || this.keyboard.left) {
-        this.triggerWalkingState();
-      } else {
-        this.triggerIdleState();
-      }
-      this.isJumping = false;
-    }
-    if (!this.isHurt()) {
-      this.hurtSoundPlayed = false;
-    }
-  }
-
-  moveRight(speed) {
-    this.posX += speed;
-    this.otherDirection = false;
-  }
-
-  moveLeft(speed) {
-    this.posX -= speed;
-    this.otherDirection = true;
-  }
-
-  startAnimation() {
-    this.idleAnimation();
-    if (this.isAboveGround()) {
-      this.jumpingAnimation();
-    } else {
-      this.walkingAnimation();
-    }
-    this.isWalking = true;
   }
 
   idleAnimation() {
@@ -306,26 +335,21 @@ export default class Character extends MoveableObject {
 
     this.isIdle = false;
   }
-
-  walkingAnimation() {
-    this.walkInterval = setInterval(() => {
-      if (!this.isAboveGround() && this.isWalking) {
-        this.playAnimation(this.IMAGES_WALKING);
-      } else {
-        clearInterval(this.walkInterval);
-      }
-    }, 1000 / 15);
+  /**
+   * Freezes the character: disables controls and animations.
+   *
+   * @returns {void}
+   */
+  freeze() {
+    this.stopAllAnimationsAndSounds();
+    this.keyboard.left = false;
+    this.keyboard.right = false;
+    this.keyboard.up = false;
+    this.isFrozen = true;
   }
 
-  jumpingAnimation() {
-    this.isJumping = true;
-    this.jumpInterval = setInterval(() => {
-      this.playAnimation(this.IMAGES_JUMP);
-      if (!this.isAboveGround()) {
-        clearInterval(this.jumpInterval);
-        this.isJumping = false;
-      }
-    }, 1000 / 15);
+  unfreeze() {
+    this.isFrozen = false;
   }
 
   stopAllAnimationsAndSounds() {

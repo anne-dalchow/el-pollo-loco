@@ -3,7 +3,6 @@ export default class Keyboard {
     this.left = false;
     this.right = false;
     this.up = false;
-    this.shift = false;
     this.d = false;
   }
 }
