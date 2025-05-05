@@ -62,10 +62,10 @@ export default class Endboss extends MoveableObject {
   startAnimationEndboss(character, world) {
     this.visible = true;
 
+    const END_BOSS_TARGET_X = 4700;
+
     if (this.isEndbossTriggered || !this.visible) return;
     this.isEndbossTriggered = true;
-
-    const END_BOSS_TARGET_X = 4700;
 
     this.walkInterval = setInterval(() => {
       if (this.posX > END_BOSS_TARGET_X) {
@@ -112,6 +112,7 @@ export default class Endboss extends MoveableObject {
   }
 
   startFight() {
+    world.endbossBar.isVisible = true;
     this.showFightBanner();
     this.isAttacking = true;
   }

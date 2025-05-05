@@ -11,14 +11,14 @@ export default class BottleBar extends DrawableObject {
   ];
 
   percentage = 100;
-  width = 160;
-  height = 50;
+  width = 165;
+  height = 45;
 
   constructor() {
     super();
     this.loadImages(this.IMAGES_BOTTLE);
-    this.posX = 180;
-    this.posY = 10;
+    this.posX = 10;
+    this.posY = 90;
     this.setPercentage(0);
   }
 

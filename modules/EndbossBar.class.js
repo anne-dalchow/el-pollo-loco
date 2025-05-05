@@ -1,30 +1,32 @@
 import DrawableObject from "./DrawableObject.class.js";
 
-export default class StatusBar extends DrawableObject {
-  IMAGES_HEALTH = [
-    "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png", // 0
-    "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png",
-    "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/40.png",
-    "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/60.png",
-    "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png",
-    "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png", //5
+export default class EndbossBar extends DrawableObject {
+  IMAGES_EndbossBar = [
+    "assets/img/7_statusbars/2_statusbar_endboss/blue/blue0.png",
+    "assets/img/7_statusbars/2_statusbar_endboss/blue/blue20.png",
+    "assets/img/7_statusbars/2_statusbar_endboss/blue/blue40.png",
+    "assets/img/7_statusbars/2_statusbar_endboss/blue/blue60.png",
+    "assets/img/7_statusbars/2_statusbar_endboss/blue/blue80.png",
+    "assets/img/7_statusbars/2_statusbar_endboss/blue/blue100.png",
   ];
 
   percentage = 100;
   width = 165;
   height = 45;
 
+  isVisible = false;
+
   constructor() {
     super();
-    this.loadImages(this.IMAGES_HEALTH);
-    this.posX = 10;
+    this.loadImages(this.IMAGES_EndbossBar);
+    this.posX = 620;
     this.posY = 10;
     this.setPercentage(100);
   }
 
   setPercentage(percentage) {
     this.percentage = percentage; // => 0 ... 5
-    let path = this.IMAGES_HEALTH[this.resolveImageIndex()];
+    let path = this.IMAGES_EndbossBar[this.resolveImageIndex()];
     this.img = this.imageCache[path];
   }
 

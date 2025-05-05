@@ -8,6 +8,15 @@ export default class ThrowableObject extends MoveableObject {
     "assets/img/6_salsa_bottle/bottle_rotation/4_bottle_rotation.png",
   ];
 
+  IMAGES_BROKEN_BOTTLE = [
+    "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/1_bottle_splash.png",
+    "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/2_bottle_splash.png",
+    "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/3_bottle_splash.png",
+    "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/4_bottle_splash.png",
+    "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png",
+    "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
+  ];
+
   throwBottleSound = new Audio("assets/audio/throw.wav");
   width = 60;
   height = 60;
@@ -21,6 +30,7 @@ export default class ThrowableObject extends MoveableObject {
     this.otherDirection = otherDirection;
     this.loadImg("assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
+    this.loadImages(this.IMAGES_BROKEN_BOTTLE);
 
     if (shouldThrow) {
       this.throwBottle();
@@ -47,11 +57,21 @@ export default class ThrowableObject extends MoveableObject {
       let direction = this.otherDirection ? -1 : 1;
       this.posX += 10 * direction;
 
-      if (this.posY >= 500) {
+      if (this.posY >= 420) {
         clearInterval(this.bottleInterval);
         clearInterval(this.throwMoveInterval);
         this.speedY = 0;
       }
     }, 25);
+  }
+
+  brokenBottleAnimation() {
+    // this.throwBottleSound.volume = 0.1;
+    // this.throwBottleSound.play().catch((e) => {
+    //   console.warn("Throw-Bottle-Sound konnte nicht abgespielt werden:", e);
+    // });
+    this.bottleInterval = setInterval(() => {
+      this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
+    }, 100);
   }
 }

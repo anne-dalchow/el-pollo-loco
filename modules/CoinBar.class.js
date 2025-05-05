@@ -11,14 +11,14 @@ export default class CoinBar extends DrawableObject {
   ];
 
   percentage = 100;
-  width = 160;
-  height = 50;
+  width = 165;
+  height = 45;
 
   constructor() {
     super();
     this.loadImages(this.IMAGES_COINS);
-    this.posX = 620;
-    this.posY = 10;
+    this.posX = 10;
+    this.posY = 50;
     this.setPercentage(0);
   }
 

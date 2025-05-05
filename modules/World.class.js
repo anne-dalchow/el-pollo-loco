@@ -2,6 +2,7 @@ import Character from "./Character.class.js";
 import { level1 } from "../levels/level1.js";
 import StatusBar from "./StatusBar.class.js";
 import CoinBar from "./CoinBar.class.js";
+import EndbossBar from "./EndbossBar.class.js";
 import BottleBar from "./BottleBar.class.js";
 import ThrowableObject from "./ThrowableObject.class.js";
 import Endboss from "./Endboss.class.js";
@@ -14,6 +15,7 @@ export default class World {
   healthBar = new StatusBar();
   coinBar = new CoinBar();
   bottleBar = new BottleBar();
+  endbossBar = new EndbossBar();
   throwableObjects = [];
   maxBottles = 10;
   currentBottles = 0;
@@ -75,11 +77,12 @@ export default class World {
         this.checkThrowObjects();
         this.checkBottleHitsEnemy();
         this.checkBottleHitsGround();
-        this.checkCollectableItems();
+        this.handleBottleCollection();
+        this.handleCoinCollection();
       }
       this.triggerEndboss();
       this.removeObjects();
-    }, 200);
+    }, 100);
   }
 
   triggerEndboss() {
@@ -150,7 +153,7 @@ export default class World {
     });
   }
 
-  checkCollectableItems() {
+  handleCoinCollection() {
     this.level.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin, 40, 60)) {
         this.level.coins.splice(index, 1);
@@ -167,7 +170,7 @@ export default class World {
     });
   }
 
-  checkBottleHitsGround() {
+  handleBottleCollection() {
     this.groundObjects.forEach((bottle, index) => {
       if (this.character.isColliding(bottle, 40, 60)) {
         // Flasche einsammeln: von groundObjects entfernen
@@ -190,6 +193,18 @@ export default class World {
     });
   }
 
+  checkBottleHitsGround() {
+    // const levelGround = 430;
+    this.throwableObjects.forEach((bottle) => {
+      this.groundObjects.forEach((ground) => {
+        if (bottle.isColliding(ground)) {
+          bottle.markForRemoval = true;
+          bottle.brokenBottleAnimation();
+        }
+      });
+    });
+  }
+
   removeObjects() {
     this.level.enemies = this.level.enemies.filter(
       (enemy) => !enemy.markForRemoval
@@ -208,20 +223,23 @@ export default class World {
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
     this.addObjectsToMap(this.groundObjects);
+    this.addObjectsToMap(this.level.clouds);
+    this.addObjectsToMap(this.level.coins);
+    this.addObjectsToMap(this.level.bottles);
+
+    this.addObjectsToMap(this.level.enemies);
+    this.addObjectsToMap(this.throwableObjects);
 
     this.ctx.translate(-this.camera_x, 0);
     // ---------- Space for fixed Objects ----------
     this.addToMap(this.healthBar);
     this.addToMap(this.coinBar);
     this.addToMap(this.bottleBar);
+    if (this.endbossBar.isVisible) {
+      this.addToMap(this.endbossBar);
+    }
     // ---------- Space for fixed Objects ----------
     this.ctx.translate(this.camera_x, 0);
-
-    this.addObjectsToMap(this.level.clouds);
-    this.addObjectsToMap(this.level.bottles);
-    this.addObjectsToMap(this.level.coins);
-    this.addObjectsToMap(this.level.enemies);
-    this.addObjectsToMap(this.throwableObjects);
 
     this.addToMap(this.character);
 
