@@ -23,7 +23,7 @@ export default class MoveableObject extends DrawableObject {
   startWalkAnimation(images) {
     this.walkInterval = setInterval(() => {
       if (this.isDead()) {
-        this.stopWalkAnimation(); // direkt hier abbrechen
+        this.stopWalkAnimation();
       } else {
         this.playAnimation(images);
       }
@@ -40,7 +40,7 @@ export default class MoveableObject extends DrawableObject {
   playAnimation(images) {
     let i = this.currentImage % images.length;
     let path = images[i];
-    this.img = this.imageCache[path]; // Bild aus dem Cache holen
+    this.img = this.imageCache[path];
     this.currentImage++;
   }
 

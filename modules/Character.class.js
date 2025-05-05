@@ -346,10 +346,12 @@ export default class Character extends MoveableObject {
     this.keyboard.right = false;
     this.keyboard.up = false;
     this.isFrozen = true;
+    this.world.characterFrozen = true;
   }
 
   unfreeze() {
     this.isFrozen = false;
+    this.world.characterFrozen = false;
   }
 
   stopAllAnimationsAndSounds() {

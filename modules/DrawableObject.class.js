@@ -8,7 +8,12 @@ export default class DrawableObject {
   currentImage = 0;
 
   draw(ctx) {
-    ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
+    try {
+      ctx.drawImage(this.img, this.posX, this.posY, this.width, this.height);
+    } catch (error) {
+      console.warn("Error loading image", error);
+      console.log("could not load image", this.img.src);
+    }
   }
 
   // drawFrame(ctx) {

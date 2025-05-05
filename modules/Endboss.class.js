@@ -99,7 +99,6 @@ export default class Endboss extends MoveableObject {
   playEndbossSound() {
     this.endbossSound.volume = 0.2;
     this.endbossSound.loop = true;
-
     this.endbossSound.play().catch((e) => {
       console.warn("Endboss-Sound konnte nicht gestartet werden:", e);
     });

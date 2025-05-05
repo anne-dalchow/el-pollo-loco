@@ -9,13 +9,16 @@ export default class ThrowableObject extends MoveableObject {
   ];
 
   throwBottleSound = new Audio("assets/audio/throw.wav");
+  width = 60;
+  height = 60;
 
-  constructor(x, y, shouldThrow = false) {
+  constructor(x, y, shouldThrow = false, otherDirection = false) {
     super();
     this.posX = x;
     this.posY = y;
     this.height = 60;
     this.width = 60;
+    this.otherDirection = otherDirection;
     this.loadImg("assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
 
@@ -41,7 +44,8 @@ export default class ThrowableObject extends MoveableObject {
     this.applyGravity();
 
     this.throwMoveInterval = setInterval(() => {
-      this.posX += 10;
+      let direction = this.otherDirection ? -1 : 1;
+      this.posX += 10 * direction;
 
       if (this.posY >= 500) {
         clearInterval(this.bottleInterval);

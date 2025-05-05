@@ -101,7 +101,8 @@ export default class World {
       let bottle = new ThrowableObject(
         this.character.posX + 80,
         this.character.posY + 100,
-        true
+        true,
+        this.character.otherDirection
       );
 
       this.throwableObjects.push(bottle);
@@ -201,7 +202,7 @@ export default class World {
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.gameRunning) {
-      this.character.move(); // Nur bewegen, wenn Spiel läuft
+      this.character.move();
     }
 
     this.ctx.translate(this.camera_x, 0);
