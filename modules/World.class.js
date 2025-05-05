@@ -35,6 +35,7 @@ export default class World {
     this.keyboard = keyboard;
     this.character = new Character(this, this.keyboard);
     this.groundObjects = this.level.bottles;
+    this.levelGround = 420;
     this.canThrow = true;
 
     this.endboss = new Endboss();
@@ -54,6 +55,11 @@ export default class World {
     this.level.enemies.forEach((enemy) => {
       if (typeof enemy.startMoving === "function") {
         enemy.startMoving();
+      }
+    });
+    this.level.clouds.forEach((cloud) => {
+      if (typeof cloud.startMoving === "function") {
+        cloud.startMoving();
       }
     });
   }
@@ -76,7 +82,7 @@ export default class World {
         this.checkCaracterCollision();
         this.checkThrowObjects();
         this.checkBottleHitsEnemy();
-        this.checkBottleHitsGround();
+        // this.checkBottleHitsGround();
         this.handleBottleCollection();
         this.handleCoinCollection();
       }
@@ -150,6 +156,7 @@ export default class World {
           bottle.markForRemoval = true;
         }
       });
+      // this.checkBottleHitsGround(this.levelGround);
     });
   }
 
@@ -193,18 +200,14 @@ export default class World {
     });
   }
 
-  checkBottleHitsGround() {
-    // const levelGround = 430;
-    this.throwableObjects.forEach((bottle) => {
-      this.groundObjects.forEach((ground) => {
-        if (bottle.isColliding(ground)) {
-          bottle.markForRemoval = true;
-          bottle.brokenBottleAnimation();
-        }
-      });
-    });
-  }
-
+  // checkBottleHitsGround() {
+  //   this.throwableObjects.forEach((bottle) => {
+  //     if (bottle.posY >= this.levelGround) {
+  //       bottle.markForRemoval = true;
+  //       bottle.brokenBottleAnimation();
+  //     }
+  //   });
+  // }
   removeObjects() {
     this.level.enemies = this.level.enemies.filter(
       (enemy) => !enemy.markForRemoval

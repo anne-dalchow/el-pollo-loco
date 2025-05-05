@@ -1,5 +1,6 @@
 import { Level } from "../modules/Level.class.js";
 import Chicken from "../modules/Chicken.class.js";
+import BrownChicken from "../modules/BrownChicken.class.js";
 import BackgroundObject from "../modules/BackgroundObject.class.js";
 import { layers } from "./backgroundLevel1.js";
 import Clouds from "../modules/Clouds.class.js";
@@ -7,14 +8,16 @@ import Endboss from "../modules/Endboss.class.js";
 import Coins from "../modules/Coins.class.js";
 import ThrowableObject from "../modules/ThrowableObject.class.js";
 
-const levelWidth = 799 * 6;
-const numberOfChickens = 7;
+const levelWidthTotal = 799 * 6;
+const levelWidthSingle = 799;
+const numberOfChickens = 6;
 const numberOfCoins = 15;
 const numberOfBottles = 10;
 
-const distancePerChicken = levelWidth / numberOfChickens;
-const distancePerCoin = levelWidth / numberOfCoins;
-const distancePerBottle = levelWidth / numberOfBottles;
+const distancePerChicken = levelWidthTotal / numberOfChickens;
+const distancePerCoin = (levelWidthTotal - levelWidthSingle) / numberOfCoins;
+const distancePerBottle =
+  (levelWidthTotal - levelWidthSingle) / numberOfBottles;
 
 const chickens = [];
 const coins = [];
@@ -24,10 +27,16 @@ const bottles = [];
 
 for (let i = 1; i <= numberOfChickens; i++) {
   const basePos = i * distancePerChicken;
-  const randomOffset = (Math.random() - 0.5) * 300;
+  const randomOffset1 = (Math.random() - 0.5) * 300;
+  console.log("randomOffset1", randomOffset1);
+  const randomOffset2 = Math.random() - 1 * 300;
+  console.log("randomOffset2", randomOffset2);
   const chicken = new Chicken();
-  chicken.posX = basePos + randomOffset;
+  const brownChicken = new BrownChicken();
+  chicken.posX = basePos + randomOffset1;
+  brownChicken.posX = basePos + randomOffset2;
   chickens.push(chicken);
+  chickens.push(brownChicken);
 }
 
 for (let i = 1; i <= numberOfCoins; i++) {
@@ -47,7 +56,14 @@ for (let i = 1; i <= numberOfBottles; i++) {
 
 export const level1 = new Level(
   [...chickens],
-  [new Clouds(), new Clouds()],
+  [
+    new Clouds(),
+    new Clouds(),
+    new Clouds(),
+    new Clouds(),
+    new Clouds(),
+    new Clouds(),
+  ],
   layers.map((layer) => new BackgroundObject(layer.path, layer.offsetX, 0)),
   coins,
   bottles

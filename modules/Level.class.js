@@ -4,7 +4,7 @@ export class Level {
   backgroundObjects;
   coins;
   bottles;
-  levelEndPosX = 4800;
+  levelEndPosX = 7 * 799;
   constructor(enemies, clouds, backgroundObjects, coins = [], bottles = []) {
     this.enemies = enemies;
     this.clouds = clouds;

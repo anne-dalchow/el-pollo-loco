@@ -8,9 +8,14 @@ export default class Clouds extends MoveableObject {
   constructor() {
     super();
     this.loadImg("assets/img/5_background/layers/4_clouds/1.png");
-    this.posX = Math.random() * 800;
-    this.moveLeft(0.15, -350);
+    this.posX = Math.random() * 5593;
   }
+
+  startMoving() {
+    let randomSpeed = 0.15 + Math.random() * 0.15;
+    this.moveLeft(randomSpeed, -60);
+  }
+
   moveLeft(speed, end) {
     this.moveInterval = setInterval(() => {
       if (this.posX > end) {

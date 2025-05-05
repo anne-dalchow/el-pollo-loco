@@ -1,25 +1,25 @@
 import MoveableObject from "./MoveableObject.class.js";
 
-export default class Chicken extends MoveableObject {
+export default class BrownChicken extends MoveableObject {
   posY = 350;
   width = 80;
   height = 80;
   IMAGES_WALKING = [
-    "assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
-    "assets/img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
-    "assets/img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
+    "assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
+    "assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
+    "assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
   ];
 
-  IMAGE_DEAD = "assets/img/3_enemies_chicken/chicken_small/2_dead/dead.png";
+  IMAGE_DEAD = "assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png";
   chickenDeadSound = new Audio("assets/audio/damage.mp3");
 
   constructor() {
     super();
     this.isDead = false;
 
-    this.loadImg("assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
+    this.loadImg("assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
-    // this.posX = 250 + Math.random() * 3600;
+    // this.posX = 300 + Math.random() * 3600;
   }
 
   startMoving() {
@@ -61,7 +61,6 @@ export default class Chicken extends MoveableObject {
     });
     this.speed = 0;
 
-    // Huhn nach 2 Sekunden entfernen
     setTimeout(() => {
       this.markForRemoval = true;
     }, 2000);

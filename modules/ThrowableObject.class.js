@@ -28,6 +28,7 @@ export default class ThrowableObject extends MoveableObject {
     this.height = 60;
     this.width = 60;
     this.otherDirection = otherDirection;
+    // this.levelGround = 420;
     this.loadImg("assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
     this.loadImages(this.IMAGES_BROKEN_BOTTLE);
@@ -60,18 +61,27 @@ export default class ThrowableObject extends MoveableObject {
       if (this.posY >= 420) {
         clearInterval(this.bottleInterval);
         clearInterval(this.throwMoveInterval);
+
         this.speedY = 0;
       }
     }, 25);
   }
 
   brokenBottleAnimation() {
-    // this.throwBottleSound.volume = 0.1;
-    // this.throwBottleSound.play().catch((e) => {
-    //   console.warn("Throw-Bottle-Sound konnte nicht abgespielt werden:", e);
-    // });
-    this.bottleInterval = setInterval(() => {
-      this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
+    this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
+    setTimeout(() => {
+      this.markForRemoval = true;
+      clearInterval(this.bottleInterval);
     }, 100);
   }
+
+  // brokenBottleAnimation() {
+  //   // this.throwBottleSound.volume = 0.1;
+  //   // this.throwBottleSound.play().catch((e) => {
+  //   //   console.warn("Throw-Bottle-Sound konnte nicht abgespielt werden:", e);
+  //   // });
+  //   this.bottleInterval = setInterval(() => {
+  //     this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
+  //   }, 100);
+  // }
 }
