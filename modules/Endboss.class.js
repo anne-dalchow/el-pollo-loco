@@ -26,6 +26,7 @@ export default class Endboss extends MoveableObject {
     this.character = character;
     this.posX = 7 * 799;
 
+    this.inFightSequence = false;
     this.isDead = false;
     this.isHurt = false;
     this.isAttacking = false;
@@ -36,7 +37,6 @@ export default class Endboss extends MoveableObject {
     this.inputLocked = false;
 
     this.endbossSound = new Audio("assets/audio/endboss.wav");
-
     this.startAnimationLoop();
   }
 
@@ -44,17 +44,6 @@ export default class Endboss extends MoveableObject {
   width = 300;
   height = 400;
 
-  // startAnimationLoop() {
-  //   this.animationInterval = setInterval(() => {
-  //     if (this.isDead) {
-  //       this.playAnimation(this.IMAGES_DEAD);
-  //     } else if (this.isHurtAnimation || this.isHurt) {
-  //       this.playAnimation(this.IMAGES_HURT);
-  //     } else if (this.isAttacking) {
-  //       this.playAnimation(this.IMAGES_ATTACK);
-  //     }
-  //   }, 150);
-  // }
   startAnimationLoop() {
     this.animationInterval = setInterval(() => {
       if (this.isDead) {
@@ -135,132 +124,93 @@ export default class Endboss extends MoveableObject {
 
     setTimeout(() => {
       fightBanner.style.animation = "none";
-    }, 2000);
+    }, 3000);
   }
 
-  // startFightSequence() {
-  //   let phase = 0; // 0 = Alert, 1 = Walk right, 2 = Fight, 3 = Walk left
-  //   const walkSpeed = 50; // Geschwindigkeit, mit der sich der Endboss bewegt
-  //   const startX = 4750;
-  //   const targetX = 4400;
-
-  //   // Stelle sicher, dass der Endboss bei startX startet
-  //   this.posX = startX;
-
-  //   this.fightInterval = setInterval(() => {
-  //     switch (phase) {
-  //       case 0: // Alert-Phase
-  //         this.playAnimation(this.IMAGES_ALERT);
-  //         console.log("Alert-Phase");
-  //         phase++; // Gehe zur nächsten Phase
-  //         break;
-  //       case 1: // Walk-Phase (rechts)
-  //         if (this.posX > targetX) {
-  //           // Der Endboss geht nach rechts auf das Ziel zu
-  //           this.posX -= walkSpeed;
-  //           this.isWalking = true;
-  //           this.playAnimation(this.IMAGES_WALKING);
-  //           console.log("Walk-Phase");
-  //         } else {
-  //           // Wenn das Ziel erreicht ist, Phase ändern
-  //           this.isWalking = false;
-  //           this.posX = targetX;
-  //           phase++; // Wechsel zur nächsten Phase
-  //           this.playAnimation(this.IMAGES_ALERT); // Übergangsanimation
-  //         }
-  //         break;
-  //       case 2: // Fight-Phase
-  //         this.isAttacking = true;
-  //         this.playAnimation(this.IMAGES_ATTACK);
-  //         console.log("Fight-Phase");
-  //         setTimeout(() => {
-  //           this.isAttacking = false; // Ende der Kampf-Animation
-  //           phase++; // Wechsel zur nächsten Phase
-  //         }, 1000); // Dauer der Kampf-Animation
-  //         break;
-  //       case 3: // Walk-Phase (links)
-  //         if (this.posX < startX) {
-  //           // Der Endboss geht zurück zum Startpunkt
-  //           this.posX += walkSpeed;
-  //           this.isWalking = true;
-  //           this.playAnimation(this.IMAGES_WALKING);
-  //           console.log("Walk-Phase (links)");
-  //           console.log(this.posX);
-  //         } else {
-  //           // clearInterval(this.fightInterval); // Stoppe das Intervall, wenn der Endboss zurück ist
-  //           this.isWalking = false;
-  //           this.posX = startX;
-  //           this.playAnimation(this.IMAGES_ALERT); // Übergangsanimation
-  //         }
-  //         break;
-  //       default:
-  //         clearInterval(this.fightInterval); // Stoppt das Intervall, wenn alle Phasen durchlaufen sind
-  //         console.log("Kampfsequenz beendet");
-  //         break;
-  //     }
-  //   }, 100); // Verkürze das Intervall für eine flüssigere Bewegung
-  // }
-
   startFightSequence() {
-    let phase = 0;
-    const walkSpeed = 50;
+    this.inFightSequence = true;
+    const walkSpeed = 25;
     const startX = 4750;
     const targetX = 4400;
 
     this.posX = startX;
 
-    this.fightInterval = setInterval(() => {
+    const walkToTarget = () => {
       if (this.isDead) {
-        clearInterval(this.fightInterval);
-        console.log("Endboss besiegt, Kampfsequenz beendet.");
+        this.die();
         return;
       }
 
-      switch (phase) {
-        case 0: // Alert-Phase
+      this.isWalking = true;
+      const interval = setInterval(() => {
+        if (this.isDead) {
+          clearInterval(interval);
+          this.die();
+          return;
+        }
+        if (this.posX > targetX) {
+          this.posX -= walkSpeed;
+        } else {
+          clearInterval(interval);
+          this.isWalking = false;
           this.playAnimation(this.IMAGES_ALERT);
-          console.log("Alert-Phase");
-          phase = 1;
-          break;
+          setTimeout(startAttack, 1000);
+        }
+      }, 1000 / 25);
+    };
 
-        case 1: // Walk nach rechts
-          if (this.posX > targetX) {
-            this.posX -= walkSpeed;
-            this.isWalking = true;
-            this.playAnimation(this.IMAGES_WALKING);
-          } else {
-            this.isWalking = false;
-            this.posX = targetX;
-            phase = 2;
-            this.playAnimation(this.IMAGES_ALERT);
-          }
-          break;
-
-        case 2: // Fight-Phase
-          this.isAttacking = true;
-          this.playAnimation(this.IMAGES_ATTACK);
-          console.log("Fight-Phase");
-
-          setTimeout(() => {
-            this.isAttacking = false;
-            phase = 3;
-          }, 1000);
-          break;
-
-        case 3: // Walk zurück nach links
-          if (this.posX < startX) {
-            this.posX += walkSpeed;
-            this.isWalking = true;
-            this.playAnimation(this.IMAGES_WALKING);
-          } else {
-            this.isWalking = false;
-            this.posX = startX;
-            phase = 0;
-            this.playAnimation(this.IMAGES_ALERT);
-          }
-          break;
+    const startAttack = () => {
+      if (this.isDead) {
+        this.die();
+        return;
       }
-    }, 100);
+
+      this.isAttacking = true;
+      this.playAnimation(this.IMAGES_ATTACK);
+      setTimeout(() => {
+        if (this.isDead) {
+          this.die();
+          return;
+        } else {
+          this.isAttacking = false;
+          walkBack();
+        }
+      }, 1000);
+    };
+
+    const walkBack = () => {
+      if (this.isDead) {
+        this.die();
+        return;
+      }
+
+      this.isWalking = true;
+      const interval = setInterval(() => {
+        if (this.isDead) {
+          clearInterval(interval);
+          this.die();
+          return;
+        }
+
+        if (this.posX < startX) {
+          this.posX += walkSpeed;
+        } else {
+          clearInterval(interval);
+          this.isWalking = false;
+          this.playAnimation(this.IMAGES_ALERT);
+          setTimeout(() => {
+            if (this.isDead) {
+              this.die();
+              return;
+            } else {
+              walkToTarget();
+            }
+          }, 1000);
+        }
+      }, 1000 / 25);
+    };
+
+    walkToTarget();
   }
 
   hit(damage = 20) {
@@ -280,7 +230,30 @@ export default class Endboss extends MoveableObject {
     this.isWalking = false;
     this.isAttacking = false;
     this.isHurt = false;
-    clearInterval(this.walkInterval);
-    clearInterval(this.animationInterval);
+
+    this.playAnimation(this.IMAGES_DEAD);
+  }
+
+  stopAllAnimationsAndSounds() {
+    // Alle Animationen stoppen
+
+    if (this.walkInterval) clearInterval(this.walkInterval);
+    if (this.animationInterval) clearInterval(this.animationInterval);
+    if (this.deadInterval) clearInterval(this.deadInterval);
+
+    this.walkInterval = null;
+    this.animationInterval = null;
+    this.deadInterval = null;
+
+    // Sounds stoppen
+    // if (this.walkingSound && !this.walkingSound.paused) {
+    //   this.walkingSound.pause();
+    //   this.walkingSound.currentTime = 0;
+    // }
+    // if (this.snoringSound && !this.snoringSound.paused) {
+    //   this.snoringSound.pause();
+    //   this.snoringSound.currentTime = 0;
+    // }
+    // this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
   }
 }
