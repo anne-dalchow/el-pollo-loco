@@ -4,7 +4,7 @@ import BrownChicken from "../modules/BrownChicken.class.js";
 import BackgroundObject from "../modules/BackgroundObject.class.js";
 import { layers } from "./backgroundLevel1.js";
 import Clouds from "../modules/Clouds.class.js";
-import Endboss from "../modules/Endboss.class.js";
+
 import Coins from "../modules/Coins.class.js";
 import ThrowableObject from "../modules/ThrowableObject.class.js";
 
@@ -28,9 +28,7 @@ const bottles = [];
 for (let i = 1; i <= numberOfChickens; i++) {
   const basePos = i * distancePerChicken;
   const randomOffset1 = (Math.random() - 0.5) * 300;
-  console.log("randomOffset1", randomOffset1);
   const randomOffset2 = Math.random() - 1 * 300;
-  console.log("randomOffset2", randomOffset2);
   const chicken = new Chicken();
   const brownChicken = new BrownChicken();
   chicken.posX = basePos + randomOffset1;

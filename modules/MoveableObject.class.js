@@ -44,12 +44,16 @@ export default class MoveableObject extends DrawableObject {
     this.currentImage++;
   }
 
-  hit() {
-    this.energy -= 5;
-    if (this.energy < 0) {
-      this.energy = 0;
-    } else {
-      this.lastHit = new Date().getTime();
+  hit(damage) {
+    const now = new Date().getTime();
+    const timePassed = now - this.lastHit;
+
+    if (timePassed > 1000 || !this.lastHit) {
+      this.energy -= damage;
+      if (this.energy < 0) {
+        this.energy = 0;
+      }
+      this.lastHit = now;
     }
   }
 

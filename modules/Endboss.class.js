@@ -8,7 +8,7 @@ import {
 import MoveableObject from "./MoveableObject.class.js";
 
 export default class Endboss extends MoveableObject {
-  constructor() {
+  constructor(world, character) {
     super();
     this.IMAGES_WALKING = IMAGES_WALKING;
     this.IMAGES_ALERT = IMAGES_ALERT;
@@ -22,7 +22,8 @@ export default class Endboss extends MoveableObject {
     this.loadImages(this.IMAGES_ATTACK);
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_DEAD);
-
+    this.world = world;
+    this.character = character;
     this.posX = 7 * 799;
 
     this.isDead = false;
@@ -43,11 +44,22 @@ export default class Endboss extends MoveableObject {
   width = 300;
   height = 400;
 
+  // startAnimationLoop() {
+  //   this.animationInterval = setInterval(() => {
+  //     if (this.isDead) {
+  //       this.playAnimation(this.IMAGES_DEAD);
+  //     } else if (this.isHurtAnimation || this.isHurt) {
+  //       this.playAnimation(this.IMAGES_HURT);
+  //     } else if (this.isAttacking) {
+  //       this.playAnimation(this.IMAGES_ATTACK);
+  //     }
+  //   }, 150);
+  // }
   startAnimationLoop() {
     this.animationInterval = setInterval(() => {
       if (this.isDead) {
         this.playAnimation(this.IMAGES_DEAD);
-      } else if (this.isHurt) {
+      } else if (this.isHurtAnimation || this.isHurt) {
         this.playAnimation(this.IMAGES_HURT);
       } else if (this.isAttacking) {
         this.playAnimation(this.IMAGES_ATTACK);
@@ -59,7 +71,7 @@ export default class Endboss extends MoveableObject {
     }, 100);
   }
 
-  startAnimationEndboss(character, world) {
+  startAnimationEndboss(world, character) {
     this.visible = true;
 
     const END_BOSS_TARGET_X = 4700;
@@ -82,7 +94,7 @@ export default class Endboss extends MoveableObject {
         this.isCharacterFrozen = true;
 
         if (world.backgroundSound && !world.backgroundSound.paused) {
-          this.stopBackgroundSound();
+          this.stopBackgroundSound(world);
         }
         this.playEndbossSound();
         character.stopAllAnimationsAndSounds();
@@ -91,7 +103,7 @@ export default class Endboss extends MoveableObject {
     }, 90);
   }
 
-  stopBackgroundSound() {
+  stopBackgroundSound(world) {
     world.backgroundSound.pause();
     world.backgroundSound.currentTime = 0;
   }
@@ -124,6 +136,18 @@ export default class Endboss extends MoveableObject {
     setTimeout(() => {
       fightBanner.style.animation = "none";
     }, 2000);
+  }
+
+  hit(damage = 20) {
+    super.hit(damage);
+
+    this.isAttacking = false;
+    this.isHurtAnimation = true;
+
+    setTimeout(() => {
+      this.isHurtAnimation = false;
+      this.isAttacking = true;
+    }, 400);
   }
 
   die() {

@@ -34,13 +34,13 @@ export default class World {
     this.canvas = canvas;
     this.keyboard = keyboard;
     this.character = new Character(this, this.keyboard);
+    this.endboss = new Endboss(this, this.character);
     this.groundObjects = this.level.bottles;
     this.levelGround = 420;
     this.canThrow = true;
 
-    this.endboss = new Endboss();
     this.endboss.visible = false;
-    this.level.enemies.push(this.endboss);
+
     this.endbossTriggerd = false;
     this.backgroundSound = null;
 
@@ -80,8 +80,10 @@ export default class World {
       if (!this.gameRunning) return;
       if (!this.characterFrozen) {
         this.checkCaracterCollision();
+        this.checkEndbossCollision();
         this.checkThrowObjects();
         this.checkBottleHitsEnemy();
+        this.checkBottleHitsEndboss();
         // this.checkBottleHitsGround();
         this.handleBottleCollection();
         this.handleCoinCollection();
@@ -89,6 +91,7 @@ export default class World {
       this.triggerEndboss();
       this.removeObjects();
     }, 100);
+    clearInterval(this.runInterval);
   }
 
   triggerEndboss() {
@@ -97,12 +100,12 @@ export default class World {
       this.endbossTriggerd = true;
     }
     if (this.endboss.visible && !this.endboss.triggered) {
-      this.endboss.startAnimationEndboss(this.character, this);
+      this.endboss.startAnimationEndboss(this, this.character);
     }
   }
 
   checkThrowObjects() {
-    if (this.keyboard.d && this.canThrow && this.currentBottles > 0) {
+    if (this.canThrowBottle()) {
       this.canThrow = false;
 
       this.character.clearIdleAnimation();
@@ -125,12 +128,31 @@ export default class World {
       this.canThrow = true;
     }
   }
+  canThrowBottle() {
+    return this.keyboard.d && this.canThrow && this.currentBottles > 0;
+  }
 
   isTopHit(impactObject, target) {
     return (
       impactObject.speedY < 0 &&
       impactObject.posY + impactObject.height >= target.posY &&
       impactObject.posY < target.posY
+    );
+  }
+
+  isLeftHit(impactObject, target) {
+    return (
+      impactObject.posX + impactObject.width >= target.posX &&
+      impactObject.posX < target.posX &&
+      impactObject.posY + impactObject.height > target.posY
+    );
+  }
+
+  isRightHit(impactObject, target) {
+    return (
+      impactObject.posX <= target.posX + target.width &&
+      impactObject.posX + impactObject.width > target.posX + target.width &&
+      impactObject.posY + impactObject.height > target.posY
     );
   }
 
@@ -141,11 +163,35 @@ export default class World {
           enemy.die();
           this.character.speedY = -10;
         } else {
-          this.character.hit();
+          this.character.hit(5);
           this.healthBar.setPercentage(this.character.energy);
         }
       }
     });
+  }
+
+  // checkEndbossCollision() {
+  //   if (this.character.isColliding(this.endboss, 40, 60)) {
+  //     if (
+  //       this.isTopHit(this.character, this.endboss) ||
+  //       this.isLeftHit(this.character, this.endboss) ||
+  //       this.isRightHit(this.character, this.endboss)
+  //     ) {
+  //       this.endboss.hit(20);
+  //       this.endbossBar.setPercentage(this.endboss.energy);
+  //     } else {
+  //       this.character.hit(5);
+  //       this.healthBar.setPercentage(this.character.energy);
+  //     }
+  //   }
+  // }
+  checkEndbossCollision() {
+    if (this.character.isColliding(this.endboss, 40, 60)) {
+      if (!this.character.isHurt()) {
+        this.character.hit(10); // z. B. 10 Schaden
+        this.healthBar.setPercentage(this.character.energy);
+      }
+    }
   }
 
   checkBottleHitsEnemy() {
@@ -156,7 +202,40 @@ export default class World {
           bottle.markForRemoval = true;
         }
       });
-      // this.checkBottleHitsGround(this.levelGround);
+    });
+  }
+
+  // checkBottleHitsEndboss() {
+  //   this.throwableObjects.forEach((bottle) => {
+  //     if (bottle.isColliding(this.endboss) && !this.endboss.isDead) {
+  //       this.endboss.hit(20);
+  //       this.endbossBar.setPercentage(this.endboss.energy);
+
+  //       if (this.endboss.energy <= 0) {
+  //         this.endboss.die();
+  //         bottle.markForRemoval = true;
+  //       }
+  //     }
+  //   });
+  // }
+
+  checkBottleHitsEndboss() {
+    this.throwableObjects.forEach((bottle) => {
+      if (bottle.isColliding(this.endboss) && !this.endboss.isDead) {
+        if (
+          this.isTopHit(bottle, this.endboss) ||
+          this.isLeftHit(bottle, this.endboss) ||
+          this.isRightHit(bottle, this.endboss)
+        ) {
+          this.endboss.hit(20);
+          this.endbossBar.setPercentage(this.endboss.energy);
+          bottle.markForRemoval = true;
+
+          if (this.endboss.energy <= 0) {
+            this.endboss.die();
+          }
+        }
+      }
     });
   }
 
@@ -231,6 +310,7 @@ export default class World {
     this.addObjectsToMap(this.level.bottles);
 
     this.addObjectsToMap(this.level.enemies);
+    this.addToMap(this.endboss);
     this.addObjectsToMap(this.throwableObjects);
 
     this.ctx.translate(-this.camera_x, 0);
@@ -262,7 +342,7 @@ export default class World {
       this.flipImage(mo);
     }
     mo.draw(this.ctx);
-    // mo.drawFrame(this.ctx);
+    mo.drawFrame(this.ctx);
     if (mo.otherDirection) {
       this.flipImageBack(mo);
     }

@@ -16,19 +16,21 @@ export default class DrawableObject {
     }
   }
 
-  // drawFrame(ctx) {
-  //   if (
-  //     this.constructor.name === "Character" ||
-  //     this.constructor.name === "Chicken" ||
-  //     this.constructor.name === "ThrowableObject"
-  //   ) {
-  //     ctx.beginPath();
-  //     ctx.lineWidth = "5";
-  //     ctx.strokeStyle = "blue";
-  //     ctx.rect(this.posX, this.posY, this.width, this.height);
-  //     ctx.stroke();
-  //   }
-  // }
+  drawFrame(ctx) {
+    if (
+      this.constructor.name === "Character" ||
+      this.constructor.name === "Chicken" ||
+      this.constructor.name === "ThrowableObject" ||
+      this.constructor.name === "BrownChicken" ||
+      this.constructor.name === "Endboss"
+    ) {
+      ctx.beginPath();
+      ctx.lineWidth = "5";
+      ctx.strokeStyle = "blue";
+      ctx.rect(this.posX, this.posY, this.width, this.height);
+      ctx.stroke();
+    }
+  }
 
   loadImg(path) {
     this.img = new Image();
