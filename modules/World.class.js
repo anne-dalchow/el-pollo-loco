@@ -90,6 +90,7 @@ export default class World {
       }
       this.triggerEndboss();
       this.removeObjects();
+      this.checkGameOver();
     }, 100);
     clearInterval(this.runInterval);
   }
@@ -170,21 +171,6 @@ export default class World {
     });
   }
 
-  // checkEndbossCollision() {
-  //   if (this.character.isColliding(this.endboss, 40, 60)) {
-  //     if (
-  //       this.isTopHit(this.character, this.endboss) ||
-  //       this.isLeftHit(this.character, this.endboss) ||
-  //       this.isRightHit(this.character, this.endboss)
-  //     ) {
-  //       this.endboss.hit(20);
-  //       this.endbossBar.setPercentage(this.endboss.energy);
-  //     } else {
-  //       this.character.hit(5);
-  //       this.healthBar.setPercentage(this.character.energy);
-  //     }
-  //   }
-  // }
   checkEndbossCollision() {
     if (this.character.isColliding(this.endboss, 40, 60)) {
       if (!this.character.isHurt()) {
@@ -204,20 +190,6 @@ export default class World {
       });
     });
   }
-
-  // checkBottleHitsEndboss() {
-  //   this.throwableObjects.forEach((bottle) => {
-  //     if (bottle.isColliding(this.endboss) && !this.endboss.isDead) {
-  //       this.endboss.hit(20);
-  //       this.endbossBar.setPercentage(this.endboss.energy);
-
-  //       if (this.endboss.energy <= 0) {
-  //         this.endboss.die();
-  //         bottle.markForRemoval = true;
-  //       }
-  //     }
-  //   });
-  // }
 
   checkBottleHitsEndboss() {
     this.throwableObjects.forEach((bottle) => {
@@ -279,14 +251,6 @@ export default class World {
     });
   }
 
-  // checkBottleHitsGround() {
-  //   this.throwableObjects.forEach((bottle) => {
-  //     if (bottle.posY >= this.levelGround) {
-  //       bottle.markForRemoval = true;
-  //       bottle.brokenBottleAnimation();
-  //     }
-  //   });
-  // }
   removeObjects() {
     this.level.enemies = this.level.enemies.filter(
       (enemy) => !enemy.markForRemoval
@@ -294,6 +258,56 @@ export default class World {
     this.throwableObjects = this.throwableObjects.filter(
       (bottle) => !bottle.markForRemoval
     );
+  }
+
+  checkGameOver() {
+    console.log(
+      "character alive?",
+      !this.character.isDead(),
+      "Energy:",
+      this.character.energy
+    );
+    if (this.gameOver) return;
+
+    if (this.character.isDead()) {
+      this.gameOver = true;
+      this.showEndscreen("lose");
+    }
+
+    if (this.endboss.isDead && this.endbossTriggerd) {
+      this.gameOver = true;
+      this.showEndscreen("win");
+    }
+  }
+
+  showEndscreen(outcome) {
+    // this.stopAllAnimationsAndSounds();
+
+    const endscreen = document.getElementById("endscreen");
+    const img1 = document.getElementById("image1");
+    const img2 = document.getElementById("image2");
+
+    if (outcome === "win") {
+      img1.src = "assets/img/You won, you lost/Game over A.png";
+      img2.src = "assets/img/You won, you lost/You won a.png";
+    } else {
+      img1.src = "assets/img/You won, you lost/Game over A.png";
+      img2.src = "assets/img/You won, you lost/You lost b.png";
+    }
+
+    endscreen.classList.remove("hidden");
+    endscreen.classList.add("visible");
+
+    img1.classList.remove("hidden");
+    img1.classList.add("visible");
+
+    setTimeout(() => {
+      img1.classList.remove("visible");
+      img1.classList.add("hidden");
+
+      img2.classList.remove("hidden");
+      img2.classList.add("visible");
+    }, 2000);
   }
 
   draw() {
