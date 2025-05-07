@@ -5,7 +5,6 @@ import SoundManager from "../modules/SoundManager.class.js";
 let canvas;
 let gameStarted = false;
 window.keyboard = new Keyboard();
-window.soundManager = new SoundManager();
 
 window.addEventListener("load", () => {
   // === DOM-Zugriffe ===
@@ -20,14 +19,52 @@ window.addEventListener("load", () => {
   const creditsBtn = document.getElementById("credits");
   const creditLinks = document.querySelectorAll("#credit-menu a");
 
+  const fullscreenCheckbox = document.getElementById("fullscreen-checkbox");
+
+  const soundCheckbox = document.getElementById("sound");
+  const soundManager = new SoundManager();
+  window.soundManager = soundManager;
+
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener noreferrer");
   });
 
-  document.getElementById("sound").addEventListener("change", (e) => {
-    window.soundManager.toggle(e.target.checked);
+  // Checkbox-Status auslesen und SoundManager stummschalten oder aktivieren
+  soundCheckbox.addEventListener("change", () => {
+    if (soundCheckbox.checked) {
+      soundManager.unmuteAll();
+    } else {
+      soundManager.muteAll();
+    }
   });
+
+  fullscreenCheckbox.addEventListener("change", () => {
+    const fullscreen = document.getElementById("fullscreen");
+    if (fullscreenCheckbox.checked) {
+      enterFullscreen(fullscreen);
+    } else {
+      exitFullscreen();
+    }
+  });
+
+  function enterFullscreen(el) {
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (el.msRequestFullscreen) {
+      el.msRequestFullscreen();
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    }
+  }
+
+  function exitFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
 
   // === Welt initialisieren ===
   window.world = new World(canvas, window.keyboard);
@@ -38,6 +75,7 @@ window.addEventListener("load", () => {
       gameStarted = true;
       document.getElementById("startscreen").style.display = "none";
       window.world.startGame();
+
       window.world.startGameSounds();
     }
   }
