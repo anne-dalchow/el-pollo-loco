@@ -66,13 +66,19 @@ export default class World {
 
   startGameSounds() {
     if (!this.backgroundSound) {
-      this.backgroundSound = new Audio("assets/audio/background.wav");
-      this.backgroundSound.loop = true;
-      this.backgroundSound.volume = 0.2;
+      this.backgroundSound = window.soundManager.play(
+        "assets/audio/background.wav",
+        0.2,
+        true
+      );
     }
-    this.backgroundSound.play().catch((e) => {
-      console.warn("Hintergrundsound konnte nicht gestartet werden:", e);
-    });
+
+    // Falls der Sound pausiert war und neu gestartet werden soll:
+    if (this.backgroundSound.paused) {
+      this.backgroundSound.play().catch((e) => {
+        console.warn("Hintergrundsound konnte nicht gestartet werden:", e);
+      });
+    }
   }
 
   run() {
@@ -174,7 +180,7 @@ export default class World {
   checkEndbossCollision() {
     if (this.character.isColliding(this.endboss, 40, 60)) {
       if (!this.character.isHurt()) {
-        this.character.hit(10); // z. B. 10 Schaden
+        this.character.hit(10);
         this.healthBar.setPercentage(this.character.energy);
       }
     }
@@ -219,11 +225,7 @@ export default class World {
         this.currentScore = this.currentCoins * 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
 
-        this.collectCoinSound = new Audio("assets/audio/coin.wav");
-        this.collectCoinSound.volume = 0.2;
-        this.collectCoinSound.play().catch((e) => {
-          console.warn("Collect-Coin-Sound konnte nicht abgespielt werden:", e);
-        });
+        window.soundManager.play("assets/audio/coin.wav", 0.2);
       }
     });
   }
@@ -238,15 +240,7 @@ export default class World {
         this.bottleBar.setPercentage(
           (this.currentBottles / this.maxBottles) * 100
         );
-
-        this.collectBottleSound = new Audio("assets/audio/collect.wav");
-        this.collectBottleSound.volume = 0.1;
-        this.collectBottleSound.play().catch((e) => {
-          console.warn(
-            "Collect-Bottle-Sound konnte nicht abgespielt werden:",
-            e
-          );
-        });
+        window.soundManager.play("assets/audio/collect.wav", 0.1);
       }
     });
   }
