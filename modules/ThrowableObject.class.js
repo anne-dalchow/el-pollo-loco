@@ -17,7 +17,6 @@ export default class ThrowableObject extends MoveableObject {
     "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
   ];
 
-  throwBottleSound = new Audio("assets/audio/throw.wav");
   width = 60;
   height = 60;
 
@@ -40,10 +39,7 @@ export default class ThrowableObject extends MoveableObject {
   }
 
   throwBottleAnimation() {
-    this.throwBottleSound.volume = 0.1;
-    this.throwBottleSound.play().catch((e) => {
-      console.warn("Throw-Bottle-Sound konnte nicht abgespielt werden:", e);
-    });
+    window.soundManager.play("assets/audio/throw.wav", 0.1);
     this.speed = 0;
     this.bottleInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_BOTTLE);

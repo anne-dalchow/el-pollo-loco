@@ -54,7 +54,6 @@ export default class BrownChicken extends MoveableObject {
   die() {
     this.isDead = true;
     this.loadImg(this.IMAGE_DEAD);
-    console.log("SoundManager:", window.soundManager);
     window.soundManager.play("assets/audio/damage.mp3", 0.4);
     this.speed = 0;
 

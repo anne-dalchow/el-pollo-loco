@@ -36,7 +36,6 @@ export default class Endboss extends MoveableObject {
     this.isCharacterFrozen = false;
     this.inputLocked = false;
 
-    this.endbossSound = new Audio("assets/audio/endboss.wav");
     this.startAnimationLoop();
   }
 
@@ -98,11 +97,7 @@ export default class Endboss extends MoveableObject {
   }
 
   playEndbossSound() {
-    this.endbossSound.volume = 0.2;
-    this.endbossSound.loop = true;
-    this.endbossSound.play().catch((e) => {
-      console.warn("Endboss-Sound konnte nicht gestartet werden:", e);
-    });
+    window.soundManager.play("assets/audio/endboss.wav", 0.2, true);
   }
 
   freezeCharacter(character) {
