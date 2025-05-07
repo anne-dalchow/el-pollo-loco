@@ -11,6 +11,23 @@
   letter-spacing: 3px;
 }
 
+button {
+  width: 150px;
+  height: 50px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ce9822;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.1rem;
+  filter: drop-shadow(1px 2px 4px rgba(0, 0, 0, 0.541));
+  cursor: pointer;
+}
+
+button:hover {
+  filter: drop-shadow(0px 0px 6px #aa7c19);
+  color: white;
+}
+
 body {
   min-height: 100vh;
   display: flex;
@@ -24,10 +41,50 @@ body {
 }
 
 h1 {
-  font-size: 80px;
+  font-size: 5rem;
   color: rgb(161, 78, 0);
   text-shadow: 2px 2px rgb(105, 51, 0);
   letter-spacing: 8px;
+}
+
+h2 {
+  font-size: 2.3rem;
+  letter-spacing: 4px;
+}
+
+h3 {
+  font-size: 1.5rem;
+  letter-spacing: 4px;
+}
+
+p {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+hr {
+  border-style: dashed;
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+label {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #ce9822;
+  text-decoration: none;
 }
 
 canvas {
@@ -37,18 +94,13 @@ canvas {
   border-radius: 15px;
 }
 
-#game-container {
+.game-container {
   position: relative;
   width: 800px;
   height: 480px;
   filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.8));
   border-radius: 15px;
   overflow: hidden;
-}
-
-#startscreen img {
-  max-width: 800px;
-  object-fit: contain;
 }
 
 #startscreen {
@@ -64,20 +116,29 @@ canvas {
   background-color: rgb(153, 68, 8);
 }
 
-#startscreen-content {
+.startscreen-content {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: absolute; /* Absolute Positionierung innerhalb von #startscreen */
 }
 
-.blink {
+.startscreen-content img {
+  width: 800px;
+}
+
+#blink {
   color: rgb(0, 0, 0);
+  font-family: "Zabars";
   font-size: 24px;
   margin: 20px;
   animation: blink-animation 2s ease-in-out infinite;
   text-shadow: 0 0 10px #ce9822;
   opacity: 1;
+  position: absolute;
+  bottom: -10px;
 }
 
 @keyframes blink-animation {
@@ -88,6 +149,106 @@ canvas {
   50% {
     opacity: 0;
   }
+}
+
+#startscreen-menu {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+#setting-menu-container,
+#credit-menu {
+  display: flex;
+  flex-flow: column wrap;
+  gap: 32px;
+  padding: 48px;
+  color: rgb(245, 217, 165);
+  background-color: rgb(0, 0, 0, 0.95);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+}
+
+#startscreen-menu button {
+  animation: slide-in-left 0.5s ease-out forwards;
+  opacity: 0; /* damit sie nicht vorher sichtbar sind */
+}
+
+@keyframes slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-200px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-right {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
+.setting-menu {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: 160px;
+  width: 100%;
+}
+
+.keyboard-keys {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.keyboard-keys div {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 24px;
+  margin: 4px 0;
+}
+
+.keyboard-keys img {
+  width: 50px;
+}
+
+.checkbox-container {
+  display: flex;
+  flex-flow: column wrap;
+  gap: 64px;
+  width: 30%;
+}
+
+.back-to-menu {
+  position: absolute;
+  bottom: 32px;
+  right: 48px;
+  width: max-content;
+  height: max-content;
+  padding: 8px 12px;
+  font-size: 1rem;
 }
 
 #fight-banner {

@@ -1,51 +1,122 @@
 import World from "../modules/World.class.js";
 import Keyboard from "../modules/Keyboard.class.js";
+import SoundManager from "../modules/SoundManager.class.js";
 
 let canvas;
 let gameStarted = false;
 window.keyboard = new Keyboard();
+window.soundManager = new SoundManager();
 
 window.addEventListener("load", () => {
+  // === DOM-Zugriffe ===
   canvas = document.getElementById("canvas");
+  const startscreenMenu = document.getElementById("startscreen-menu");
+  const blinkText = document.getElementById("blink");
+  const settingMenu = document.getElementById("setting-menu-container");
+  const creditMenu = document.getElementById("credit-menu");
+  const backToMenuBtns = document.querySelectorAll(".back-to-menu");
+  const startGameBtn = document.getElementById("start-game");
+  const settingBtn = document.getElementById("settings");
+  const creditsBtn = document.getElementById("credits");
+  const creditLinks = document.querySelectorAll("#credit-menu a");
+
+  creditLinks.forEach((link) => {
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noopener noreferrer");
+  });
+
+  document.getElementById("sound").addEventListener("change", (e) => {
+    window.soundManager.toggle(e.target.checked);
+  });
+
+  // === Welt initialisieren ===
   window.world = new World(canvas, window.keyboard);
-});
 
-function gameStart() {
-  if (!gameStarted) {
-    gameStarted = true;
-    document.getElementById("startscreen").style.display = "none";
-    window.world.startGame();
-    window.world.startGameSounds();
+  // === Spielstartfunktion ===
+  function gameStart() {
+    if (!gameStarted) {
+      gameStarted = true;
+      document.getElementById("startscreen").style.display = "none";
+      window.world.startGame();
+      window.world.startGameSounds();
+    }
   }
-}
 
-window.addEventListener("keydown", (e) => {
-  gameStart();
-  if (e.key === "ArrowLeft") {
-    window.keyboard.left = true;
+  // === Toggle-Helferfunktionen ===
+  function showElement(el) {
+    el.classList.remove("hidden");
+    el.classList.add("visible");
   }
-  if (e.key === "ArrowRight") {
-    window.keyboard.right = true;
-  }
-  if (e.key === " ") {
-    window.keyboard.up = true;
-  }
-  if (e.key === "d") {
-    window.keyboard.d = true;
-  }
-});
 
-window.addEventListener("keyup", (e) => {
-  if (e.key === "ArrowLeft") {
-    window.keyboard.left = false;
+  function hideElement(el) {
+    el.classList.remove("visible");
+    el.classList.add("hidden");
   }
-  if (e.key === "ArrowRight") {
-    window.keyboard.right = false;
+
+  // === Startscreen-Logik ===
+  function startscreen() {
+    showElement(startscreenMenu);
+
+    const buttons = startscreenMenu.querySelectorAll("button");
+    buttons.forEach((btn, i) => {
+      btn.style.animation = "none";
+      void btn.offsetWidth; // Reflow
+      btn.style.animation = `slide-in-left 0.4s ease-out ${i * 0.1}s forwards`;
+    });
+
+    blinkText.style.animation = "none";
+    blinkText.classList.add("hidden");
+    settingMenu.classList.add("hidden");
   }
-  if (e.key === " ") {
-    window.keyboard.up = false;
-  }
-  if (e.key === "d") {
-    window.keyboard.d = false;
-  }
+
+  // === EventListener ===
+  startGameBtn.addEventListener("click", () => {
+    const buttons = startscreenMenu.querySelectorAll("button");
+
+    buttons.forEach((btn, i) => {
+      btn.style.animation = "slide-out-right 0.4s ease-in forwards";
+      btn.style.animationDelay = `${i * 0.1}s`;
+    });
+
+    setTimeout(() => {
+      hideElement(startscreenMenu);
+      gameStart();
+    }, 600);
+  });
+
+  settingBtn.addEventListener("click", () => {
+    hideElement(startscreenMenu);
+    showElement(settingMenu);
+  });
+
+  creditsBtn.addEventListener("click", () => {
+    hideElement(startscreenMenu);
+    showElement(creditMenu);
+  });
+
+  backToMenuBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      showElement(startscreenMenu);
+      hideElement(settingMenu);
+      hideElement(creditMenu);
+      blinkText.style.animation = "none";
+      blinkText.classList.add("hidden");
+    });
+  });
+
+  // === Tastatursteuerung ===
+  window.addEventListener("keydown", (e) => {
+    startscreen(); // Startmenü zeigen
+    if (e.key === "ArrowLeft") window.keyboard.left = true;
+    if (e.key === "ArrowRight") window.keyboard.right = true;
+    if (e.key === " ") window.keyboard.up = true;
+    if (e.key === "d") window.keyboard.d = true;
+  });
+
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowLeft") window.keyboard.left = false;
+    if (e.key === "ArrowRight") window.keyboard.right = false;
+    if (e.key === " ") window.keyboard.up = false;
+    if (e.key === "d") window.keyboard.d = false;
+  });
 });

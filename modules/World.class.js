@@ -261,12 +261,6 @@ export default class World {
   }
 
   checkGameOver() {
-    console.log(
-      "character alive?",
-      !this.character.isDead(),
-      "Energy:",
-      this.character.energy
-    );
     if (this.gameOver) return;
 
     if (this.character.isDead()) {
