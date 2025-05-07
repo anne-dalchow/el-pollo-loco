@@ -11,7 +11,6 @@ export default class Chicken extends MoveableObject {
   ];
 
   IMAGE_DEAD = "assets/img/3_enemies_chicken/chicken_small/2_dead/dead.png";
-  chickenDeadSound = new Audio("assets/audio/damage.mp3");
 
   constructor() {
     super();
@@ -55,13 +54,10 @@ export default class Chicken extends MoveableObject {
   die() {
     this.isDead = true;
     this.loadImg(this.IMAGE_DEAD);
-    this.chickenDeadSound.volume = 0.4;
-    this.chickenDeadSound.play().catch((e) => {
-      console.warn("Chicken-Dead-Sound konnte nicht abgespielt werden:", e);
-    });
+    console.log("SoundManager:", window.soundManager);
+    window.soundManager.play("assets/audio/damage.mp3", 0.4);
     this.speed = 0;
 
-    // Huhn nach 2 Sekunden entfernen
     setTimeout(() => {
       this.markForRemoval = true;
     }, 2000);
