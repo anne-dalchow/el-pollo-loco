@@ -266,6 +266,7 @@ canvas {
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
+  font-family: "Zabars";
   font-size: 80px;
   letter-spacing: 5px;
   font-weight: bold;
