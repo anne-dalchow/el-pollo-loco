@@ -259,18 +259,24 @@ export default class World {
 
     if (this.character.isDead()) {
       this.gameOver = true;
-      this.showEndscreen("lose");
+      this.endboss.stopAllAnimationsAndSounds();
+      this.character.stopAllAnimationsAndSounds();
+      setTimeout(() => {
+        this.showEndscreen("lose");
+      }, 2000);
     }
 
     if (this.endboss.isDead && this.endbossTriggerd) {
       this.gameOver = true;
-      this.showEndscreen("win");
+      this.endboss.stopAllAnimationsAndSounds();
+      this.character.stopAllAnimationsAndSounds();
+      setTimeout(() => {
+        this.showEndscreen("win");
+      }, 3000);
     }
   }
 
   showEndscreen(outcome) {
-    // this.stopAllAnimationsAndSounds();
-
     const endscreen = document.getElementById("endscreen");
     const img1 = document.getElementById("image1");
     const img2 = document.getElementById("image2");

@@ -369,14 +369,10 @@ export default class Character extends MoveableObject {
     this.jumpInterval = null;
 
     // Sounds stoppen
-    if (this.walkingSound && !this.walkingSound.paused) {
-      this.walkingSound.pause();
-      this.walkingSound.currentTime = 0;
-    }
-    if (this.snoringSound && !this.snoringSound.paused) {
-      this.snoringSound.pause();
-      this.snoringSound.currentTime = 0;
-    }
+    this.walkingSound.pause();
+
+    this.snoringSound.pause();
+
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
   }
 }

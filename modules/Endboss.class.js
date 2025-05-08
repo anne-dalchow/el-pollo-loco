@@ -61,7 +61,6 @@ export default class Endboss extends MoveableObject {
 
   startAnimationEndboss(world, character) {
     this.visible = true;
-
     const END_BOSS_TARGET_X = 4700;
 
     if (this.isEndbossTriggered || !this.visible) return;
@@ -77,7 +76,7 @@ export default class Endboss extends MoveableObject {
       }
 
       // Einfrieren des Charakters, wenn der Endboss die Position erreicht hat
-      if (character.posX >= 4400 && !this.isCharacterFrozen) {
+      if (character.posX >= 4350 && !this.isCharacterFrozen) {
         character.freeze();
         this.isCharacterFrozen = true;
 
@@ -110,7 +109,9 @@ export default class Endboss extends MoveableObject {
   startFight() {
     world.endbossBar.isVisible = true;
     this.showFightBanner();
-    this.startFightSequence(); // Startet die Kampfsequenz
+    setTimeout(() => {
+      this.startFightSequence();
+    }, 1000);
   }
 
   showFightBanner() {
@@ -126,7 +127,7 @@ export default class Endboss extends MoveableObject {
     this.inFightSequence = true;
     const walkSpeed = 25;
     const startX = 4750;
-    const targetX = 4400;
+    const targetX = 4450;
 
     this.posX = startX;
 
@@ -217,7 +218,7 @@ export default class Endboss extends MoveableObject {
     setTimeout(() => {
       this.isHurtAnimation = false;
       this.isAttacking = true;
-    }, 400);
+    }, 600);
   }
 
   die() {
@@ -226,7 +227,9 @@ export default class Endboss extends MoveableObject {
     this.isAttacking = false;
     this.isHurt = false;
 
-    this.playAnimation(this.IMAGES_DEAD);
+    setInterval(() => {
+      this.playAnimation(this.IMAGES_DEAD);
+    }, 200);
   }
 
   stopAllAnimationsAndSounds() {
@@ -241,14 +244,11 @@ export default class Endboss extends MoveableObject {
     this.deadInterval = null;
 
     // Sounds stoppen
-    // if (this.walkingSound && !this.walkingSound.paused) {
-    //   this.walkingSound.pause();
-    //   this.walkingSound.currentTime = 0;
-    // }
-    // if (this.snoringSound && !this.snoringSound.paused) {
-    //   this.snoringSound.pause();
-    //   this.snoringSound.currentTime = 0;
-    // }
-    // this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
+    this.endbossBackgroundSound = window.soundManager.play(
+      "assets/audio/endboss.wav",
+      0.2,
+      true
+    );
+    this.endbossBackgroundSound.pause();
   }
 }
