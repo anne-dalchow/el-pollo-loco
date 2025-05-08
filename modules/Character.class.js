@@ -53,6 +53,10 @@ export default class Character extends MoveableObject {
     this.isSnoring = false;
     this.snoringPath = "assets/audio/snoring.wav";
     this.snoringSound = soundManager.prepare(this.snoringPath, 0.8, true, 1.5);
+
+    this.deadSoundPlayed = false;
+    this.deadSoundPath = "assets/audio/character_die.mp3";
+    this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
   }
 
   move() {
@@ -79,7 +83,11 @@ export default class Character extends MoveableObject {
     if (this.world.characterFrozen) return;
 
     if (this.isDead()) {
-      this.playAnimation(this.IMAGES_DEAD);
+      if (!this.deadSoundPlayed) {
+        this.deadSound.play();
+        this.deadSoundPlayed = true;
+        this.playDeathAnimationOnce();
+      }
       return;
     }
 
@@ -107,13 +115,11 @@ export default class Character extends MoveableObject {
 
   startAnimation() {
     this.idleAnimation();
-
     if (this.isAboveGround()) {
       this.jumpingAnimation();
     } else {
       this.walkingAnimation();
     }
-
     this.isWalking = true;
   }
 
@@ -330,6 +336,7 @@ export default class Character extends MoveableObject {
     this.isSnoring = false;
     this.isIdle = false;
   }
+
   /**
    * Freezes the character: disables controls and animations.
    *
@@ -368,8 +375,6 @@ export default class Character extends MoveableObject {
     this.jumpingSound.pause();
     this.snoringSound.pause();
     this.hurtingSound.pause();
-
-    this.isSnoring = false;
 
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
   }

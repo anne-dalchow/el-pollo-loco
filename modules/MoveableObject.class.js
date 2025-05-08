@@ -67,6 +67,16 @@ export default class MoveableObject extends DrawableObject {
     return this.energy == 0;
   }
 
+  async playDeathAnimationOnce() {
+    if (this.deathAnimationPlayed) return;
+    this.deathAnimationPlayed = true;
+
+    for (let i = 0; i < this.IMAGES_DEAD.length; i++) {
+      this.loadImg(this.IMAGES_DEAD[i]);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+  }
+
   applyGravity() {
     this.gravityInterval = setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
