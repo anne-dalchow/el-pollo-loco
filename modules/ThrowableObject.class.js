@@ -27,6 +27,7 @@ export default class ThrowableObject extends MoveableObject {
     this.height = 60;
     this.width = 60;
     this.otherDirection = otherDirection;
+    this.isBroken = false;
     // this.levelGround = 420;
     this.loadImg("assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
@@ -64,11 +65,15 @@ export default class ThrowableObject extends MoveableObject {
   }
 
   brokenBottleAnimation() {
-    this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
-    setTimeout(() => {
-      this.markForRemoval = true;
-      clearInterval(this.bottleInterval);
+    console.log("Bottle zerbricht");
+    this.brokenBottleInterval = setInterval(() => {
+      this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
     }, 100);
+
+    // setTimeout(() => {
+    //   this.markForRemoval = true;
+    //   clearInterval(this.brokenBottleInterval);
+    // }, 100);
   }
 
   // brokenBottleAnimation() {

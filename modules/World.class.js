@@ -36,7 +36,7 @@ export default class World {
     this.character = new Character(this, this.keyboard);
     this.endboss = new Endboss(this, this.character);
     this.groundObjects = this.level.bottles;
-    this.levelGround = 420;
+    this.levelGround = 410;
     this.canThrow = true;
 
     this.endboss.visible = false;
@@ -90,7 +90,7 @@ export default class World {
         this.checkThrowObjects();
         this.checkBottleHitsEnemy();
         this.checkBottleHitsEndboss();
-        // this.checkBottleHitsGround();
+        this.checkBottleHitsGround();
         this.handleBottleCollection();
         this.handleCoinCollection();
       }
@@ -189,17 +189,41 @@ export default class World {
   checkBottleHitsEnemy() {
     this.throwableObjects.forEach((bottle) => {
       this.level.enemies.forEach((enemy) => {
-        if (bottle.isColliding(enemy) && !enemy.isDead) {
+        if (
+          bottle.isColliding(enemy) &&
+          !enemy.isDead &&
+          !bottle.isBroken &&
+          this.isTopHit(bottle, enemy)
+        ) {
+          bottle.brokenBottleAnimation();
+          bottle.isBroken = true;
           enemy.die();
-          bottle.markForRemoval = true;
+          // setTimeout(() => {
+          //   bottle.markForRemoval = true;
+          // }, 1000);
         }
       });
+    });
+  }
+
+  checkBottleHitsGround() {
+    this.throwableObjects.forEach((bottle) => {
+      if (bottle.posY >= this.levelGround && !bottle.isBroken) {
+        bottle.posY = this.levelGround; // Position auf Boden setzen
+        bottle.speedY = 0; // Fallgeschwindigkeit stoppen
+        bottle.isBroken = true; // Flag, damit Animation nur 1x startet
+        bottle.brokenBottleAnimation();
+        setTimeout(() => {
+          bottle.markForRemoval = true;
+        }, 1000);
+      }
     });
   }
 
   checkBottleHitsEndboss() {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.isColliding(this.endboss) && !this.endboss.isDead) {
+        bottle.brokenBottleAnimation();
         if (
           this.isTopHit(bottle, this.endboss) ||
           this.isLeftHit(bottle, this.endboss) ||
@@ -207,7 +231,7 @@ export default class World {
         ) {
           this.endboss.hit(20);
           this.endbossBar.setPercentage(this.endboss.energy);
-          bottle.markForRemoval = true;
+          // bottle.markForRemoval = true;
 
           if (this.endboss.energy <= 0) {
             this.endboss.die();
