@@ -331,14 +331,14 @@ export default class World {
     endscreen.classList.remove("hidden");
     endscreen.classList.add("visible");
 
-    img1.classList.remove("hidden");
+    img1.classList.remove("display-none");
     img1.classList.add("visible");
 
     setTimeout(() => {
       img1.classList.remove("visible");
-      img1.classList.add("hidden");
+      img1.classList.add("display-none");
 
-      img2.classList.remove("hidden");
+      img2.classList.remove("display-none");
       img2.classList.add("visible");
     }, 2000);
   }

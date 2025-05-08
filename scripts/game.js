@@ -78,6 +78,8 @@ window.addEventListener("load", () => {
     }
   }
 
+  // backToMenuBtn.addEventListener("click", location.reload());
+
   // === Toggle-Helferfunktionen ===
   function showElement(el) {
     el.classList.remove("hidden");
@@ -138,6 +140,20 @@ window.addEventListener("load", () => {
       blinkText.style.animation = "none";
       blinkText.classList.add("hidden");
     });
+  });
+
+  const endscreen = document.getElementById("endscreen");
+  const img1 = document.getElementById("image1");
+  const img2 = document.getElementById("image2");
+  const restartBtn = document.getElementById("restart-btn");
+  const backToMenuBtn = document.getElementById("back-to-menu-endscreen-btn");
+
+  restartBtn.addEventListener("click", () => {
+    hideElement(img1);
+    hideElement(img2);
+    hideElement(endscreen);
+
+    window.world = new World(canvas, window.keyboard, soundManager);
   });
 
   // === Tastatursteuerung ===
