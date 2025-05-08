@@ -4,26 +4,39 @@ export default class SoundManager {
     this.muted = false;
   }
 
-  play(path, volume = 1, loop = false, playbackRate = 1) {
-    try {
-      let sound;
-
-      if (this.sounds[path]) {
-        sound = this.sounds[path];
-      } else {
-        sound = new Audio(path);
-        sound.dataset.originalVolume = volume;
-        sound.dataset.originalPlaybackRate = playbackRate;
-        this.sounds[path] = sound;
-      }
-
+  prepare(path, volume = 1, loop = false, playbackRate = 1) {
+    if (!this.sounds[path]) {
+      const sound = new Audio(path);
       sound.loop = loop;
       sound.volume = this.muted ? 0 : volume;
       sound.playbackRate = playbackRate;
+      sound.dataset.originalVolume = volume;
+      sound.dataset.originalPlaybackRate = playbackRate;
+      this.sounds[path] = sound;
+    }
+    return this.sounds[path];
+  }
+
+  play(path) {
+    try {
+      const sound = this.sounds[path];
+
+      if (!sound) {
+        console.warn(`Sound wurde nicht vorbereitet: ${path}`);
+        return;
+      }
+
       sound.play();
       return sound;
     } catch (e) {
       console.warn(`Sound konnte nicht abgespielt werden: ${path}`, e);
+    }
+  }
+
+  pause(path) {
+    const sound = this.sounds[path];
+    if (sound && !sound.paused) {
+      sound.pause();
     }
   }
 

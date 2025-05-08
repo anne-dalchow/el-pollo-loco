@@ -9,6 +9,10 @@ window.keyboard = new Keyboard();
 window.addEventListener("load", () => {
   // === DOM-Zugriffe ===
   canvas = document.getElementById("canvas");
+  const soundCheckbox = document.getElementById("sound");
+  const soundManager = new SoundManager();
+  window.soundManager = soundManager;
+
   const startscreenMenu = document.getElementById("startscreen-menu");
   const blinkText = document.getElementById("blink");
   const settingMenu = document.getElementById("setting-menu-container");
@@ -20,10 +24,6 @@ window.addEventListener("load", () => {
   const creditLinks = document.querySelectorAll("#credit-menu a");
 
   const fullscreenCheckbox = document.getElementById("fullscreen-checkbox");
-
-  const soundCheckbox = document.getElementById("sound");
-  const soundManager = new SoundManager();
-  window.soundManager = soundManager;
 
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
@@ -65,9 +65,8 @@ window.addEventListener("load", () => {
       document.webkitExitFullscreen();
     }
   }
-
   // === Welt initialisieren ===
-  window.world = new World(canvas, window.keyboard);
+  window.world = new World(canvas, window.keyboard, soundManager);
 
   // === Spielstartfunktion ===
   function gameStart() {

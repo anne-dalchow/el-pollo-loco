@@ -8,7 +8,7 @@ import ThrowableObject from "./ThrowableObject.class.js";
 import Endboss from "./Endboss.class.js";
 
 export default class World {
-  level = level1;
+  level = level1(soundManager);
   canvas;
   ctx;
   camera_x = 0;
@@ -29,12 +29,12 @@ export default class World {
   characterFrozen = false;
   gameRunning = false;
 
-  constructor(canvas, keyboard) {
+  constructor(canvas, keyboard, soundManager) {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
-    this.character = new Character(this, this.keyboard);
-    this.endboss = new Endboss(this, this.character);
+    this.character = new Character(this, this.keyboard, soundManager);
+    this.endboss = new Endboss(this, this.character, soundManager);
     this.groundObjects = this.level.bottles;
     this.levelGround = 410;
     this.canThrow = true;
@@ -198,9 +198,9 @@ export default class World {
           bottle.brokenBottleAnimation();
           bottle.isBroken = true;
           enemy.die();
-          // setTimeout(() => {
-          //   bottle.markForRemoval = true;
-          // }, 1000);
+          setTimeout(() => {
+            bottle.markForRemoval = true;
+          }, 500);
         }
       });
     });
@@ -209,13 +209,13 @@ export default class World {
   checkBottleHitsGround() {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.posY >= this.levelGround && !bottle.isBroken) {
-        bottle.posY = this.levelGround; // Position auf Boden setzen
-        bottle.speedY = 0; // Fallgeschwindigkeit stoppen
-        bottle.isBroken = true; // Flag, damit Animation nur 1x startet
+        bottle.posY = this.levelGround;
+        bottle.speedY = 0;
+        bottle.isBroken = true;
         bottle.brokenBottleAnimation();
         setTimeout(() => {
           bottle.markForRemoval = true;
-        }, 1000);
+        }, 500);
       }
     });
   }

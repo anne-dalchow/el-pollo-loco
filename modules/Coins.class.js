@@ -28,7 +28,7 @@ export default class Coins extends MoveableObject {
     "assets/img/8_coin/Gold_30.png",
   ];
 
-  constructor() {
+  constructor(soundManager) {
     super();
     this.posY = 80 + Math.random() * 300;
     this.posX = 50 + Math.random() * 3000;

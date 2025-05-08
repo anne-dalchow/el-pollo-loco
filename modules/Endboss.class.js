@@ -8,7 +8,7 @@ import {
 import MoveableObject from "./MoveableObject.class.js";
 
 export default class Endboss extends MoveableObject {
-  constructor(world, character) {
+  constructor(world, character, soundManager) {
     super();
     this.IMAGES_WALKING = IMAGES_WALKING;
     this.IMAGES_ALERT = IMAGES_ALERT;

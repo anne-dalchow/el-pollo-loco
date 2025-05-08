@@ -12,9 +12,12 @@ export default class BrownChicken extends MoveableObject {
 
   IMAGE_DEAD = "assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png";
 
-  constructor() {
+  constructor(soundManager) {
     super();
     this.isDead = false;
+
+    this.deadPath = "assets/audio/damage.mp3";
+    this.dieingSound = soundManager.prepare(this.deadPath, 0.4);
 
     this.loadImg("assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
@@ -54,9 +57,8 @@ export default class BrownChicken extends MoveableObject {
   die() {
     this.isDead = true;
     this.loadImg(this.IMAGE_DEAD);
-    window.soundManager.play("assets/audio/damage.mp3", 0.4);
+    this.dieingSound.play(this.deadPath);
     this.speed = 0;
-
     setTimeout(() => {
       this.markForRemoval = true;
     }, 2000);
