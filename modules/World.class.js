@@ -53,6 +53,20 @@ export default class World {
     this.collectingSoundPath = "assets/audio/collect.wav";
     this.collectingSound = soundManager.prepare(this.collectingSoundPath, 0.1);
 
+    this.loseSoundPath = "assets/audio/lose_endscreen.wav";
+    this.loseSound = soundManager.prepare(this.loseSoundPath, 0.5);
+
+    this.winSoundPath = "assets/audio/win_endscreen.wav";
+    this.winSound = soundManager.prepare(this.winSoundPath, 0.5);
+
+    this.chickenSoundPath = "assets/audio/chicken sound.mp3";
+    this.chickenSound = soundManager.prepare(
+      this.chickenSoundPath,
+      1,
+      false,
+      1.5
+    );
+
     this.draw();
     this.run();
   }
@@ -166,7 +180,7 @@ export default class World {
           enemy.die();
           this.character.speedY = -10;
         } else {
-          this.character.hit(5);
+          this.character.hit(20);
           this.healthBar.setPercentage(this.character.energy);
         }
       }
@@ -220,6 +234,7 @@ export default class World {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.isColliding(this.endboss) && !this.endboss.isDead) {
         bottle.brokenBottleAnimation();
+        this.chickenSound.play();
         if (
           this.isTopHit(bottle, this.endboss) ||
           this.isLeftHit(bottle, this.endboss) ||
@@ -279,19 +294,24 @@ export default class World {
     if (this.character.isDead()) {
       this.gameOver = true;
       this.endboss.stopAllAnimationsAndSounds();
-      this.character.stopAllAnimationsAndSounds();
+
+      this.backgroundSound.pause();
       setTimeout(() => {
+        this.loseSound.play();
         this.showEndscreen("lose");
-      }, 2000);
+        this.character.stopAllAnimationsAndSounds();
+      }, 1500);
     }
 
     if (this.endboss.isDead && this.endbossTriggerd) {
       this.gameOver = true;
       this.endboss.stopAllAnimationsAndSounds();
-      this.character.stopAllAnimationsAndSounds();
+
       setTimeout(() => {
+        this.winSound.play();
         this.showEndscreen("win");
-      }, 3000);
+        this.character.stopAllAnimationsAndSounds();
+      }, 1500);
     }
   }
 
