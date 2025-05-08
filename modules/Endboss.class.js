@@ -233,9 +233,7 @@ export default class Endboss extends MoveableObject {
     this.isAttacking = false;
     this.isHurt = false;
 
-    setInterval(() => {
-      this.playAnimation(this.IMAGES_DEAD);
-    }, 200);
+    this.playDeathAnimationOnce();
   }
 
   stopAllAnimationsAndSounds() {
