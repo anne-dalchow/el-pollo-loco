@@ -222,15 +222,9 @@ export default class Character extends MoveableObject {
 
   playStepSounds() {
     if (this.movingHorizontally && !this.isAboveGround()) {
-      if (this.walkingSound.paused) {
-        this.walkingSound.volume = 1;
-        this.walkingSound.playbackRate = 2;
-        this.walkingSound.play();
-      }
+      this.walkingSound.play();
     } else {
-      if (!this.walkingSound.paused) {
-        this.walkingSound.pause();
-      }
+      this.walkingSound.pause();
     }
   }
 

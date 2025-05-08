@@ -36,6 +36,13 @@ export default class Endboss extends MoveableObject {
     this.isCharacterFrozen = false;
     this.inputLocked = false;
 
+    this.endbossBackgroundSoundPath = "assets/audio/endboss.wav";
+    this.endbossBackgroundSound = soundManager.prepare(
+      this.endbossBackgroundSoundPath,
+      0.2,
+      true
+    );
+
     this.startAnimationLoop();
   }
 
@@ -92,11 +99,10 @@ export default class Endboss extends MoveableObject {
 
   stopBackgroundSound(world) {
     world.backgroundSound.pause();
-    world.backgroundSound.currentTime = 0;
   }
 
   playEndbossSound() {
-    window.soundManager.play("assets/audio/endboss.wav", 0.2, true);
+    this.endbossBackgroundSound.play();
   }
 
   freezeCharacter(character) {
@@ -244,11 +250,6 @@ export default class Endboss extends MoveableObject {
     this.deadInterval = null;
 
     // Sounds stoppen
-    this.endbossBackgroundSound = window.soundManager.play(
-      "assets/audio/endboss.wav",
-      0.2,
-      true
-    );
     this.endbossBackgroundSound.pause();
   }
 }

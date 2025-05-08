@@ -30,7 +30,6 @@ window.addEventListener("load", () => {
     link.setAttribute("rel", "noopener noreferrer");
   });
 
-  // Checkbox-Status auslesen und SoundManager stummschalten oder aktivieren
   soundCheckbox.addEventListener("change", () => {
     if (soundCheckbox.checked) {
       soundManager.unmuteAll();

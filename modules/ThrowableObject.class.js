@@ -32,6 +32,9 @@ export default class ThrowableObject extends MoveableObject {
     this.loadImages(this.IMAGES_BOTTLE);
     this.loadImages(this.IMAGES_BROKEN_BOTTLE);
 
+    this.throwSoundPath = "assets/audio/throw.wav";
+    this.throwSound = soundManager.prepare(this.throwSoundPath, 0.1);
+
     if (shouldThrow) {
       this.throwBottle();
       this.throwBottleAnimation();
@@ -39,7 +42,7 @@ export default class ThrowableObject extends MoveableObject {
   }
 
   throwBottleAnimation() {
-    window.soundManager.play("assets/audio/throw.wav", 0.1);
+    this.throwSound.play();
     this.speed = 0;
     this.bottleInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_BOTTLE);

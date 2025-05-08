@@ -40,9 +40,18 @@ export default class World {
     this.canThrow = true;
 
     this.endboss.visible = false;
-
     this.endbossTriggerd = false;
-    this.backgroundSound = null;
+
+    this.backgroundSoundPath = "assets/audio/background.wav";
+    this.backgroundSound = soundManager.prepare(
+      this.backgroundSoundPath,
+      0.2,
+      true
+    );
+    this.coinSoundPath = "assets/audio/coin.wav";
+    this.coinSound = soundManager.prepare(this.coinSoundPath, 0.2);
+    this.collectingSoundPath = "assets/audio/collect.wav";
+    this.collectingSound = soundManager.prepare(this.collectingSoundPath, 0.1);
 
     this.draw();
     this.run();
@@ -65,20 +74,7 @@ export default class World {
   }
 
   startGameSounds() {
-    if (!this.backgroundSound) {
-      this.backgroundSound = window.soundManager.play(
-        "assets/audio/background.wav",
-        0.2,
-        true
-      );
-    }
-
-    // Falls der Sound pausiert war und neu gestartet werden soll:
-    if (this.backgroundSound.paused) {
-      this.backgroundSound.play().catch((e) => {
-        console.warn("Hintergrundsound konnte nicht gestartet werden:", e);
-      });
-    }
+    this.backgroundSound.play();
   }
 
   run() {
@@ -248,8 +244,7 @@ export default class World {
         this.currentCoins++;
         this.currentScore = this.currentCoins * 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
-
-        window.soundManager.play("assets/audio/coin.wav", 0.2);
+        this.coinSound.play();
       }
     });
   }
@@ -264,7 +259,7 @@ export default class World {
         this.bottleBar.setPercentage(
           (this.currentBottles / this.maxBottles) * 100
         );
-        window.soundManager.play("assets/audio/collect.wav", 0.1);
+        this.collectingSound.play();
       }
     });
   }
