@@ -48,7 +48,7 @@ export default class MoveableObject extends DrawableObject {
     const now = new Date().getTime();
     const timePassed = now - this.lastHit;
 
-    if (timePassed > 1000 || !this.lastHit) {
+    if (timePassed > 1500 || !this.lastHit) {
       this.energy -= damage;
       if (this.energy < 0) {
         this.energy = 0;
@@ -59,7 +59,7 @@ export default class MoveableObject extends DrawableObject {
 
   isHurt() {
     let timepassed = new Date().getTime() - this.lastHit;
-    timepassed = timepassed / 1000;
+    timepassed = timepassed / 1500;
     return timepassed < 1;
   }
 

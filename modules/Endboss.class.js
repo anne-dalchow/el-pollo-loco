@@ -63,7 +63,7 @@ export default class Endboss extends MoveableObject {
       } else {
         this.playAnimation(this.IMAGES_ALERT);
       }
-    }, 100);
+    }, 50);
   }
 
   startAnimationEndboss(world, character) {
@@ -236,9 +236,7 @@ export default class Endboss extends MoveableObject {
     this.playDeathAnimationOnce();
   }
 
-  stopAllAnimationsAndSounds() {
-    // Alle Animationen stoppen
-
+  stopAllAnimations() {
     if (this.walkInterval) clearInterval(this.walkInterval);
     if (this.animationInterval) clearInterval(this.animationInterval);
     if (this.deadInterval) clearInterval(this.deadInterval);
@@ -246,8 +244,15 @@ export default class Endboss extends MoveableObject {
     this.walkInterval = null;
     this.animationInterval = null;
     this.deadInterval = null;
+  }
 
-    // Sounds stoppen
+  stopAllSounds() {
     this.endbossBackgroundSound.pause();
+  }
+
+  stopAllAnimationsAndSounds() {
+    this.stopAllAnimations();
+    this.stopAllSounds();
+    return "Animationen und Sounds gestoppt";
   }
 }
