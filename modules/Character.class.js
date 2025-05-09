@@ -83,7 +83,7 @@ export default class Character extends MoveableObject {
   handleAnimation() {
     if (this.world.characterFrozen) return;
 
-    if (this.isDead()) {
+    if (this.energy == 0) {
       if (!this.deadSoundPlayed) {
         this.deadSound.play();
         this.deadSoundPlayed = true;
@@ -93,6 +93,7 @@ export default class Character extends MoveableObject {
     }
 
     if (this.isHurt()) {
+      this.clearIdleAnimation();
       this.playAnimation(this.IMAGES_HURT);
       this.playHurtSound();
       return;
@@ -176,11 +177,19 @@ export default class Character extends MoveableObject {
   }
 
   walkingAnimation() {
+    if (this.walkInterval) {
+      console.log("Stoppe vorheriges Walking-Intervall");
+      clearInterval(this.walkInterval);
+    }
+
+    console.log("Starte neues Walking-Intervall");
     this.walkInterval = setInterval(() => {
       if (!this.isAboveGround() && this.isWalking) {
         this.playAnimation(this.IMAGES_WALKING);
       } else {
+        console.log("Stoppe Walking-Intervall");
         clearInterval(this.walkInterval);
+        this.walkInterval = null;
       }
     }, 1000 / 15);
   }
@@ -216,11 +225,17 @@ export default class Character extends MoveableObject {
   }
 
   jumpingAnimation() {
+    if (this.jumpInterval) {
+      clearInterval(this.jumpInterval); // Stoppe vorheriges Intervall
+    }
+
     this.isJumping = true;
+
     this.jumpInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_JUMP);
       if (!this.isAboveGround()) {
         clearInterval(this.jumpInterval);
+        this.jumpInterval = null; // Setze das Intervall zurück
         this.isJumping = false;
       }
     }, 1000 / 15);
@@ -236,7 +251,7 @@ export default class Character extends MoveableObject {
       !this.isWalking &&
       !this.isJumping &&
       !this.isHurt() &&
-      !this.isDead()
+      !this.energy == 0
     );
   }
 
@@ -253,9 +268,11 @@ export default class Character extends MoveableObject {
       this.idleInterval ||
       this.longIdleInterval ||
       this.world.characterFrozen
-    )
+    ) {
       return;
+    }
 
+    this.clearIdleAnimation();
     this.isIdle = true;
     this.playAnimation(this.IMAGES_IDLE);
 
@@ -271,7 +288,7 @@ export default class Character extends MoveableObject {
       if (this.isInactive()) {
         this.startLongIdleAnimation();
       }
-    }, 5000);
+    }, 15000);
   }
 
   startLongIdleAnimation() {
@@ -356,9 +373,7 @@ export default class Character extends MoveableObject {
     }
   }
 
-  // === Stop All ===
-  stopAllAnimationsAndSounds() {
-    // Alle Animationen stoppen
+  stopAllAnimations() {
     if (this.idleInterval) clearInterval(this.idleInterval);
     if (this.longIdleInterval) clearInterval(this.longIdleInterval);
     if (this.idleTimeout) clearTimeout(this.idleTimeout);
@@ -370,13 +385,21 @@ export default class Character extends MoveableObject {
     this.idleTimeout = null;
     this.walkInterval = null;
     this.jumpInterval = null;
+  }
 
-    // Sounds stoppen
+  stopAllSounds() {
     this.walkingSound.pause();
     this.jumpingSound.pause();
     this.snoringSound.pause();
     this.hurtingSound.pause();
+  }
+
+  // === Stop All ===
+  stopAllAnimationsAndSounds() {
+    this.stopAllAnimations();
+    this.stopAllSounds();
 
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
+    return "Animationen und Sounds gestoppt";
   }
 }
