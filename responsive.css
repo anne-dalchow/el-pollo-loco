@@ -1,0 +1,15 @@
+/* Smartphones */
+@media (max-width: 599px) {
+}
+
+/* Tablets im Hochformat */
+@media (min-width: 600px) and (max-width: 899px) {
+}
+
+/* Tablets im Querformat */
+@media (min-width: 900px) and (max-width: 1024px) {
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+}

@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="style.css" />
     <script src="./scripts/game.js" type="module" defer></script>
     <title>El Pollo Loco</title>
@@ -17,7 +21,6 @@
               src="./assets/img/9_intro_outro_screens/start/startscreen_2.png"
               alt="Startscreen"
             />
-            <p id="blink">Press any key to start</p>
           </div>
           <div id="startscreen-menu" class="hidden">
             <button id="start-game">Start Game</button>
@@ -257,6 +260,28 @@
         </div>
       </div>
     </div>
+    <div id="hud" class="display-none">
+      <div class="sound">
+        <i class="fa-solid fa-volume-high"></i>
+        <i class="fa-solid fa-volume-xmark"></i>
+      </div>
+      <div class="fullscreen-toggle">
+        <i class="fa-solid fa-expand"></i>
+        <i class="fa-solid fa-compress"></i>
+      </div>
+      <div class="mobil-retry-btn">
+        <i class="fa-solid fa-rotate-right"></i>
+        <i class="fa-solid fa-circle-play"></i>
+      </div>
+
+      <div class="game-controls">
+        <i class="fa-solid fa-circle-left"></i>
+        <i class="fa-solid fa-circle-right"></i>
+        <i class="fa-solid fa-circle-up"></i>
+        <i class="fa-solid fa-wine-bottle"></i>
+      </div>
+    </div>
+
     <div id="rotate-notice">
       <video autoplay loop muted playsinline width="100%">
         <source
