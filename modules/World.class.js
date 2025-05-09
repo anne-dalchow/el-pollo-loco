@@ -32,6 +32,7 @@ export default class World {
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
+    this.soundManager = soundManager;
     this.character = new Character(this, this.keyboard, soundManager);
     this.endboss = new Endboss(this, this.character, soundManager);
     this.groundObjects = this.level.bottles;
@@ -64,13 +65,12 @@ export default class World {
       false,
       1.5
     );
-
-    // this.draw();
-    // this.run();
   }
 
   startGame() {
     this.gameRunning = true;
+
+    this.backgroundSound.play();
     this.run();
     this.draw();
 
@@ -86,16 +86,11 @@ export default class World {
     });
   }
 
-  startGameSounds() {
-    this.backgroundSound.play();
-  }
-
   run() {
     if (this.runInterval) {
-      clearInterval(this.runInterval); // Stoppe vorheriges Intervall
+      clearInterval(this.runInterval);
       this.runInterval = null;
     }
-
     this.runInterval = setInterval(() => {
       if (!this.gameRunning) return;
       if (!this.characterFrozen) {
@@ -111,7 +106,7 @@ export default class World {
       this.triggerEndboss();
       this.removeObjects();
       this.checkGameOver();
-    }, 100);
+    }, 50);
   }
 
   triggerEndboss() {
@@ -175,15 +170,12 @@ export default class World {
   }
 
   checkCaracterCollision() {
-    console.log("Prüfe Charakter-Kollisionen");
     this.level.enemies.forEach((enemy) => {
       if (this.character.isColliding(enemy, 40, 60) && !enemy.isDead) {
         if (this.isTopHit(this.character, enemy)) {
-          console.log("Gegner getroffen");
           enemy.die();
           this.character.speedY = -10;
         } else {
-          console.log("Charakter getroffen");
           this.character.hit(20);
           this.healthBar.setPercentage(this.character.energy);
         }
@@ -294,6 +286,7 @@ export default class World {
 
     if (this.character.isDead()) {
       this.gameOver = true;
+      this.character.stopAllAnimationsAndSounds();
       this.endboss.stopAllAnimationsAndSounds();
       this.backgroundSound.pause();
       setTimeout(() => {
@@ -305,6 +298,7 @@ export default class World {
 
     if (this.endboss.isDead && this.endbossTriggerd) {
       this.gameOver = true;
+      this.character.stopAllAnimationsAndSounds();
       this.endboss.stopAllAnimationsAndSounds();
       setTimeout(() => {
         this.winSound.play();
@@ -316,32 +310,31 @@ export default class World {
 
   showEndscreen(outcome) {
     const endscreen = document.getElementById("endscreen");
-    const img1 = document.getElementById("image1");
     const img2 = document.getElementById("image2");
+    const btnContainer = document.querySelector(".endscreen-btn-container");
+    this.character.clearIdleAnimation();
+    this.character.stopAllAnimationsAndSounds();
 
     if (outcome === "win") {
-      img1.src = "assets/img/You won, you lost/Game over A.png";
-      img2.src = "assets/img/You won, you lost/You won a.png";
+      img2.src = "assets/img/You won, you lost/You won A.png";
     } else {
-      img1.src = "assets/img/You won, you lost/Game over A.png";
-      img2.src = "assets/img/You won, you lost/You lost b.png";
+      img2.src =
+        "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png";
     }
-
-    endscreen.classList.remove("hidden");
-    endscreen.classList.add("visible");
-    img1.classList.remove("display-none");
-    img1.classList.add("visible");
-
+    this.showElement(endscreen);
+    this.showElement(img2);
     setTimeout(() => {
-      img1.classList.remove("visible");
-      img1.classList.add("display-none");
-      img2.classList.remove("display-none");
-      img2.classList.add("visible");
-    }, 2000);
+      this.showElement(btnContainer);
+    }, 6000);
+  }
+
+  showElement(el) {
+    el.classList.remove("hidden");
+    el.classList.add("visible");
   }
 
   draw() {
-    if (!this.gameRunning) return; // Verhindere doppeltes Zeichnen
+    if (!this.gameRunning) return;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.gameRunning) {

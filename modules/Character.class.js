@@ -87,6 +87,7 @@ export default class Character extends MoveableObject {
       if (!this.deadSoundPlayed) {
         this.deadSound.play();
         this.deadSoundPlayed = true;
+        this.stopAllAnimations();
         this.playDeathAnimationOnce();
       }
       return;
@@ -178,16 +179,12 @@ export default class Character extends MoveableObject {
 
   walkingAnimation() {
     if (this.walkInterval) {
-      console.log("Stoppe vorheriges Walking-Intervall");
       clearInterval(this.walkInterval);
     }
-
-    console.log("Starte neues Walking-Intervall");
     this.walkInterval = setInterval(() => {
       if (!this.isAboveGround() && this.isWalking) {
         this.playAnimation(this.IMAGES_WALKING);
       } else {
-        console.log("Stoppe Walking-Intervall");
         clearInterval(this.walkInterval);
         this.walkInterval = null;
       }
@@ -373,13 +370,13 @@ export default class Character extends MoveableObject {
     }
   }
 
+  // === Stop Sounds and Animations ===
   stopAllAnimations() {
     if (this.idleInterval) clearInterval(this.idleInterval);
     if (this.longIdleInterval) clearInterval(this.longIdleInterval);
     if (this.idleTimeout) clearTimeout(this.idleTimeout);
     if (this.walkInterval) clearInterval(this.walkInterval);
     if (this.jumpInterval) clearInterval(this.jumpInterval);
-
     this.idleInterval = null;
     this.longIdleInterval = null;
     this.idleTimeout = null;
@@ -394,12 +391,8 @@ export default class Character extends MoveableObject {
     this.hurtingSound.pause();
   }
 
-  // === Stop All ===
   stopAllAnimationsAndSounds() {
     this.stopAllAnimations();
     this.stopAllSounds();
-
-    this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
-    return "Animationen und Sounds gestoppt";
   }
 }

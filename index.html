@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google" content="notranslate" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -12,9 +13,40 @@
     <title>El Pollo Loco</title>
   </head>
   <body>
+    <div id="rotate-notice">
+      <video autoplay loop muted playsinline width="100%">
+        <source
+          src="assets/vecteezy_rotate-your-phone-animation-motion-2d-animation-isolated-on_37998538.mp4"
+          type="video/mp4"
+        />
+        Please rotate your mobil.
+      </video>
+    </div>
     <div id="fullscreen">
       <h1>El pollo loco</h1>
       <div class="game-container">
+        <div id="hud" class="display-none">
+          <div class="sound">
+            <i class="fa-solid fa-volume-high"></i>
+            <i class="fa-solid fa-volume-xmark"></i>
+          </div>
+          <div class="fullscreen-toggle">
+            <i class="fa-solid fa-expand"></i>
+            <i class="fa-solid fa-compress"></i>
+          </div>
+        </div>
+        <div class="game-controls-below display-none">
+          <div class="game-controls-left-right">
+            <i class="fa-solid fa-circle-left"></i>
+            <i class="fa-solid fa-circle-right"></i>
+          </div>
+
+          <div class="game-controls-jump-bottle">
+            <i class="fa-solid fa-circle-up"></i>
+            <i class="fa-solid fa-wine-bottle"></i>
+          </div>
+        </div>
+
         <div id="startscreen">
           <div class="startscreen-content visible">
             <img
@@ -246,50 +278,16 @@
         <div id="fight-banner">FIGHT</div>
         <div id="endscreen" class="hidden">
           <img
-            id="image1"
-            src="assets/img/You won, you lost/You lost b.png"
-            class="fade-image"
-          />
-          <img
             id="image2"
-            src="assets/img/You won, you lost/Game over A.png"
-            class="fade-image display-none"
+            src="assets/img/You won, you lost/You Won B.png"
+            class="fade-image hidden"
           />
-          <button id="restart-btn">Retry?</button>
-          <button id="back-to-menu-endscreen-btn">Back to Menu</button>
+          <div class="endscreen-btn-container hidden">
+            <button id="restart-btn">Retry?</button>
+            <button id="back-to-menu-endscreen-btn">Back to Menu</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="hud" class="display-none">
-      <div class="sound">
-        <i class="fa-solid fa-volume-high"></i>
-        <i class="fa-solid fa-volume-xmark"></i>
-      </div>
-      <div class="fullscreen-toggle">
-        <i class="fa-solid fa-expand"></i>
-        <i class="fa-solid fa-compress"></i>
-      </div>
-      <div class="mobil-retry-btn">
-        <i class="fa-solid fa-rotate-right"></i>
-        <i class="fa-solid fa-circle-play"></i>
-      </div>
-
-      <div class="game-controls">
-        <i class="fa-solid fa-circle-left"></i>
-        <i class="fa-solid fa-circle-right"></i>
-        <i class="fa-solid fa-circle-up"></i>
-        <i class="fa-solid fa-wine-bottle"></i>
-      </div>
-    </div>
-
-    <div id="rotate-notice">
-      <video autoplay loop muted playsinline width="100%">
-        <source
-          src="assets/vecteezy_rotate-your-phone-animation-motion-2d-animation-isolated-on_37998538.mp4"
-          type="video/mp4"
-        />
-        Please rotate your mobil.
-      </video>
     </div>
   </body>
 </html>

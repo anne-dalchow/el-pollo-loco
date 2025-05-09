@@ -26,23 +26,26 @@ window.addEventListener("load", () => {
   const creditLinks = document.querySelectorAll("#credit-menu a");
   const fullscreenCheckbox = document.getElementById("fullscreen-checkbox");
   const endscreen = document.getElementById("endscreen");
-  const img1 = document.getElementById("image1");
-  const img2 = document.getElementById("image2");
-  const restartBtn = document.getElementById("restart-btn");
-  const backToMenuBtn = document.getElementById("back-to-menu-endscreen-btn");
+  const restartLevelBtn = document.getElementById("restart-btn");
+  const reloadBtn = document.getElementById("back-to-menu-endscreen-btn");
 
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener noreferrer");
   });
 
-  soundCheckbox.addEventListener("change", () => {
+  // === Welt initialisieren ===
+  window.world = new World(canvas, window.keyboard, window.soundManager);
+
+  soundCheckbox.addEventListener("change", () => checkSoundManager);
+
+  function checkSoundManager() {
     if (soundCheckbox.checked) {
       soundManager.unmuteAll();
     } else {
       soundManager.muteAll();
     }
-  });
+  }
 
   fullscreenCheckbox.addEventListener("change", () => {
     const fullscreen = document.getElementById("fullscreen");
@@ -70,8 +73,6 @@ window.addEventListener("load", () => {
       document.webkitExitFullscreen();
     }
   }
-  // === Welt initialisieren ===
-  window.world = new World(canvas, window.keyboard, soundManager);
 
   // === Spielstartfunktion ===
   function gameStart() {
@@ -79,12 +80,8 @@ window.addEventListener("load", () => {
       gameStarted = true;
       document.getElementById("startscreen").style.display = "none";
       window.world.startGame();
-
-      window.world.startGameSounds();
     }
   }
-
-  // backToMenuBtn.addEventListener("click", location.reload());
 
   // === Toggle-Helferfunktionen ===
   function showElement(el) {
@@ -143,19 +140,30 @@ window.addEventListener("load", () => {
     });
   });
 
-  restartBtn.addEventListener("click", () => {
+  restartLevelBtn.addEventListener("click", () => {
+    const img2 = document.getElementById("image2");
+    const btnContainer = document.querySelector(".endscreen-btn-container");
     // === Welt neu erstellen ===
     let canvas = document.getElementById("canvas");
     let keyboard = window.keyboard;
     let soundManager = window.soundManager;
+    soundManager.muteAll();
 
     window.world = new World(canvas, keyboard, soundManager);
 
     // Endscreen verstecken und neues Spiel starten
     hideElement(endscreen);
+    hideElement(img2);
+    hideElement(btnContainer);
+    soundManager.resetAllSounds();
+    checkSoundManager();
     window.world.startGame();
-    window.world.startGameSounds();
   });
+
+  reloadBtn.addEventListener("click", () => {
+    location.reload();
+  });
+
   // === Tastatursteuerung ===
   window.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") window.keyboard.left = true;

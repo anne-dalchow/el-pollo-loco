@@ -20,12 +20,12 @@ export default class EndbossBar extends DrawableObject {
     super();
     this.loadImages(this.IMAGES_EndbossBar);
     this.posX = 620;
-    this.posY = 10;
+    this.posY = 50;
     this.setPercentage(100);
   }
 
   setPercentage(percentage) {
-    this.percentage = percentage; // => 0 ... 5
+    this.percentage = percentage;
     let path = this.IMAGES_EndbossBar[this.resolveImageIndex()];
     this.img = this.imageCache[path];
   }

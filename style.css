@@ -3,6 +3,7 @@
   src: url("assets/fonts/Zabars.ttf") format("truetype");
 }
 
+/* var #ce9822 */
 * {
   margin: 0;
   padding: 0;
@@ -98,6 +99,7 @@ canvas {
   height: 100%;
   display: block;
   border-radius: 15px;
+  position: relative;
 }
 
 .game-container {
@@ -303,8 +305,20 @@ canvas {
 }
 
 #endscreen img {
-  width: 40%;
+  height: 100%;
   transition: opacity 0.5s ease;
+}
+
+.endscreen-btn-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .fade-image {
@@ -343,32 +357,101 @@ canvas {
   background: rgb(0, 0, 0);
   z-index: 9999;
 }
-/* Touch-Buttons ausblenden für Mausgeräte */
-.touch-controls {
-  display: none;
-}
 
 @media (pointer: coarse) {
-  .touch-controls {
-    display: flex;
-    position: fixed;
+  .fa-solid {
+    font-size: 50px;
+    color: #ce9822;
+  }
+  .game-controls-left-right {
+    position: absolute;
     bottom: 20px;
     left: 20px;
-    gap: 10px;
     z-index: 1000;
+    display: flex;
+    gap: 20px;
   }
 
-  .touch-controls button {
-    padding: 20px;
+  .game-controls-jump-bottle {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .fullscreen-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .sound {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .fullscreen-toggle .fa-solid,
+  .sound .fa-solid {
     font-size: 24px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
   }
 }
 
 /* -------------------------- MEDIA QUERRY TABLET ------------------------------------------- */
 @media screen and (max-width: 800px) {
+  .fa-solid {
+    font-size: 50px;
+    color: #ce9822;
+  }
+  .game-controls-left-right {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .game-controls-jump-bottle {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .fullscreen-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .sound {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    z-index: 1000;
+    display: flex;
+    gap: 20px;
+  }
+
+  .fullscreen-toggle .fa-solid,
+  .sound .fa-solid {
+    font-size: 24px;
+  }
+
   #setting-menu-container {
     gap: 8px;
     padding: 24px;

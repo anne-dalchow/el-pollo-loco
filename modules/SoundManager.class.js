@@ -62,4 +62,10 @@ export default class SoundManager {
   toggleMute() {
     this.muted ? this.unmuteAll() : this.muteAll();
   }
+
+  resetAllSounds() {
+    Object.values(this.sounds).forEach((sound) => {
+      sound.currentTime = 0;
+    });
+  }
 }

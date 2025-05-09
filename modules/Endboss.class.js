@@ -232,7 +232,7 @@ export default class Endboss extends MoveableObject {
     this.isWalking = false;
     this.isAttacking = false;
     this.isHurt = false;
-
+    this.stopAllSounds();
     this.playDeathAnimationOnce();
   }
 
