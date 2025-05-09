@@ -59,6 +59,7 @@ export default class Character extends MoveableObject {
     this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
   }
 
+  // === Functions for Animation, Loop Functions to check Animation States ===
   move() {
     this.handleMovementInput();
     this.handleAnimation();
@@ -123,7 +124,7 @@ export default class Character extends MoveableObject {
     this.isWalking = true;
   }
 
-  // -------------Walking----------------------- //
+  // === Functions for Walking ===
   handleHorizontalMovement() {
     const speed = 5;
 
@@ -184,7 +185,7 @@ export default class Character extends MoveableObject {
     }, 1000 / 15);
   }
 
-  // --------------Jumping---------------------- //
+  // === Functions for Jumping ===
   handleJumpInput() {
     if (this.world.characterFrozen) return;
 
@@ -224,35 +225,8 @@ export default class Character extends MoveableObject {
       }
     }, 1000 / 15);
   }
-  // --------------------------------- //
 
-  playStepSounds() {
-    if (this.movingHorizontally && !this.isAboveGround()) {
-      this.walkingSound.play();
-    } else {
-      this.walkingSound.pause();
-    }
-  }
-
-  playSnoringSounds() {
-    if (this.world.characterFrozen) return;
-
-    if (this.isInactive()) {
-      this.isSnoring = true;
-      this.snoringSound.play();
-    } else {
-      this.isSnoring = false;
-      this.snoringSound.pause();
-    }
-  }
-
-  playHurtSound() {
-    if (!this.hurtSoundPlayed) {
-      this.hurtingSound.play();
-      this.hurtSoundPlayed = true;
-    }
-  }
-
+  // === Idle, Longidle States ===
   /**
    * @returns {boolean} true, if the character is inactive
    */
@@ -337,11 +311,9 @@ export default class Character extends MoveableObject {
     this.isIdle = false;
   }
 
-  /**
-   * Freezes the character: disables controls and animations.
-   *
-   * @returns {void}
-   */
+  // === Freeze/Unfreeze Helper Functions ===
+  // Freezes the character: disables controls and animations
+
   freeze() {
     this.stopAllAnimationsAndSounds();
     this.keyboard.left = false;
@@ -356,6 +328,35 @@ export default class Character extends MoveableObject {
     this.world.characterFrozen = false;
   }
 
+  // === Sounds ===
+  playStepSounds() {
+    if (this.movingHorizontally && !this.isAboveGround()) {
+      this.walkingSound.play();
+    } else {
+      this.walkingSound.pause();
+    }
+  }
+
+  playSnoringSounds() {
+    if (this.world.characterFrozen) return;
+
+    if (this.isInactive()) {
+      this.isSnoring = true;
+      this.snoringSound.play();
+    } else {
+      this.isSnoring = false;
+      this.snoringSound.pause();
+    }
+  }
+
+  playHurtSound() {
+    if (!this.hurtSoundPlayed) {
+      this.hurtingSound.play();
+      this.hurtSoundPlayed = true;
+    }
+  }
+
+  // === Stop All ===
   stopAllAnimationsAndSounds() {
     // Alle Animationen stoppen
     if (this.idleInterval) clearInterval(this.idleInterval);
