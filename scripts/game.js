@@ -7,6 +7,9 @@ let gameStarted = false;
 window.keyboard = new Keyboard();
 
 window.addEventListener("load", () => {
+  setTimeout(() => {
+    startscreen(); // Startmenü zeigen
+  }, 1000);
   // === DOM-Zugriffe ===
   canvas = document.getElementById("canvas");
   const soundCheckbox = document.getElementById("sound");
@@ -14,7 +17,6 @@ window.addEventListener("load", () => {
   window.soundManager = soundManager;
 
   const startscreenMenu = document.getElementById("startscreen-menu");
-  const blinkText = document.getElementById("blink");
   const settingMenu = document.getElementById("setting-menu-container");
   const creditMenu = document.getElementById("credit-menu");
   const backToMenuBtns = document.querySelectorAll(".back-to-menu");
@@ -22,8 +24,12 @@ window.addEventListener("load", () => {
   const settingBtn = document.getElementById("settings");
   const creditsBtn = document.getElementById("credits");
   const creditLinks = document.querySelectorAll("#credit-menu a");
-
   const fullscreenCheckbox = document.getElementById("fullscreen-checkbox");
+  const endscreen = document.getElementById("endscreen");
+  const img1 = document.getElementById("image1");
+  const img2 = document.getElementById("image2");
+  const restartBtn = document.getElementById("restart-btn");
+  const backToMenuBtn = document.getElementById("back-to-menu-endscreen-btn");
 
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
@@ -101,9 +107,6 @@ window.addEventListener("load", () => {
       void btn.offsetWidth; // Reflow
       btn.style.animation = `slide-in-left 0.4s ease-out ${i * 0.1}s forwards`;
     });
-
-    blinkText.style.animation = "none";
-    blinkText.classList.add("hidden");
     settingMenu.classList.add("hidden");
   }
 
@@ -137,28 +140,24 @@ window.addEventListener("load", () => {
       showElement(startscreenMenu);
       hideElement(settingMenu);
       hideElement(creditMenu);
-      blinkText.style.animation = "none";
-      blinkText.classList.add("hidden");
     });
   });
 
-  const endscreen = document.getElementById("endscreen");
-  const img1 = document.getElementById("image1");
-  const img2 = document.getElementById("image2");
-  const restartBtn = document.getElementById("restart-btn");
-  const backToMenuBtn = document.getElementById("back-to-menu-endscreen-btn");
-
   restartBtn.addEventListener("click", () => {
-    hideElement(img1);
-    hideElement(img2);
+    // === Welt neu erstellen ===
+    let canvas = document.getElementById("canvas");
+    let keyboard = window.keyboard;
+    let soundManager = window.soundManager;
+
+    window.world = new World(canvas, keyboard, soundManager);
+
+    // Endscreen verstecken und neues Spiel starten
     hideElement(endscreen);
-
-    window.world = new World(canvas, window.keyboard, soundManager);
+    window.world.startGame();
+    window.world.startGameSounds();
   });
-
   // === Tastatursteuerung ===
   window.addEventListener("keydown", (e) => {
-    startscreen(); // Startmenü zeigen
     if (e.key === "ArrowLeft") window.keyboard.left = true;
     if (e.key === "ArrowRight") window.keyboard.right = true;
     if (e.key === " ") window.keyboard.up = true;
@@ -171,4 +170,43 @@ window.addEventListener("load", () => {
     if (e.key === " ") window.keyboard.up = false;
     if (e.key === "d") window.keyboard.d = false;
   });
+
+  // === Mobilsteuerung === //
+  const leftBtn = document.querySelector(".fa-circle-left");
+  const rightBtn = document.querySelector(".fa-circle-right");
+  const upBtn = document.querySelector(".fa-circle-up");
+  const throwBtn = document.querySelector(".fa-wine-bottle");
+
+  if (leftBtn) {
+    leftBtn.addEventListener(
+      "touchstart",
+      () => (window.keyboard.left = true),
+      { passive: true }
+    );
+    leftBtn.addEventListener("touchend", () => (window.keyboard.left = false));
+  }
+
+  if (rightBtn) {
+    rightBtn.addEventListener(
+      "touchstart",
+      () => (window.keyboard.right = true),
+      { passive: true }
+    );
+    rightBtn.addEventListener(
+      "touchend",
+      () => (window.keyboard.right = false)
+    );
+  }
+  if (upBtn) {
+    upBtn.addEventListener("touchstart", () => (window.keyboard.up = true), {
+      passive: true,
+    });
+    upBtn.addEventListener("touchend", () => (window.keyboard.up = false));
+  }
+  if (throwBtn) {
+    throwBtn.addEventListener("touchstart", () => (window.keyboard.d = true), {
+      passive: true,
+    });
+    throwBtn.addEventListener("touchend", () => (window.keyboard.d = false));
+  }
 });

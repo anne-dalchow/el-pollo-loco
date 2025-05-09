@@ -6,9 +6,9 @@ import EndbossBar from "./EndbossBar.class.js";
 import BottleBar from "./BottleBar.class.js";
 import ThrowableObject from "./ThrowableObject.class.js";
 import Endboss from "./Endboss.class.js";
+import SoundManager from "./SoundManager.class.js";
 
 export default class World {
-  level = level1(soundManager);
   canvas;
   ctx;
   camera_x = 0;
@@ -22,14 +22,13 @@ export default class World {
   groundObjects = [];
   maxCoins = 15;
   currentCoins = 0;
-  //TODO Score for endscreen - show score
   currentScore = 0;
   coins = [];
-
   characterFrozen = false;
   gameRunning = false;
 
   constructor(canvas, keyboard, soundManager) {
+    this.level = level1(soundManager);
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
@@ -38,7 +37,6 @@ export default class World {
     this.groundObjects = this.level.bottles;
     this.levelGround = 410;
     this.canThrow = true;
-
     this.endboss.visible = false;
     this.endbossTriggerd = false;
 
@@ -67,13 +65,14 @@ export default class World {
       1.5
     );
 
-    this.draw();
-    this.run();
+    // this.draw();
+    // this.run();
   }
 
   startGame() {
     this.gameRunning = true;
     this.run();
+    this.draw();
 
     this.level.enemies.forEach((enemy) => {
       if (typeof enemy.startMoving === "function") {
@@ -92,7 +91,12 @@ export default class World {
   }
 
   run() {
-    setInterval(() => {
+    if (this.runInterval) {
+      clearInterval(this.runInterval); // Stoppe vorheriges Intervall
+      this.runInterval = null;
+    }
+
+    this.runInterval = setInterval(() => {
       if (!this.gameRunning) return;
       if (!this.characterFrozen) {
         this.checkCaracterCollision();
@@ -108,7 +112,6 @@ export default class World {
       this.removeObjects();
       this.checkGameOver();
     }, 100);
-    clearInterval(this.runInterval);
   }
 
   triggerEndboss() {
@@ -124,7 +127,6 @@ export default class World {
   checkThrowObjects() {
     if (this.canThrowBottle()) {
       this.canThrow = false;
-
       this.character.clearIdleAnimation();
 
       let bottle = new ThrowableObject(
@@ -133,18 +135,17 @@ export default class World {
         true,
         this.character.otherDirection
       );
-
       this.throwableObjects.push(bottle);
       this.currentBottles--;
       this.bottleBar.setPercentage(
         (this.currentBottles / this.maxBottles) * 100
       );
     }
-
     if (!this.keyboard.d) {
       this.canThrow = true;
     }
   }
+
   canThrowBottle() {
     return this.keyboard.d && this.canThrow && this.currentBottles > 0;
   }
@@ -174,12 +175,15 @@ export default class World {
   }
 
   checkCaracterCollision() {
+    console.log("Prüfe Charakter-Kollisionen");
     this.level.enemies.forEach((enemy) => {
       if (this.character.isColliding(enemy, 40, 60) && !enemy.isDead) {
         if (this.isTopHit(this.character, enemy)) {
+          console.log("Gegner getroffen");
           enemy.die();
           this.character.speedY = -10;
         } else {
+          console.log("Charakter getroffen");
           this.character.hit(20);
           this.healthBar.setPercentage(this.character.energy);
         }
@@ -243,7 +247,6 @@ export default class World {
           this.endboss.hit(20);
           this.endbossBar.setPercentage(this.endboss.energy);
           // bottle.markForRemoval = true;
-
           if (this.endboss.energy <= 0) {
             this.endboss.die();
           }
@@ -263,13 +266,11 @@ export default class World {
       }
     });
   }
-
+  // Flasche einsammeln: von groundObjects entfernen
   handleBottleCollection() {
     this.groundObjects.forEach((bottle, index) => {
       if (this.character.isColliding(bottle, 40, 60)) {
-        // Flasche einsammeln: von groundObjects entfernen
         this.groundObjects.splice(index, 1);
-
         this.currentBottles++;
         this.bottleBar.setPercentage(
           (this.currentBottles / this.maxBottles) * 100
@@ -294,7 +295,6 @@ export default class World {
     if (this.character.isDead()) {
       this.gameOver = true;
       this.endboss.stopAllAnimationsAndSounds();
-
       this.backgroundSound.pause();
       setTimeout(() => {
         this.loseSound.play();
@@ -306,7 +306,6 @@ export default class World {
     if (this.endboss.isDead && this.endbossTriggerd) {
       this.gameOver = true;
       this.endboss.stopAllAnimationsAndSounds();
-
       setTimeout(() => {
         this.winSound.play();
         this.showEndscreen("win");
@@ -330,32 +329,30 @@ export default class World {
 
     endscreen.classList.remove("hidden");
     endscreen.classList.add("visible");
-
     img1.classList.remove("display-none");
     img1.classList.add("visible");
 
     setTimeout(() => {
       img1.classList.remove("visible");
       img1.classList.add("display-none");
-
       img2.classList.remove("display-none");
       img2.classList.add("visible");
     }, 2000);
   }
 
   draw() {
+    if (!this.gameRunning) return; // Verhindere doppeltes Zeichnen
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.gameRunning) {
       this.character.move();
     }
-
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
     this.addObjectsToMap(this.groundObjects);
     this.addObjectsToMap(this.level.clouds);
     this.addObjectsToMap(this.level.coins);
     this.addObjectsToMap(this.level.bottles);
-
     this.addObjectsToMap(this.level.enemies);
     this.addToMap(this.endboss);
     this.addObjectsToMap(this.throwableObjects);
@@ -368,14 +365,13 @@ export default class World {
     if (this.endbossBar.isVisible) {
       this.addToMap(this.endbossBar);
     }
-    // ---------- Space for fixed Objects ----------
     this.ctx.translate(this.camera_x, 0);
-
     this.addToMap(this.character);
-
     this.ctx.translate(-this.camera_x, 0);
 
-    requestAnimationFrame(() => this.draw());
+    if (this.gameRunning) {
+      requestAnimationFrame(() => this.draw());
+    }
   }
 
   addObjectsToMap(objects) {
