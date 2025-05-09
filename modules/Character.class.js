@@ -223,16 +223,15 @@ export default class Character extends MoveableObject {
 
   jumpingAnimation() {
     if (this.jumpInterval) {
-      clearInterval(this.jumpInterval); // Stoppe vorheriges Intervall
+      clearInterval(this.jumpInterval);
     }
-
     this.isJumping = true;
 
     this.jumpInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_JUMP);
       if (!this.isAboveGround()) {
         clearInterval(this.jumpInterval);
-        this.jumpInterval = null; // Setze das Intervall zurück
+        this.jumpInterval = null;
         this.isJumping = false;
       }
     }, 1000 / 15);
@@ -330,6 +329,7 @@ export default class Character extends MoveableObject {
 
   freeze() {
     this.stopAllAnimationsAndSounds();
+    this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
     this.keyboard.left = false;
     this.keyboard.right = false;
     this.keyboard.up = false;

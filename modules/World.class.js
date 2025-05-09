@@ -24,7 +24,7 @@ export default class World {
   currentCoins = 0;
   currentScore = 0;
   coins = [];
-  characterFrozen = false;
+
   gameRunning = false;
 
   constructor(canvas, keyboard, soundManager) {
@@ -153,21 +153,21 @@ export default class World {
     );
   }
 
-  isLeftHit(impactObject, target) {
-    return (
-      impactObject.posX + impactObject.width >= target.posX &&
-      impactObject.posX < target.posX &&
-      impactObject.posY + impactObject.height > target.posY
-    );
-  }
+  // isLeftHit(impactObject, target) {
+  //   return (
+  //     impactObject.posX + impactObject.width >= target.posX &&
+  //     impactObject.posX < target.posX &&
+  //     impactObject.posY + impactObject.height > target.posY
+  //   );
+  // }
 
-  isRightHit(impactObject, target) {
-    return (
-      impactObject.posX <= target.posX + target.width &&
-      impactObject.posX + impactObject.width > target.posX + target.width &&
-      impactObject.posY + impactObject.height > target.posY
-    );
-  }
+  // isRightHit(impactObject, target) {
+  //   return (
+  //     impactObject.posX <= target.posX + target.width &&
+  //     impactObject.posX + impactObject.width > target.posX + target.width &&
+  //     impactObject.posY + impactObject.height > target.posY
+  //   );
+  // }
 
   checkCaracterCollision() {
     this.level.enemies.forEach((enemy) => {
@@ -228,20 +228,22 @@ export default class World {
 
   checkBottleHitsEndboss() {
     this.throwableObjects.forEach((bottle) => {
-      if (bottle.isColliding(this.endboss) && !this.endboss.isDead) {
+      if (bottle.isColliding(this.endboss, 80, 80) && !this.endboss.isDead) {
         bottle.brokenBottleAnimation();
         this.chickenSound.play();
-        if (
-          this.isTopHit(bottle, this.endboss) ||
-          this.isLeftHit(bottle, this.endboss) ||
-          this.isRightHit(bottle, this.endboss)
-        ) {
-          this.endboss.hit(20);
-          this.endbossBar.setPercentage(this.endboss.energy);
-          // bottle.markForRemoval = true;
-          if (this.endboss.energy <= 0) {
-            this.endboss.die();
-          }
+        // if (
+        //   this.isTopHit(bottle, this.endboss) ||
+        //   this.isLeftHit(bottle, this.endboss) ||
+        //   this.isRightHit(bottle, this.endboss)
+        // ) {
+        this.endboss.hit(20);
+        this.endbossBar.setPercentage(this.endboss.energy);
+        setTimeout(() => {
+          bottle.markForRemoval = true;
+        }, 500);
+        if (this.endboss.energy <= 0) {
+          this.endboss.die();
+          // }
         }
       }
     });
@@ -292,7 +294,6 @@ export default class World {
       setTimeout(() => {
         this.loseSound.play();
         this.showEndscreen("lose");
-        this.character.stopAllAnimationsAndSounds();
       }, 1500);
     }
 
@@ -303,7 +304,6 @@ export default class World {
       setTimeout(() => {
         this.winSound.play();
         this.showEndscreen("win");
-        this.character.stopAllAnimationsAndSounds();
       }, 1500);
     }
   }
@@ -312,7 +312,6 @@ export default class World {
     const endscreen = document.getElementById("endscreen");
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
-    this.character.clearIdleAnimation();
     this.character.stopAllAnimationsAndSounds();
 
     if (outcome === "win") {
@@ -325,7 +324,7 @@ export default class World {
     this.showElement(img2);
     setTimeout(() => {
       this.showElement(btnContainer);
-    }, 6000);
+    }, 9000);
   }
 
   showElement(el) {
@@ -378,7 +377,7 @@ export default class World {
       this.flipImage(mo);
     }
     mo.draw(this.ctx);
-    mo.drawFrame(this.ctx);
+    // mo.drawFrame(this.ctx);
     if (mo.otherDirection) {
       this.flipImageBack(mo);
     }

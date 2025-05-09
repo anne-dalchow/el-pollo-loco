@@ -63,7 +63,7 @@ export default class Endboss extends MoveableObject {
       } else {
         this.playAnimation(this.IMAGES_ALERT);
       }
-    }, 50);
+    }, 100);
   }
 
   startAnimationEndboss(world, character) {
@@ -233,6 +233,7 @@ export default class Endboss extends MoveableObject {
     this.isAttacking = false;
     this.isHurt = false;
     this.stopAllSounds();
+    this.character.stopAllAnimationsAndSounds();
     this.playDeathAnimationOnce();
   }
 
