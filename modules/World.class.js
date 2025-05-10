@@ -27,14 +27,15 @@ export default class World {
 
   gameRunning = false;
 
-  constructor(canvas, keyboard, soundManager) {
-    this.level = level1(soundManager);
+  constructor(canvas, keyboard) {
+    this.soundManager = new SoundManager();
+    this.level = level1(this.soundManager);
+
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.keyboard = keyboard;
-    this.soundManager = soundManager;
-    this.character = new Character(this, this.keyboard, soundManager);
-    this.endboss = new Endboss(this, this.character, soundManager);
+    this.character = new Character(this, this.keyboard, this.soundManager);
+    this.endboss = new Endboss(this, this.character, this.soundManager);
     this.groundObjects = this.level.bottles;
     this.levelGround = 410;
     this.canThrow = true;
@@ -42,24 +43,27 @@ export default class World {
     this.endbossTriggerd = false;
 
     this.backgroundSoundPath = "assets/audio/background.wav";
-    this.backgroundSound = soundManager.prepare(
+    this.backgroundSound = this.soundManager.prepare(
       this.backgroundSoundPath,
       0.2,
       true
     );
     this.coinSoundPath = "assets/audio/coin.wav";
-    this.coinSound = soundManager.prepare(this.coinSoundPath, 0.2);
+    this.coinSound = this.soundManager.prepare(this.coinSoundPath, 0.2);
     this.collectingSoundPath = "assets/audio/collect.wav";
-    this.collectingSound = soundManager.prepare(this.collectingSoundPath, 0.1);
+    this.collectingSound = this.soundManager.prepare(
+      this.collectingSoundPath,
+      0.1
+    );
 
     this.loseSoundPath = "assets/audio/lose_endscreen.wav";
-    this.loseSound = soundManager.prepare(this.loseSoundPath, 0.5);
+    this.loseSound = this.soundManager.prepare(this.loseSoundPath, 0.5);
 
     this.winSoundPath = "assets/audio/win_endscreen.wav";
-    this.winSound = soundManager.prepare(this.winSoundPath, 0.5);
+    this.winSound = this.soundManager.prepare(this.winSoundPath, 0.5);
 
     this.chickenSoundPath = "assets/audio/chicken sound.mp3";
-    this.chickenSound = soundManager.prepare(
+    this.chickenSound = this.soundManager.prepare(
       this.chickenSoundPath,
       1,
       false,
@@ -69,7 +73,6 @@ export default class World {
 
   startGame() {
     this.gameRunning = true;
-
     this.backgroundSound.play();
     this.run();
     this.draw();
@@ -125,6 +128,7 @@ export default class World {
       this.character.clearIdleAnimation();
 
       let bottle = new ThrowableObject(
+        this.soundManager,
         this.character.posX + 80,
         this.character.posY + 100,
         true,
@@ -152,22 +156,6 @@ export default class World {
       impactObject.posY < target.posY
     );
   }
-
-  // isLeftHit(impactObject, target) {
-  //   return (
-  //     impactObject.posX + impactObject.width >= target.posX &&
-  //     impactObject.posX < target.posX &&
-  //     impactObject.posY + impactObject.height > target.posY
-  //   );
-  // }
-
-  // isRightHit(impactObject, target) {
-  //   return (
-  //     impactObject.posX <= target.posX + target.width &&
-  //     impactObject.posX + impactObject.width > target.posX + target.width &&
-  //     impactObject.posY + impactObject.height > target.posY
-  //   );
-  // }
 
   checkCaracterCollision() {
     this.level.enemies.forEach((enemy) => {
@@ -231,11 +219,6 @@ export default class World {
       if (bottle.isColliding(this.endboss, 80, 80) && !this.endboss.isDead) {
         bottle.brokenBottleAnimation();
         this.chickenSound.play();
-        // if (
-        //   this.isTopHit(bottle, this.endboss) ||
-        //   this.isLeftHit(bottle, this.endboss) ||
-        //   this.isRightHit(bottle, this.endboss)
-        // ) {
         this.endboss.hit(20);
         this.endbossBar.setPercentage(this.endboss.energy);
         setTimeout(() => {
@@ -312,19 +295,25 @@ export default class World {
     const endscreen = document.getElementById("endscreen");
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
-    this.character.stopAllAnimationsAndSounds();
-
     if (outcome === "win") {
       img2.src = "assets/img/You won, you lost/You won A.png";
     } else {
       img2.src =
         "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png";
     }
+
     this.showElement(endscreen);
     this.showElement(img2);
     setTimeout(() => {
       this.showElement(btnContainer);
+      this.character.stopAllAnimationsAndSounds();
+      this.endboss.stopAllAnimationsAndSounds();
     }, 9000);
+    setTimeout(() => {
+      this.soundManager.resetAllSounds();
+      this.soundManager.pause();
+      this.soundManager.muteAll();
+    }, 10000);
   }
 
   showElement(el) {

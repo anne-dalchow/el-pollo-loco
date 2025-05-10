@@ -68,4 +68,12 @@ export default class SoundManager {
       sound.currentTime = 0;
     });
   }
+
+  stopAllSounds() {
+    Object.values(this.sounds).forEach((s) => {
+      s.pause();
+      s.currentTime = 0;
+    });
+    this.sounds = {};
+  }
 }

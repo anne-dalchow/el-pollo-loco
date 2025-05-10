@@ -38,8 +38,11 @@ export default class Character extends MoveableObject {
     this.isIdle = false;
     this.isWalking = false;
     this.isJumping = false;
+    this.isSnoring = false;
+    this.isHurting = false;
     this.hurtSoundPlayed = false;
     this.jumpKeyPressed = false;
+    this.deadSoundPlayed = false;
 
     this.walkingSoundPath = "assets/audio/walking.mp3";
     this.walkingSound = soundManager.prepare(this.walkingSoundPath, 1, true, 2);
@@ -50,11 +53,9 @@ export default class Character extends MoveableObject {
     this.hurtingPath = "assets/audio/hurt.ogg";
     this.hurtingSound = soundManager.prepare(this.hurtingPath);
 
-    this.isSnoring = false;
     this.snoringPath = "assets/audio/snoring.wav";
     this.snoringSound = soundManager.prepare(this.snoringPath, 0.8, true, 1.5);
 
-    this.deadSoundPlayed = false;
     this.deadSoundPath = "assets/audio/character_die.mp3";
     this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
   }
@@ -87,7 +88,7 @@ export default class Character extends MoveableObject {
       if (!this.deadSoundPlayed) {
         this.deadSound.play();
         this.deadSoundPlayed = true;
-        this.stopAllAnimations();
+        this.stopAllAnimationsAndSounds();
         this.playDeathAnimationOnce();
       }
       return;
@@ -178,9 +179,8 @@ export default class Character extends MoveableObject {
   }
 
   walkingAnimation() {
-    if (this.walkInterval) {
-      clearInterval(this.walkInterval);
-    }
+    clearInterval(this.walkInterval);
+
     this.walkInterval = setInterval(() => {
       if (!this.isAboveGround() && this.isWalking) {
         this.playAnimation(this.IMAGES_WALKING);
@@ -222,9 +222,8 @@ export default class Character extends MoveableObject {
   }
 
   jumpingAnimation() {
-    if (this.jumpInterval) {
-      clearInterval(this.jumpInterval);
-    }
+    clearInterval(this.jumpInterval);
+    this.clearIdleAnimation();
     this.isJumping = true;
 
     this.jumpInterval = setInterval(() => {
@@ -267,11 +266,7 @@ export default class Character extends MoveableObject {
     ) {
       return;
     }
-
-    this.clearIdleAnimation();
     this.isIdle = true;
-    this.playAnimation(this.IMAGES_IDLE);
-
     this.idleInterval = setInterval(() => {
       if (this.isInactive()) {
         this.playAnimation(this.IMAGES_IDLE);
@@ -282,6 +277,7 @@ export default class Character extends MoveableObject {
 
     this.idleTimeout = setTimeout(() => {
       if (this.isInactive()) {
+        this.isSnoring = true;
         this.startLongIdleAnimation();
       }
     }, 15000);
@@ -291,37 +287,35 @@ export default class Character extends MoveableObject {
     if (this.longIdleInterval || this.world.characterFrozen) return;
 
     this.clearIdleAnimation();
-    this.playAnimation(this.IMAGES_LONG_IDLE);
-    this.isSnoring = true;
-    this.playSnoringSounds();
+    clearTimeout(this.idleTimeout);
 
+    if (this.isSnoring == true) {
+      this.snoringSound.play();
+    } else if (this.isSnoring == false) {
+      this.snoringSound.pause();
+    }
     this.longIdleInterval = setInterval(() => {
       if (this.isInactive()) {
         this.playAnimation(this.IMAGES_LONG_IDLE);
       } else {
-        this.clearIdleAnimation();
+        this.clearLongIdleAnimation();
       }
     }, 1000 / 5);
   }
 
   clearIdleAnimation() {
-    if (this.idleInterval) {
-      clearInterval(this.idleInterval);
-      this.idleInterval = null;
-    }
-    if (this.idleTimeout) {
-      clearTimeout(this.idleTimeout);
-      this.idleTimeout = null;
-    }
-    if (this.longIdleInterval) {
-      clearInterval(this.longIdleInterval);
-      this.longIdleInterval = null;
-    }
-    if (this.isSnoring) {
-      this.snoringSound.pause();
-    }
-    this.isSnoring = false;
+    clearInterval(this.idleInterval);
+    this.idleInterval = null;
+    clearTimeout(this.idleTimeout);
+    this.idleTimeout = null;
     this.isIdle = false;
+  }
+
+  clearLongIdleAnimation() {
+    this.isSnoring = false;
+    this.snoringSound.pause();
+    clearInterval(this.longIdleInterval);
+    this.longIdleInterval = null;
   }
 
   // === Freeze/Unfreeze Helper Functions ===
@@ -351,18 +345,6 @@ export default class Character extends MoveableObject {
     }
   }
 
-  playSnoringSounds() {
-    if (this.world.characterFrozen) return;
-
-    if (this.isInactive()) {
-      this.isSnoring = true;
-      this.snoringSound.play();
-    } else {
-      this.isSnoring = false;
-      this.snoringSound.pause();
-    }
-  }
-
   playHurtSound() {
     if (!this.hurtSoundPlayed) {
       this.hurtingSound.play();
@@ -371,28 +353,35 @@ export default class Character extends MoveableObject {
   }
 
   // === Stop Sounds and Animations ===
-  stopAllAnimations() {
-    if (this.idleInterval) clearInterval(this.idleInterval);
-    if (this.longIdleInterval) clearInterval(this.longIdleInterval);
-    if (this.idleTimeout) clearTimeout(this.idleTimeout);
-    if (this.walkInterval) clearInterval(this.walkInterval);
-    if (this.jumpInterval) clearInterval(this.jumpInterval);
-    this.idleInterval = null;
-    this.longIdleInterval = null;
-    this.idleTimeout = null;
-    this.walkInterval = null;
-    this.jumpInterval = null;
-  }
-
-  stopAllSounds() {
-    this.walkingSound.pause();
-    this.jumpingSound.pause();
-    this.snoringSound.pause();
-    this.hurtingSound.pause();
-  }
 
   stopAllAnimationsAndSounds() {
     this.stopAllAnimations();
     this.stopAllSounds();
+  }
+
+  stopAllAnimations() {
+    clearInterval(this.idleInterval);
+    this.idleInterval = null;
+    clearInterval(this.longIdleInterval);
+    this.longIdleInterval = null;
+    clearTimeout(this.idleTimeout);
+    this.idleTimeout = null;
+    clearInterval(this.walkInterval);
+    this.walkInterval = null;
+    clearInterval(this.jumpInterval);
+    this.jumpInterval = null;
+  }
+
+  stopAllSounds() {
+    this.isIdle = false;
+    this.isWalking = false;
+    this.isJumping = false;
+    this.isSnoring = false;
+    this.isHurting = false;
+    this.jumpKeyPressed = false;
+    this.walkingSound.pause();
+    this.jumpingSound.pause();
+    this.snoringSound.pause();
+    this.hurtingSound.pause();
   }
 }

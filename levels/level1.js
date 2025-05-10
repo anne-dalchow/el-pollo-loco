@@ -48,7 +48,11 @@ export const level1 = (soundManager) => {
   for (let i = 1; i <= numberOfBottles; i++) {
     const basePos = i * distancePerBottle;
     const randomOffset = (Math.random() - 0.5) * 300;
-    const bottle = new ThrowableObject(basePos + randomOffset, 370);
+    const bottle = new ThrowableObject(
+      soundManager,
+      basePos + randomOffset,
+      370
+    );
     bottles.push(bottle);
   }
 

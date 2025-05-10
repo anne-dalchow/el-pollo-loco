@@ -20,7 +20,7 @@ export default class ThrowableObject extends MoveableObject {
   width = 60;
   height = 60;
 
-  constructor(x, y, shouldThrow = false, otherDirection = false) {
+  constructor(soundManager, x, y, shouldThrow = false, otherDirection = false) {
     super();
     this.posX = x;
     this.posY = y;
@@ -31,9 +31,10 @@ export default class ThrowableObject extends MoveableObject {
     this.loadImg("assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
     this.loadImages(this.IMAGES_BROKEN_BOTTLE);
+    this.soundManager = soundManager;
 
     this.throwSoundPath = "assets/audio/throw.wav";
-    this.throwSound = soundManager.prepare(this.throwSoundPath, 0.1);
+    this.throwSound = this.soundManager.prepare(this.throwSoundPath, 0.1);
 
     if (shouldThrow) {
       this.throwBottle();
@@ -47,6 +48,9 @@ export default class ThrowableObject extends MoveableObject {
     this.bottleInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_BOTTLE);
     }, 100);
+    if (this.posY > 450) {
+      this.stopAllSounds();
+    }
   }
 
   throwBottle() {
@@ -70,5 +74,11 @@ export default class ThrowableObject extends MoveableObject {
     this.brokenBottleInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_BROKEN_BOTTLE);
     }, 100);
+  }
+
+  stopAllSounds() {
+    clearInterval(this.bottleInterval);
+    clearInterval(this.brokenBottleInterval);
+    this.throwSound.pause();
   }
 }
