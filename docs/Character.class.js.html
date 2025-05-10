@@ -1,4 +1,32 @@
-import {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Character.class.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Character.class.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {
   IMAGES_IDLE,
   IMAGES_LONG_IDLE,
   IMAGES_WALKING,
@@ -31,10 +59,18 @@ export default class Character extends MoveableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
 
+    this.applyGravity();
+
     this.keyboard = keyboard;
     this.world = world;
-    this.applyGravity();
-    this.initializeState();
+    this.isIdle = false;
+    this.isWalking = false;
+    this.isJumping = false;
+    this.isSnoring = false;
+    this.isHurting = false;
+    this.hurtSoundPlayed = false;
+    this.jumpKeyPressed = false;
+    this.deadSoundPlayed = false;
 
     this.walkingSoundPath = "assets/audio/walking.mp3";
     this.walkingSound = soundManager.prepare(this.walkingSoundPath, 1, true, 2);
@@ -52,17 +88,6 @@ export default class Character extends MoveableObject {
     this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
   }
 
-  initializeState() {
-    this.isIdle = false;
-    this.isWalking = false;
-    this.isJumping = false;
-    this.isSnoring = false;
-    this.isHurting = false;
-    this.hurtSoundPlayed = false;
-    this.jumpKeyPressed = false;
-    this.deadSoundPlayed = false;
-  }
-
   // === Functions for Animation, Loop Functions to check Animation States ===
   move() {
     this.handleMovementInput();
@@ -70,7 +95,12 @@ export default class Character extends MoveableObject {
   }
 
   handleMovementInput() {
-    if (this.world.characterFrozen) return this.resetMovementKeys();
+    if (this.world.characterFrozen) {
+      this.keyboard.left = false;
+      this.keyboard.right = false;
+      this.keyboard.up = false;
+      return;
+    }
 
     this.movingHorizontally = false;
     this.handleJumpInput();
@@ -83,7 +113,12 @@ export default class Character extends MoveableObject {
     if (this.world.characterFrozen) return;
 
     if (this.energy == 0) {
-      this.handleDeath();
+      if (!this.deadSoundPlayed) {
+        this.deadSound.play();
+        this.deadSoundPlayed = true;
+        this.stopAllAnimationsAndSounds();
+        this.playDeathAnimationOnce();
+      }
       return;
     }
 
@@ -94,25 +129,14 @@ export default class Character extends MoveableObject {
       return;
     }
 
-    this.handleMovementState();
-  }
-
-  handleDeath() {
-    if (!this.deadSoundPlayed) {
-      this.deadSound.play();
-      this.deadSoundPlayed = true;
-      this.stopAllAnimationsAndSounds();
-      this.playDeathAnimationOnce();
-    }
-  }
-
-  handleMovementState() {
     if (this.isAboveGround()) {
       this.triggerJumpingState();
     } else {
-      this.keyboard.right || this.keyboard.left
-        ? this.triggerWalkingState()
-        : this.triggerIdleState();
+      if (this.keyboard.right || this.keyboard.left) {
+        this.triggerWalkingState();
+      } else {
+        this.triggerIdleState();
+      }
       this.isJumping = false;
     }
 
@@ -123,33 +147,52 @@ export default class Character extends MoveableObject {
 
   startAnimation() {
     this.idleAnimation();
-    this.isAboveGround() ? this.jumpingAnimation() : this.walkingAnimation();
+    if (this.isAboveGround()) {
+      this.jumpingAnimation();
+    } else {
+      this.walkingAnimation();
+    }
     this.isWalking = true;
   }
 
   // === Functions for Walking ===
   handleHorizontalMovement() {
     const speed = 5;
+
     if (this.canMoveRight()) {
       this.moveRight(speed);
+      this.movingHorizontally = true;
     } else if (this.canMoveLeft()) {
       this.moveLeft(speed);
+      this.movingHorizontally = true;
     }
   }
 
+  /**
+   * @returns {boolean} true, if moving right is possible
+   */
   canMoveRight() {
-    return this.keyboard.right && this.posX < this.world.level.levelEndPosX;
+    return this.keyboard.right &amp;&amp; this.posX &lt; this.world.level.levelEndPosX;
   }
 
+  /**
+   * @returns {boolean} true, if moving left is possible
+   */
   canMoveLeft() {
-    return this.keyboard.left && this.posX > 0;
+    return this.keyboard.left &amp;&amp; this.posX > 0;
   }
 
+  /**
+   * @param {number} speed - The distance to move right
+   */
   moveRight(speed) {
     this.posX += speed;
     this.otherDirection = false;
   }
 
+  /**
+   * @param {number} speed - The distance to move left
+   */
   moveLeft(speed) {
     this.posX -= speed;
     this.otherDirection = true;
@@ -165,8 +208,9 @@ export default class Character extends MoveableObject {
 
   walkingAnimation() {
     clearInterval(this.walkInterval);
+
     this.walkInterval = setInterval(() => {
-      if (!this.isAboveGround() && this.isWalking) {
+      if (!this.isAboveGround() &amp;&amp; this.isWalking) {
         this.playAnimation(this.IMAGES_WALKING);
       } else {
         clearInterval(this.walkInterval);
@@ -192,7 +236,8 @@ export default class Character extends MoveableObject {
   }
 
   canJump() {
-    return this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed;
+    if (this.world.characterFrozen) return false;
+    return this.keyboard.up &amp;&amp; !this.isAboveGround() &amp;&amp; !this.jumpKeyPressed;
   }
 
   triggerJumpingState() {
@@ -220,12 +265,15 @@ export default class Character extends MoveableObject {
   }
 
   // === Idle, Longidle States ===
+  /**
+   * @returns {boolean} true, if the character is inactive
+   */
   isInactive() {
     return (
-      !this.isAboveGround() &&
-      !this.isWalking &&
-      !this.isJumping &&
-      !this.isHurt() &&
+      !this.isAboveGround() &amp;&amp;
+      !this.isWalking &amp;&amp;
+      !this.isJumping &amp;&amp;
+      !this.isHurt() &amp;&amp;
       !this.energy == 0
     );
   }
@@ -243,8 +291,9 @@ export default class Character extends MoveableObject {
       this.idleInterval ||
       this.longIdleInterval ||
       this.world.characterFrozen
-    )
+    ) {
       return;
+    }
     this.isIdle = true;
     this.idleInterval = setInterval(() => {
       if (this.isInactive()) {
@@ -264,10 +313,15 @@ export default class Character extends MoveableObject {
 
   startLongIdleAnimation() {
     if (this.longIdleInterval || this.world.characterFrozen) return;
+
     this.clearIdleAnimation();
     clearTimeout(this.idleTimeout);
 
-    this.snoringSound.play();
+    if (this.isSnoring == true) {
+      this.snoringSound.play();
+    } else if (this.isSnoring == false) {
+      this.snoringSound.pause();
+    }
     this.longIdleInterval = setInterval(() => {
       if (this.isInactive()) {
         this.playAnimation(this.IMAGES_LONG_IDLE);
@@ -293,12 +347,7 @@ export default class Character extends MoveableObject {
   }
 
   // === Freeze/Unfreeze Helper Functions ===
-  freezeCharacter() {
-    this.freeze();
-    setTimeout(() => {
-      this.unfreeze();
-    }, 10000);
-  }
+  // Freezes the character: disables controls and animations
 
   freeze() {
     this.stopAllAnimationsAndSounds();
@@ -317,7 +366,7 @@ export default class Character extends MoveableObject {
 
   // === Sounds ===
   playStepSounds() {
-    if (this.movingHorizontally && !this.isAboveGround()) {
+    if (this.movingHorizontally &amp;&amp; !this.isAboveGround()) {
       this.walkingSound.play();
     } else {
       this.walkingSound.pause();
@@ -332,18 +381,23 @@ export default class Character extends MoveableObject {
   }
 
   // === Stop Sounds and Animations ===
+
   stopAllAnimationsAndSounds() {
     this.stopAllAnimations();
     this.stopAllSounds();
   }
 
   stopAllAnimations() {
-    this.clearIntervalAndTimeouts([
-      this.idleInterval,
-      this.longIdleInterval,
-      this.walkInterval,
-      this.jumpInterval,
-    ]);
+    clearInterval(this.idleInterval);
+    this.idleInterval = null;
+    clearInterval(this.longIdleInterval);
+    this.longIdleInterval = null;
+    clearTimeout(this.idleTimeout);
+    this.idleTimeout = null;
+    clearInterval(this.walkInterval);
+    this.walkInterval = null;
+    clearInterval(this.jumpInterval);
+    this.jumpInterval = null;
   }
 
   stopAllSounds() {
@@ -358,15 +412,27 @@ export default class Character extends MoveableObject {
     this.snoringSound.pause();
     this.hurtingSound.pause();
   }
-
-  clearIntervalAndTimeouts(intervals) {
-    intervals.forEach((interval) => clearInterval(interval));
-    intervals.forEach((interval) => (interval = null));
-  }
-
-  resetMovementKeys() {
-    this.keyboard.left = false;
-    this.keyboard.right = false;
-    this.keyboard.up = false;
-  }
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports_module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#canMoveLeft">canMoveLeft</a></li><li><a href="global.html#canMoveRight">canMoveRight</a></li><li><a href="global.html#checkCharacterFreeze">checkCharacterFreeze</a></li><li><a href="global.html#freezeCharacter">freezeCharacter</a></li><li><a href="global.html#freezeCharacterInteraction">freezeCharacterInteraction</a></li><li><a href="global.html#handleIfDead">handleIfDead</a></li><li><a href="global.html#handleReachedTarget">handleReachedTarget</a></li><li><a href="global.html#hit">hit</a></li><li><a href="global.html#isInactive">isInactive</a></li><li><a href="global.html#loadImages">loadImages</a></li><li><a href="global.html#moveLeft">moveLeft</a></li><li><a href="global.html#moveRight">moveRight</a></li><li><a href="global.html#moveTowardsTarget">moveTowardsTarget</a></li><li><a href="global.html#shouldSkipEndboss">shouldSkipEndboss</a></li><li><a href="global.html#startAnimationEndboss">startAnimationEndboss</a></li><li><a href="global.html#startAnimationLoop">startAnimationLoop</a></li><li><a href="global.html#startAttack">startAttack</a></li><li><a href="global.html#startMovingToStartPosition">startMovingToStartPosition</a></li><li><a href="global.html#stopBackgroundSound">stopBackgroundSound</a></li><li><a href="global.html#walkBack">walkBack</a></li><li><a href="global.html#walkToTarget">walkToTarget</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat May 10 2025 15:46:51 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -20,22 +20,22 @@ export default class MoveableObject extends DrawableObject {
     );
   }
 
-  startWalkAnimation(images) {
-    this.walkInterval = setInterval(() => {
-      if (this.isDead()) {
-        this.stopWalkAnimation();
-      } else {
-        this.playAnimation(images);
-      }
-    }, 100);
-  }
+  // startWalkAnimation(images) {
+  //   this.walkInterval = setInterval(() => {
+  //     if (this.isDead()) {
+  //       this.stopWalkAnimation();
+  //     } else {
+  //       this.playAnimation(images);
+  //     }
+  //   }, 100);
+  // }
 
-  stopWalkAnimation() {
-    if (this.walkInterval) {
-      clearInterval(this.walkInterval);
-      this.walkInterval = null;
-    }
-  }
+  // stopWalkAnimation() {
+  //   if (this.walkInterval) {
+  //     clearInterval(this.walkInterval);
+  //     this.walkInterval = null;
+  //   }
+  // }
 
   playAnimation(images) {
     let i = this.currentImage % images.length;
