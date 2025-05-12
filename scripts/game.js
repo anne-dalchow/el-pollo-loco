@@ -13,13 +13,15 @@ window.addEventListener("load", () => {
 
   // === DOM-Zugriffe ===
   canvas = document.getElementById("canvas");
-
   const startscreenMenu = document.getElementById("startscreen-menu");
   const settingMenu = document.getElementById("setting-menu-container");
   const creditMenu = document.getElementById("credit-menu");
   const backToMenuBtns = document.querySelectorAll(".back-to-menu");
   const buttons = startscreenMenu.querySelectorAll("button");
   const startGameBtn = document.getElementById("start-game");
+  const toggleControls = document.getElementById("toggle-controls");
+  const gamepadIcon = toggleControls.querySelector(".fa-gamepad");
+  const hintText = toggleControls.querySelector(".hint-text");
   const settingBtn = document.getElementById("settings");
   const creditsBtn = document.getElementById("credits");
   const creditLinks = document.querySelectorAll("#credit-menu a");
@@ -29,14 +31,21 @@ window.addEventListener("load", () => {
   const endscreen = document.getElementById("endscreen");
   const restartLevelBtn = document.getElementById("restart-btn");
   const reloadBtn = document.getElementById("back-to-menu-endscreen-btn");
+  let gameControlsBtns = document.getElementById("game-controls-below");
+
+  window.controls = new Controls();
+  window.world = new World(canvas, window.controls);
 
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener noreferrer");
   });
 
-  window.controls = new Controls();
-  window.world = new World(canvas, window.controls);
+  // === Show Game Controler for Mobile ===
+  toggleControls.addEventListener("click", () => {
+    gameControlsBtns.classList.toggle("display-none");
+    toggleControls.classList.toggle("display-none");
+  });
 
   // === Spielstartfunktion ===
   function handleStartGame() {
@@ -104,7 +113,6 @@ window.addEventListener("load", () => {
   // === Startscreen-Logik ===
   function startscreen() {
     showElement(startscreenMenu);
-
     const buttons = startscreenMenu.querySelectorAll("button");
     buttons.forEach((btn, i) => {
       btn.style.animation = "none";
@@ -114,47 +122,52 @@ window.addEventListener("load", () => {
     settingMenu.classList.add("hidden");
   }
 
-  // === EventListener ===
+  // === Buttons EventListener ===
   startGameBtn.addEventListener("click", () => {
     buttons.forEach((btn, i) => {
       btn.style.animation = "slide-out-right 0.4s ease-in forwards";
       btn.style.animationDelay = `${i * 0.1}s`;
     });
     setTimeout(() => {
+      gamepadIcon.classList.remove("bouncing");
+      hideElement(hintText);
       hideElement(startscreenMenu);
       handleStartGame();
     }, 600);
   });
+
   settingBtn.addEventListener("click", () => {
     hideElement(startscreenMenu);
     showElement(settingMenu);
+    toggleControls.style.display = "none";
   });
+
   creditsBtn.addEventListener("click", () => {
     hideElement(startscreenMenu);
     showElement(creditMenu);
+    toggleControls.style.display = "none";
   });
+
   backToMenuBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       showElement(startscreenMenu);
       hideElement(settingMenu);
       hideElement(creditMenu);
+      toggleControls.style.display = "block";
     });
   });
 
+  // === Restart & Reload ===
   restartLevelBtn.addEventListener("click", () => {
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
-
     window.world = null;
-
     canvas = document.getElementById("canvas");
     window.world = new World(canvas, window.controls);
-
     hideElement(endscreen);
     hideElement(img2);
     hideElement(btnContainer);
     gameStarted = true;
-
     window.world.startGame();
   });
 

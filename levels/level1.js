@@ -4,8 +4,6 @@ import BrownChicken from "../modules/BrownChicken.class.js";
 import BackgroundObject from "../modules/BackgroundObject.class.js";
 import { layers } from "./backgroundLevel1.js";
 import Clouds from "../modules/Clouds.class.js";
-import SoundManager from "../modules/SoundManager.class.js";
-
 import Coins from "../modules/Coins.class.js";
 import ThrowableObject from "../modules/ThrowableObject.class.js";
 
