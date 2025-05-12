@@ -20,12 +20,10 @@ export default class SoundManager {
   play(path) {
     try {
       const sound = this.sounds[path];
-
       if (!sound) {
         console.warn(`Sound wurde nicht vorbereitet: ${path}`);
         return;
       }
-
       sound.play();
       return sound;
     } catch (e) {
@@ -63,16 +61,11 @@ export default class SoundManager {
     this.muted ? this.unmuteAll() : this.muteAll();
   }
 
-  resetAllSounds() {
+  stopAndResetAllSounds() {
     Object.values(this.sounds).forEach((sound) => {
+      sound.pause();
+      sound.volume = 0;
       sound.currentTime = 0;
-    });
-  }
-
-  stopAllSounds() {
-    Object.values(this.sounds).forEach((s) => {
-      s.pause();
-      s.currentTime = 0;
     });
     this.sounds = {};
   }
