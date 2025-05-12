@@ -1,12 +1,7 @@
-// export default class Keyboard {
-//   constructor() {
-//     this.left = false;
-//     this.right = false;
-//     this.up = false;
-//     this.d = false;
-//   }
-// }
-// controls.js
+const leftBtn = document.querySelector(".fa-circle-left");
+const rightBtn = document.querySelector(".fa-circle-right");
+const upBtn = document.querySelector(".fa-circle-up");
+const throwBtn = document.querySelector(".fa-wine-bottle");
 
 export default class Controls {
   constructor() {
@@ -16,10 +11,7 @@ export default class Controls {
     this.up = false;
     this.d = false;
 
-    // Hinzufügen der Event-Listener für Tastatursteuerung
     this.setupKeyboardControls();
-
-    // Hinzufügen der Event-Listener für Touchsteuerung (mobil)
     this.setupTouchControls();
   }
 
@@ -42,11 +34,6 @@ export default class Controls {
 
   // Setup der Touchsteuerung (Mobilgeräte)
   setupTouchControls() {
-    const leftBtn = document.querySelector(".fa-circle-left");
-    const rightBtn = document.querySelector(".fa-circle-right");
-    const upBtn = document.querySelector(".fa-circle-up");
-    const throwBtn = document.querySelector(".fa-wine-bottle");
-
     if (leftBtn) {
       leftBtn.addEventListener("touchstart", () => (this.left = true), {
         passive: true,

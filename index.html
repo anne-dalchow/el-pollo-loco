@@ -4,27 +4,35 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="./assets/favicon_io/favicon-32x32.png"
+    />
+    <!-- Fontawesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="responsive.css" />
+    <!-- Scripts -->
     <script src="./scripts/game.js" type="module" defer></script>
+
     <title>El Pollo Loco</title>
   </head>
+
   <body>
     <div id="rotate-notice">
       <video autoplay loop muted playsinline>
-        <source
-          src="assets/vecteezy_rotate-your-phone-animation-motion-2d-animation-isolated-on_37998538.mp4"
-          type="video/mp4"
-        />
+        <source src="assets/video/rotate-your-phone.mp4" type="video/mp4" />
         Please rotate your mobile device
       </video>
     </div>
+    <h1>El pollo loco</h1>
     <div id="fullscreen">
-      <h1>El pollo loco</h1>
       <div class="game-container">
         <div id="hud">
           <div class="sound">
@@ -36,7 +44,12 @@
             <i class="fa-solid fa-compress display-none"></i>
           </div>
         </div>
-        <div class="game-controls-below">
+        <div id="toggle-controls">
+          <span class="hint-text visible">Press for mobile controls</span>
+          <i class="fa-solid fa-gamepad bouncing"></i>
+        </div>
+
+        <div id="game-controls-below" class="display-none">
           <div class="game-controls-left-right">
             <i class="fa-solid fa-circle-left"></i>
             <i class="fa-solid fa-circle-right"></i>
@@ -57,12 +70,15 @@
           </div>
           <div id="startscreen-menu" class="hidden">
             <button id="start-game">Start Game</button>
-            <button id="settings">Settings</button>
+            <button id="settings">Controls</button>
             <button id="credits">Credits</button>
+            <button id="imprint">
+              <a href="imprint.html" target="_blank">Imprint</a>
+            </button>
           </div>
           <section id="setting-menu-container" class="hidden">
             <div>
-              <h2>Settings</h2>
+              <h2>Controls</h2>
               <hr />
             </div>
             <section class="setting-menu">
@@ -97,6 +113,7 @@
                   />
                   <p>Throw Bottle</p>
                 </div>
+                <div><button class="back-to-menu">Back</button></div>
               </div>
 
               <div class="mobil-keys">
@@ -118,7 +135,6 @@
                   <i class="fa-solid fa-wine-bottle"></i>
                   <p>Throw Bottle</p>
                 </div>
-                <button class="back-to-menu">Back</button>
               </div>
             </section>
           </section>
