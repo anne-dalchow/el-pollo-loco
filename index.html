@@ -9,33 +9,34 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="responsive.css" />
     <script src="./scripts/game.js" type="module" defer></script>
     <title>El Pollo Loco</title>
   </head>
   <body>
     <div id="rotate-notice">
-      <video autoplay loop muted playsinline width="100%">
+      <video autoplay loop muted playsinline>
         <source
           src="assets/vecteezy_rotate-your-phone-animation-motion-2d-animation-isolated-on_37998538.mp4"
           type="video/mp4"
         />
-        Please rotate your mobil.
+        Please rotate your mobile device
       </video>
     </div>
     <div id="fullscreen">
       <h1>El pollo loco</h1>
       <div class="game-container">
-        <div id="hud" class="display-none">
+        <div id="hud">
           <div class="sound">
             <i class="fa-solid fa-volume-high"></i>
-            <i class="fa-solid fa-volume-xmark"></i>
+            <i class="fa-solid fa-volume-xmark display-none"></i>
           </div>
           <div class="fullscreen-toggle">
             <i class="fa-solid fa-expand"></i>
-            <i class="fa-solid fa-compress"></i>
+            <i class="fa-solid fa-compress display-none"></i>
           </div>
         </div>
-        <div class="game-controls-below display-none">
+        <div class="game-controls-below">
           <div class="game-controls-left-right">
             <i class="fa-solid fa-circle-left"></i>
             <i class="fa-solid fa-circle-right"></i>
@@ -47,7 +48,7 @@
           </div>
         </div>
 
-        <div id="startscreen">
+        <section id="startscreen">
           <div class="startscreen-content visible">
             <img
               src="./assets/img/9_intro_outro_screens/start/startscreen_2.png"
@@ -59,50 +60,69 @@
             <button id="settings">Settings</button>
             <button id="credits">Credits</button>
           </div>
-          <div id="setting-menu-container" class="hidden">
+          <section id="setting-menu-container" class="hidden">
             <div>
               <h2>Settings</h2>
               <hr />
             </div>
-            <div class="setting-menu">
+            <section class="setting-menu">
               <div class="keyboard-keys">
                 <h3>Keyboard</h3>
                 <hr />
                 <div>
-                  <img src="assets/img/keyboard/keyboard keys-01.png" alt="" />
+                  <img
+                    src="assets/img/keyboard/keyboard keys-01.png"
+                    alt="Right arrow key"
+                  />
                   <p>Move right</p>
                 </div>
                 <div>
-                  <img src="assets/img/keyboard/keyboard keys-03.png" alt="" />
+                  <img
+                    src="assets/img/keyboard/keyboard keys-03.png"
+                    alt="Left arrow key"
+                  />
                   <p>Move left</p>
                 </div>
                 <div>
-                  <img src="assets/img/keyboard/keyboard keys-02.png" alt="" />
+                  <img
+                    src="assets/img/keyboard/keyboard keys-02.png"
+                    alt="Jump with space key"
+                  />
                   <p>Jump</p>
                 </div>
                 <div>
-                  <img src="assets/img/keyboard/keyboard keys-04.png" alt="" />
+                  <img
+                    src="assets/img/keyboard/keyboard keys-04.png"
+                    alt="Throw Bottle with d key"
+                  />
                   <p>Throw Bottle</p>
                 </div>
               </div>
-              <div class="checkbox-container">
+
+              <div class="mobil-keys">
+                <h3>Mobile</h3>
+                <hr />
                 <div>
-                  <h3>Sounds</h3>
-                  <hr />
-                  <input id="sound" type="checkbox" checked />
-                  <label for="sound">Sounds on</label>
+                  <i class="fa-solid fa-circle-right"></i>
+                  <p>Move right</p>
                 </div>
                 <div>
-                  <h3>Display</h3>
-                  <hr />
-                  <input id="fullscreen-checkbox" type="checkbox" />
-                  <label for="fullscreen-checkbox">Fullscreen</label>
+                  <i class="fa-solid fa-circle-left"></i>
+                  <p>Move left</p>
+                </div>
+                <div>
+                  <i class="fa-solid fa-circle-up"></i>
+                  <p>Jump</p>
+                </div>
+                <div>
+                  <i class="fa-solid fa-wine-bottle"></i>
+                  <p>Throw Bottle</p>
                 </div>
                 <button class="back-to-menu">Back</button>
               </div>
-            </div>
-          </div>
-          <div id="credit-menu" class="hidden">
+            </section>
+          </section>
+          <section id="credit-menu" class="hidden">
             <h2>Thanks to all these amazing people</h2>
             <ul>
               <li>
@@ -272,17 +292,17 @@
               </li>
             </ul>
             <button class="back-to-menu">Back</button>
-          </div>
-        </div>
+          </section>
+        </section>
         <canvas id="canvas" width="800" height="480"></canvas>
         <div id="fight-banner">FIGHT</div>
-        <div id="endscreen" class="hidden">
+        <section id="endscreen" class="hidden">
           <img id="image2" src="" class="fade-image hidden" />
           <div class="endscreen-btn-container hidden">
             <button id="restart-btn">Retry?</button>
             <button id="back-to-menu-endscreen-btn">Back to Menu</button>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   </body>
