@@ -12,10 +12,6 @@ export default class World {
   canvas;
   ctx;
   camera_x = 0;
-  healthBar = new StatusBar();
-  coinBar = new CoinBar();
-  bottleBar = new BottleBar();
-  endbossBar = new EndbossBar();
   throwableObjects = [];
   maxBottles = 10;
   currentBottles = 0;
@@ -27,21 +23,36 @@ export default class World {
 
   gameRunning = false;
 
-  constructor(canvas, keyboard) {
+  constructor(canvas, controls) {
     this.soundManager = new SoundManager();
     this.level = level1(this.soundManager);
-
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
-    this.keyboard = keyboard;
-    this.character = new Character(this, this.keyboard, this.soundManager);
+    this.controls = controls;
+    this.initLevel();
+    this.initBars();
+    this.initSounds();
+  }
+
+  initLevel() {
+    this.level = level1(this.soundManager);
+    this.character = new Character(this, this.controls, this.soundManager);
     this.endboss = new Endboss(this, this.character, this.soundManager);
     this.groundObjects = this.level.bottles;
     this.levelGround = 410;
-    this.canThrow = true;
     this.endboss.visible = false;
     this.endbossTriggerd = false;
+    this.canThrow = true;
+  }
 
+  initBars() {
+    this.healthBar = new StatusBar();
+    this.coinBar = new CoinBar();
+    this.bottleBar = new BottleBar();
+    this.endbossBar = new EndbossBar();
+  }
+
+  initSounds() {
     this.backgroundSoundPath = "assets/audio/background.wav";
     this.backgroundSound = this.soundManager.prepare(
       this.backgroundSoundPath,
@@ -55,26 +66,24 @@ export default class World {
       this.collectingSoundPath,
       0.1
     );
-
     this.loseSoundPath = "assets/audio/lose_endscreen.wav";
     this.loseSound = this.soundManager.prepare(this.loseSoundPath, 0.5);
-
     this.winSoundPath = "assets/audio/win_endscreen.wav";
     this.winSound = this.soundManager.prepare(this.winSoundPath, 0.5);
+  }
 
-    this.chickenSoundPath = "assets/audio/chicken sound.mp3";
-    this.chickenSound = this.soundManager.prepare(
-      this.chickenSoundPath,
-      1,
-      false,
-      1.5
-    );
+  muteAllSounds() {
+    this.soundManager.muteAll();
+  }
+
+  unmuteAllSounds() {
+    this.soundManager.unmuteAll();
   }
 
   startGame() {
     this.gameRunning = true;
     this.backgroundSound.play();
-    this.run();
+    this.runGameLoop();
     this.draw();
 
     this.level.enemies.forEach((enemy) => {
@@ -89,7 +98,7 @@ export default class World {
     });
   }
 
-  run() {
+  runGameLoop() {
     if (this.runInterval) {
       clearInterval(this.runInterval);
       this.runInterval = null;
@@ -140,13 +149,13 @@ export default class World {
         (this.currentBottles / this.maxBottles) * 100
       );
     }
-    if (!this.keyboard.d) {
+    if (!this.controls.d) {
       this.canThrow = true;
     }
   }
 
   canThrowBottle() {
-    return this.keyboard.d && this.canThrow && this.currentBottles > 0;
+    return this.controls.d && this.canThrow && this.currentBottles > 0;
   }
 
   isTopHit(impactObject, target) {
@@ -162,6 +171,7 @@ export default class World {
       if (this.character.isColliding(enemy, 40, 60) && !enemy.isDead) {
         if (this.isTopHit(this.character, enemy)) {
           enemy.die();
+          this.markForRemovalLater(enemy, 2000);
           this.character.speedY = -10;
         } else {
           this.character.hit(20);
@@ -189,12 +199,9 @@ export default class World {
           !bottle.isBroken &&
           this.isTopHit(bottle, enemy)
         ) {
-          bottle.brokenBottleAnimation();
-          bottle.isBroken = true;
+          this.handleBrokenBottle(bottle);
           enemy.die();
-          setTimeout(() => {
-            bottle.markForRemoval = true;
-          }, 500);
+          this.markForRemovalLater(enemy, 2000);
         }
       });
     });
@@ -205,11 +212,7 @@ export default class World {
       if (bottle.posY >= this.levelGround && !bottle.isBroken) {
         bottle.posY = this.levelGround;
         bottle.speedY = 0;
-        bottle.isBroken = true;
-        bottle.brokenBottleAnimation();
-        setTimeout(() => {
-          bottle.markForRemoval = true;
-        }, 500);
+        this.handleBrokenBottle(bottle);
       }
     });
   }
@@ -217,19 +220,21 @@ export default class World {
   checkBottleHitsEndboss() {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.isColliding(this.endboss, 80, 80) && !this.endboss.isDead) {
-        bottle.brokenBottleAnimation();
-        this.chickenSound.play();
+        this.handleBrokenBottle(bottle);
+
         this.endboss.hit(20);
         this.endbossBar.setPercentage(this.endboss.energy);
-        setTimeout(() => {
-          bottle.markForRemoval = true;
-        }, 500);
         if (this.endboss.energy <= 0) {
           this.endboss.die();
-          // }
         }
       }
     });
+  }
+
+  handleBrokenBottle(bottle) {
+    bottle.brokenBottleAnimation();
+    bottle.isBroken = true;
+    this.markForRemovalLater(bottle);
   }
 
   handleCoinCollection() {
@@ -243,7 +248,7 @@ export default class World {
       }
     });
   }
-  // Flasche einsammeln: von groundObjects entfernen
+
   handleBottleCollection() {
     this.groundObjects.forEach((bottle, index) => {
       if (this.character.isColliding(bottle, 40, 60)) {
@@ -257,6 +262,10 @@ export default class World {
     });
   }
 
+  markForRemovalLater(obj, delay = 500) {
+    setTimeout(() => (obj.markForRemoval = true), delay);
+  }
+
   removeObjects() {
     this.level.enemies = this.level.enemies.filter(
       (enemy) => !enemy.markForRemoval
@@ -268,22 +277,24 @@ export default class World {
 
   checkGameOver() {
     if (this.gameOver) return;
+    this.isCharacterDead();
+    this.isEndbossDead();
+  }
 
+  isCharacterDead() {
     if (this.character.isDead()) {
-      this.gameOver = true;
-      this.character.stopAllAnimationsAndSounds();
-      this.endboss.stopAllAnimationsAndSounds();
+      this.handleGameOver();
       this.backgroundSound.pause();
       setTimeout(() => {
         this.loseSound.play();
         this.showEndscreen("lose");
       }, 1500);
     }
+  }
 
+  isEndbossDead() {
     if (this.endboss.isDead && this.endbossTriggerd) {
-      this.gameOver = true;
-      this.character.stopAllAnimationsAndSounds();
-      this.endboss.stopAllAnimationsAndSounds();
+      this.handleGameOver();
       setTimeout(() => {
         this.winSound.play();
         this.showEndscreen("win");
@@ -291,16 +302,20 @@ export default class World {
     }
   }
 
+  handleGameOver() {
+    this.gameOver = true;
+    this.character.stopAllAnimationsAndSounds();
+    this.endboss.stopAllAnimationsAndSounds();
+  }
+
   showEndscreen(outcome) {
     const endscreen = document.getElementById("endscreen");
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
-    if (outcome === "win") {
-      img2.src = "assets/img/You won, you lost/You won A.png";
-    } else {
-      img2.src =
-        "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png";
-    }
+    outcome === "win"
+      ? (img2.src = "assets/img/You won, you lost/You won A.png")
+      : (img2.src =
+          "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png");
 
     this.showElement(endscreen);
     this.showElement(img2);
@@ -310,9 +325,7 @@ export default class World {
       this.endboss.stopAllAnimationsAndSounds();
     }, 9000);
     setTimeout(() => {
-      this.soundManager.resetAllSounds();
-      this.soundManager.pause();
-      this.soundManager.muteAll();
+      this.soundManager.stopAndResetAllSounds();
     }, 10000);
   }
 
