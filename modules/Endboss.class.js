@@ -58,6 +58,13 @@ export default class Endboss extends MoveableObject {
       0.2,
       true
     );
+    this.endbossHurtSoundPath = "assets/audio/chicken sound.mp3";
+    this.endbossHurtSound = soundManager.prepare(
+      this.endbossHurtSoundPath,
+      1,
+      false,
+      1.5
+    );
 
     this.startAnimationLoop();
   }
@@ -310,10 +317,9 @@ export default class Endboss extends MoveableObject {
    */
   hit(damage = 20) {
     super.hit(damage);
-
     this.isAttacking = false;
     this.isHurtAnimation = true;
-
+    this.endbossHurtSound.play();
     setTimeout(() => {
       this.isHurtAnimation = false;
       this.isAttacking = true;
@@ -331,11 +337,15 @@ export default class Endboss extends MoveableObject {
     this.playDeathAnimationOnce();
   }
 
+  stopAllAnimationsAndSounds() {
+    this.stopAllAnimations();
+    this.stopAllSounds();
+  }
+
   stopAllAnimations() {
     clearInterval(this.walkInterval);
     clearInterval(this.animationInterval);
     clearInterval(this.deadInterval);
-
     this.walkInterval = null;
     this.animationInterval = null;
     this.deadInterval = null;
@@ -343,10 +353,5 @@ export default class Endboss extends MoveableObject {
 
   stopAllSounds() {
     this.endbossBackgroundSound.pause();
-  }
-
-  stopAllAnimationsAndSounds() {
-    this.stopAllAnimations();
-    this.stopAllSounds();
   }
 }
