@@ -22,8 +22,6 @@ export default class Endboss extends MoveableObject {
    */
   constructor(world, character, soundManager) {
     super();
-
-    // Bildquellen
     this.IMAGES_WALKING = IMAGES_WALKING;
     this.IMAGES_ALERT = IMAGES_ALERT;
     this.IMAGES_ATTACK = IMAGES_ATTACK;
@@ -39,19 +37,25 @@ export default class Endboss extends MoveableObject {
 
     this.world = world;
     this.character = character;
-    this.posX = 7 * 799;
+    this.isEndbossTriggered = false;
+    this.posX = 5500;
 
-    // Status-Flags
+    this.initStatusFlags();
+    this.initSounds(soundManager);
+    this.startAnimationLoop();
+  }
+
+  initStatusFlags() {
     this.inFightSequence = false;
     this.isDead = false;
     this.isHurt = false;
     this.isAttacking = false;
     this.isWalking = false;
-    this.isEndbossTriggered = false;
     this.isCharacterFrozen = false;
     this.inputLocked = false;
+  }
 
-    // Sound
+  initSounds(soundManager) {
     this.endbossBackgroundSoundPath = "assets/audio/endboss.wav";
     this.endbossBackgroundSound = soundManager.prepare(
       this.endbossBackgroundSoundPath,
@@ -65,10 +69,7 @@ export default class Endboss extends MoveableObject {
       false,
       1.5
     );
-
-    this.startAnimationLoop();
   }
-
   /**
    * Starts the animation loop for the Endboss.
    * Chooses the appropriate animation based on the Endboss's state.
