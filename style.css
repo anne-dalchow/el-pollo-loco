@@ -103,7 +103,7 @@ canvas {
 }
 
 .game-container {
-  aspect-ratio: 800 / 480; /* Festes Seitenverhältnis */
+  aspect-ratio: 800 / 480;
   width: 100%;
   max-width: 100vw;
   max-height: 100vh;
@@ -191,7 +191,7 @@ canvas {
 
 #startscreen-menu button {
   animation: slide-in-left 0.5s ease-out forwards;
-  opacity: 0; /* damit sie nicht vorher sichtbar sind */
+  opacity: 0;
 }
 
 @keyframes slide-in-left {
@@ -223,13 +223,16 @@ canvas {
   width: 100%;
 }
 
-.keyboard-keys {
+.keyboard-keys,
+.mobil-keys {
   display: flex;
   flex-direction: column;
   width: 40%;
+  gap: 4px;
 }
 
-.keyboard-keys div {
+.keyboard-keys div,
+.mobil-keys div {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -238,17 +241,12 @@ canvas {
 }
 
 .keyboard-keys img {
-  width: 50px;
+  width: 45px;
 }
 
-.checkbox-container {
-  display: flex;
-  flex-flow: column wrap;
-  gap: 64px;
-  width: 40%;
-}
-.checkbox-container:last-child {
-  gap: 34px;
+.mobil-keys .fa-solid {
+  font-size: 36px;
+  color: white;
 }
 
 #fight-banner {
@@ -358,207 +356,38 @@ canvas {
   z-index: 9999;
 }
 
-@media (pointer: coarse) {
-  .fa-solid {
-    font-size: 50px;
-    color: #ce9822;
-  }
-  .game-controls-left-right {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .game-controls-jump-bottle {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .fullscreen-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .sound {
-    position: absolute;
-    top: 20px;
-    right: 40px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .fullscreen-toggle .fa-solid,
-  .sound .fa-solid {
-    font-size: 24px;
-  }
+.game-controls-below {
+  display: none;
 }
 
-/* -------------------------- MEDIA QUERRY TABLET ------------------------------------------- */
-@media screen and (max-width: 800px) {
-  .fa-solid {
-    font-size: 50px;
-    color: #ce9822;
-  }
-  .game-controls-left-right {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .game-controls-jump-bottle {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .fullscreen-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .sound {
-    position: absolute;
-    top: 20px;
-    right: 40px;
-    z-index: 1000;
-    display: flex;
-    gap: 20px;
-  }
-
-  .fullscreen-toggle .fa-solid,
-  .sound .fa-solid {
-    font-size: 24px;
-  }
-
-  #setting-menu-container {
-    gap: 8px;
-    padding: 24px;
-  }
-
-  .checkbox-container {
-    gap: 16px;
-  }
-
-  .keyboard-keys {
-    width: 45%;
-  }
-
-  .checkbox-container {
-    width: 45%;
-  }
-
-  .keyboard-keys img {
-    width: 40px;
-  }
-  #credit-menu {
-    height: 100%;
-    padding: 16px;
-    overflow: hidden;
-    gap: 0px;
-  }
-
-  #credit-menu h2 {
-    margin-bottom: 16px;
-  }
-
-  #credit-menu ul {
-    max-height: 250px;
-    overflow-y: auto;
-    padding: 0 8px;
-    width: 100%;
-    touch-action: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  #credit-menu ul li {
-    font-size: 0.9rem;
-  }
-
-  #credit-menu ul li a {
-    word-break: break-word;
-  }
-
-  #credit-menu ul::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  #credit-menu ul::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-  }
+.fullscreen-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 20px;
 }
 
-@media screen and (max-width: 620px) {
-  h1 {
-    font-size: 4rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
-  h3 {
-    font-size: 1.2rem;
-  }
-
-  hr {
-    margin-top: 2px;
-    margin-bottom: 12px;
-  }
-
-  button {
-    width: 150px;
-    height: max-content;
-    padding: 8px 12px;
-  }
-
-  #setting-menu-container {
-    gap: 0px;
-    padding: 16px;
-  }
-
-  .checkbox-container {
-    gap: 8px;
-  }
-  .checkbox-container:last-child {
-    gap: 16px;
-  }
-
-  .keyboard-keys img {
-    width: 30px;
-  }
+.sound {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  z-index: 1000;
+  display: flex;
+  gap: 20px;
+  margin-right: 24px;
 }
 
-/* Ab 400px und kleiner: Video zeigen, Rest ausblenden */
-@media screen and (max-width: 400px) {
-  body > *:not(#rotate-notice) {
-    display: none !important;
-  }
-
-  #rotate-notice {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.fullscreen-toggle .fa-solid,
+.sound .fa-solid {
+  font-size: 24px;
+  color: #ce9822;
 }
+
+/* .sound button:focus-visible,
+.fullscreen-toggle button:focus-visible {
+  outline: 2px solid #ce9822;
+  outline-offset: 4px;
+  border-radius: 4px;
+} */
