@@ -1,66 +1,18 @@
-import MoveableObject from "./MoveableObject.class.js";
+import Enemies from "./Enemies.class.js";
 
-export default class BrownChicken extends MoveableObject {
-  posY = 350;
-  width = 80;
-  height = 80;
-  IMAGES_WALKING = [
-    "assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
-    "assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
-    "assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
-  ];
-
-  IMAGE_DEAD = "assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png";
-
+export default class BrownChicken extends Enemies {
   constructor(soundManager) {
-    super();
-    this.isDead = false;
-
-    this.dieingSoundPath = "assets/audio/damage.mp3";
-    this.dieingSound = soundManager.prepare(this.dieingSoundPath, 0.4);
-
-    this.loadImg("assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
-    this.loadImages(this.IMAGES_WALKING);
-    // this.posX = 300 + Math.random() * 3600;
-  }
-
-  startMoving() {
-    let randomSpeed = 0.5 + Math.random() * 0.5;
-    this.chickenWalkAnimation();
-    this.moveLeft(randomSpeed, -60);
-  }
-
-  chickenWalkAnimation() {
-    this.walkInterval = setInterval(() => {
-      if (!this.isDead) {
-        this.playAnimation(this.IMAGES_WALKING);
-      } else {
-        clearInterval(this.walkInterval);
-      }
-    }, 100);
-  }
-
-  moveLeft(speed, end) {
-    this.moveInterval = setInterval(() => {
-      if (!this.isDead) {
-        if (this.posX > end) {
-          this.posX -= speed;
-        } else {
-          this.posX = 800;
-        }
-      } else {
-        clearInterval(this.moveInterval);
-      }
-    }, 1000 / 60);
-  }
-
-  die() {
-    this.isDead = true;
-    this.loadImg(this.IMAGE_DEAD);
-    this.dieingSound.play();
-    this.speed = 0;
-    setTimeout(() => {
-      this.markForRemoval = true;
-    }, 2000);
+    super(
+      [
+        "assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
+        "assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
+        "assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
+      ],
+      "assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png",
+      350,
+      80,
+      80,
+      soundManager
+    );
   }
 }
