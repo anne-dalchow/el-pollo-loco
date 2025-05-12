@@ -1,28 +1,31 @@
 import World from "../modules/World.class.js";
-import Keyboard from "../modules/Keyboard.class.js";
+import Controls from "../modules/Controls.class.js";
 
 let canvas;
 let world;
+
 let gameStarted = false;
 
 window.addEventListener("load", () => {
   setTimeout(() => {
-    startscreen(); // Startmenü zeigen
+    startscreen();
   }, 1000);
 
   // === DOM-Zugriffe ===
   canvas = document.getElementById("canvas");
-  const soundCheckbox = document.getElementById("sound");
 
   const startscreenMenu = document.getElementById("startscreen-menu");
   const settingMenu = document.getElementById("setting-menu-container");
   const creditMenu = document.getElementById("credit-menu");
   const backToMenuBtns = document.querySelectorAll(".back-to-menu");
+  const buttons = startscreenMenu.querySelectorAll("button");
   const startGameBtn = document.getElementById("start-game");
   const settingBtn = document.getElementById("settings");
   const creditsBtn = document.getElementById("credits");
   const creditLinks = document.querySelectorAll("#credit-menu a");
-  const fullscreenCheckbox = document.getElementById("fullscreen-checkbox");
+  const soundIcons = document.querySelectorAll(".sound i");
+  const fullscreen = document.getElementById("fullscreen");
+  const fullscreenIcons = document.querySelectorAll(".fullscreen-toggle i");
   const endscreen = document.getElementById("endscreen");
   const restartLevelBtn = document.getElementById("restart-btn");
   const reloadBtn = document.getElementById("back-to-menu-endscreen-btn");
@@ -32,10 +35,11 @@ window.addEventListener("load", () => {
     link.setAttribute("rel", "noopener noreferrer");
   });
 
-  window.keyboard = new Keyboard();
-  window.world = new World(canvas, window.keyboard);
+  window.controls = new Controls();
+  window.world = new World(canvas, window.controls);
+
   // === Spielstartfunktion ===
-  function gameStart() {
+  function handleStartGame() {
     if (!gameStarted) {
       gameStarted = true;
       document.getElementById("startscreen").style.display = "none";
@@ -43,21 +47,29 @@ window.addEventListener("load", () => {
     }
   }
 
-  soundCheckbox.addEventListener("change", () => {
-    if (soundCheckbox.checked) {
-      world.unmuteAllSounds();
-    } else {
-      world.muteAllSounds();
-    }
+  // === Sound-Toggle ===
+  soundIcons.forEach((icon) => {
+    icon.addEventListener("click", () => {
+      soundIcons.forEach((i) => i.classList.toggle("display-none"));
+      const soundOnVisible =
+        document
+          .querySelector(".fa-volume-high")
+          .classList.contains("display-none") === false;
+
+      soundOnVisible
+        ? window.world.unmuteAllSounds()
+        : window.world.muteAllSounds();
+    });
   });
 
-  fullscreenCheckbox.addEventListener("change", () => {
-    const fullscreen = document.getElementById("fullscreen");
-    if (fullscreenCheckbox.checked) {
-      enterFullscreen(fullscreen);
-    } else {
-      exitFullscreen();
-    }
+  // === Fullscreen-Toggle ===
+  fullscreenIcons.forEach((icon) => {
+    icon.addEventListener("click", () => {
+      fullscreenIcons.forEach((i) => i.classList.toggle("display-none"));
+      const isFullscreen = document.fullscreenElement === fullscreen;
+
+      isFullscreen ? exitFullscreen() : enterFullscreen(fullscreen);
+    });
   });
 
   function enterFullscreen(el) {
@@ -104,29 +116,23 @@ window.addEventListener("load", () => {
 
   // === EventListener ===
   startGameBtn.addEventListener("click", () => {
-    const buttons = startscreenMenu.querySelectorAll("button");
-
     buttons.forEach((btn, i) => {
       btn.style.animation = "slide-out-right 0.4s ease-in forwards";
       btn.style.animationDelay = `${i * 0.1}s`;
     });
-
     setTimeout(() => {
       hideElement(startscreenMenu);
-      gameStart();
+      handleStartGame();
     }, 600);
   });
-
   settingBtn.addEventListener("click", () => {
     hideElement(startscreenMenu);
     showElement(settingMenu);
   });
-
   creditsBtn.addEventListener("click", () => {
     hideElement(startscreenMenu);
     showElement(creditMenu);
   });
-
   backToMenuBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       showElement(startscreenMenu);
@@ -142,7 +148,7 @@ window.addEventListener("load", () => {
     window.world = null;
 
     canvas = document.getElementById("canvas");
-    window.world = new World(canvas, window.keyboard);
+    window.world = new World(canvas, window.controls);
 
     hideElement(endscreen);
     hideElement(img2);
@@ -155,60 +161,4 @@ window.addEventListener("load", () => {
   reloadBtn.addEventListener("click", () => {
     location.reload();
   });
-
-  // === Tastatursteuerung ===
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") window.keyboard.left = true;
-    if (e.key === "ArrowRight") window.keyboard.right = true;
-    if (e.key === " ") window.keyboard.up = true;
-    if (e.key === "d") window.keyboard.d = true;
-  });
-
-  window.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowLeft") window.keyboard.left = false;
-    if (e.key === "ArrowRight") window.keyboard.right = false;
-    if (e.key === " ") window.keyboard.up = false;
-    if (e.key === "d") window.keyboard.d = false;
-  });
-
-  // === Mobilsteuerung ===
-  const leftBtn = document.querySelector(".fa-circle-left");
-  const rightBtn = document.querySelector(".fa-circle-right");
-  const upBtn = document.querySelector(".fa-circle-up");
-  const throwBtn = document.querySelector(".fa-wine-bottle");
-
-  if (leftBtn) {
-    leftBtn.addEventListener(
-      "touchstart",
-      () => (window.keyboard.left = true),
-      { passive: true }
-    );
-    leftBtn.addEventListener("touchend", () => (window.keyboard.left = false));
-  }
-
-  if (rightBtn) {
-    rightBtn.addEventListener(
-      "touchstart",
-      () => (window.keyboard.right = true),
-      { passive: true }
-    );
-    rightBtn.addEventListener(
-      "touchend",
-      () => (window.keyboard.right = false)
-    );
-  }
-
-  if (upBtn) {
-    upBtn.addEventListener("touchstart", () => (window.keyboard.up = true), {
-      passive: true,
-    });
-    upBtn.addEventListener("touchend", () => (window.keyboard.up = false));
-  }
-
-  if (throwBtn) {
-    throwBtn.addEventListener("touchstart", () => (window.keyboard.d = true), {
-      passive: true,
-    });
-    throwBtn.addEventListener("touchend", () => (window.keyboard.d = false));
-  }
 });
