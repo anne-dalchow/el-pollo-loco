@@ -14,7 +14,7 @@ export default class Character extends MoveableObject {
   posX = 80;
   posY = 210;
 
-  constructor(world, keyboard, soundManager) {
+  constructor(world, controls, soundManager) {
     super();
     this.IMAGES_IDLE = IMAGES_IDLE;
     this.IMAGES_LONG_IDLE = IMAGES_LONG_IDLE;
@@ -31,25 +31,11 @@ export default class Character extends MoveableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
 
-    this.keyboard = keyboard;
+    this.controls = controls;
     this.world = world;
     this.applyGravity();
     this.initializeState();
-
-    this.walkingSoundPath = "assets/audio/walking.mp3";
-    this.walkingSound = soundManager.prepare(this.walkingSoundPath, 1, true, 2);
-
-    this.jumpingSoundPath = "assets/audio/jump.wav";
-    this.jumpingSound = soundManager.prepare(this.jumpingSoundPath);
-
-    this.hurtingPath = "assets/audio/hurt.ogg";
-    this.hurtingSound = soundManager.prepare(this.hurtingPath);
-
-    this.snoringPath = "assets/audio/snoring.wav";
-    this.snoringSound = soundManager.prepare(this.snoringPath, 0.8, true, 1.5);
-
-    this.deadSoundPath = "assets/audio/character_die.mp3";
-    this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
+    this.preparingSounds(soundManager);
   }
 
   initializeState() {
@@ -63,6 +49,19 @@ export default class Character extends MoveableObject {
     this.deadSoundPlayed = false;
   }
 
+  preparingSounds(soundManager) {
+    this.walkingSoundPath = "assets/audio/walking.mp3";
+    this.walkingSound = soundManager.prepare(this.walkingSoundPath, 1, true, 2);
+    this.jumpingSoundPath = "assets/audio/jump.wav";
+    this.jumpingSound = soundManager.prepare(this.jumpingSoundPath);
+    this.hurtingPath = "assets/audio/hurt.ogg";
+    this.hurtingSound = soundManager.prepare(this.hurtingPath);
+    this.snoringPath = "assets/audio/snoring.wav";
+    this.snoringSound = soundManager.prepare(this.snoringPath, 0.8, true, 1.5);
+    this.deadSoundPath = "assets/audio/character_die.mp3";
+    this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
+  }
+
   // === Functions for Animation, Loop Functions to check Animation States ===
   move() {
     this.handleMovementInput();
@@ -70,8 +69,10 @@ export default class Character extends MoveableObject {
   }
 
   handleMovementInput() {
-    if (this.world.characterFrozen) return this.resetMovementKeys();
-
+    if (this.world.characterFrozen) {
+      this.resetMovementKeys();
+      return;
+    }
     this.movingHorizontally = false;
     this.handleJumpInput();
     this.handleHorizontalMovement();
@@ -81,43 +82,35 @@ export default class Character extends MoveableObject {
 
   handleAnimation() {
     if (this.world.characterFrozen) return;
-
-    if (this.energy == 0) {
+    if (this.isDead()) {
       this.handleDeath();
       return;
     }
-
     if (this.isHurt()) {
       this.clearIdleAnimation();
       this.playAnimation(this.IMAGES_HURT);
       this.playHurtSound();
       return;
     }
+    this.isAboveGround() ? this.triggerJumpingState() : this.handleWalking();
+    if (!this.isHurt()) {
+      this.hurtSoundPlayed = false;
+    }
+  }
 
-    this.handleMovementState();
+  handleWalking() {
+    this.controls.right || this.controls.left
+      ? this.triggerWalkingState()
+      : this.triggerIdleState();
+    this.isJumping = false;
   }
 
   handleDeath() {
     if (!this.deadSoundPlayed) {
       this.deadSound.play();
       this.deadSoundPlayed = true;
-      this.stopAllAnimationsAndSounds();
+      this.stopAllAnimations();
       this.playDeathAnimationOnce();
-    }
-  }
-
-  handleMovementState() {
-    if (this.isAboveGround()) {
-      this.triggerJumpingState();
-    } else {
-      this.keyboard.right || this.keyboard.left
-        ? this.triggerWalkingState()
-        : this.triggerIdleState();
-      this.isJumping = false;
-    }
-
-    if (!this.isHurt()) {
-      this.hurtSoundPlayed = false;
     }
   }
 
@@ -130,26 +123,41 @@ export default class Character extends MoveableObject {
   // === Functions for Walking ===
   handleHorizontalMovement() {
     const speed = 5;
+
     if (this.canMoveRight()) {
       this.moveRight(speed);
+      this.movingHorizontally = true;
     } else if (this.canMoveLeft()) {
       this.moveLeft(speed);
+      this.movingHorizontally = true;
     }
   }
 
+  /**
+   * @returns {boolean} true, if moving right is possible
+   */
   canMoveRight() {
-    return this.keyboard.right && this.posX < this.world.level.levelEndPosX;
+    return this.controls.right && this.posX < this.world.level.levelEndPosX;
   }
 
+  /**
+   * @returns {boolean} true, if moving left is possible
+   */
   canMoveLeft() {
-    return this.keyboard.left && this.posX > 0;
+    return this.controls.left && this.posX > 0;
   }
 
+  /**
+   * @param {number} speed - The distance to move right
+   */
   moveRight(speed) {
     this.posX += speed;
     this.otherDirection = false;
   }
 
+  /**
+   * @param {number} speed - The distance to move left
+   */
   moveLeft(speed) {
     this.posX -= speed;
     this.otherDirection = true;
@@ -186,13 +194,13 @@ export default class Character extends MoveableObject {
       this.jumpKeyPressed = true;
     }
 
-    if (!this.keyboard.up) {
+    if (!this.controls.up) {
       this.jumpKeyPressed = false;
     }
   }
 
   canJump() {
-    return this.keyboard.up && !this.isAboveGround() && !this.jumpKeyPressed;
+    return this.controls.up && !this.isAboveGround() && !this.jumpKeyPressed;
   }
 
   triggerJumpingState() {
@@ -247,11 +255,9 @@ export default class Character extends MoveableObject {
       return;
     this.isIdle = true;
     this.idleInterval = setInterval(() => {
-      if (this.isInactive()) {
-        this.playAnimation(this.IMAGES_IDLE);
-      } else {
-        this.clearIdleAnimation();
-      }
+      this.isInactive()
+        ? this.playAnimation(this.IMAGES_IDLE)
+        : this.clearIdleAnimation();
     }, 1000 / 5);
 
     this.idleTimeout = setTimeout(() => {
@@ -269,11 +275,9 @@ export default class Character extends MoveableObject {
 
     this.snoringSound.play();
     this.longIdleInterval = setInterval(() => {
-      if (this.isInactive()) {
-        this.playAnimation(this.IMAGES_LONG_IDLE);
-      } else {
-        this.clearLongIdleAnimation();
-      }
+      this.isInactive()
+        ? this.playAnimation(this.IMAGES_LONG_IDLE)
+        : this.clearLongIdleAnimation();
     }, 1000 / 5);
   }
 
@@ -303,9 +307,9 @@ export default class Character extends MoveableObject {
   freeze() {
     this.stopAllAnimationsAndSounds();
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
-    this.keyboard.left = false;
-    this.keyboard.right = false;
-    this.keyboard.up = false;
+    this.controls.left = false;
+    this.controls.right = false;
+    this.controls.up = false;
     this.isFrozen = true;
     this.world.characterFrozen = true;
   }
@@ -317,11 +321,9 @@ export default class Character extends MoveableObject {
 
   // === Sounds ===
   playStepSounds() {
-    if (this.movingHorizontally && !this.isAboveGround()) {
-      this.walkingSound.play();
-    } else {
-      this.walkingSound.pause();
-    }
+    this.movingHorizontally && !this.isAboveGround()
+      ? this.walkingSound.play()
+      : this.walkingSound.pause();
   }
 
   playHurtSound() {
@@ -338,12 +340,16 @@ export default class Character extends MoveableObject {
   }
 
   stopAllAnimations() {
-    this.clearIntervalAndTimeouts([
-      this.idleInterval,
-      this.longIdleInterval,
-      this.walkInterval,
-      this.jumpInterval,
-    ]);
+    clearInterval(this.idleInterval);
+    clearInterval(this.longIdleInterval);
+    clearTimeout(this.idleTimeout);
+    clearInterval(this.walkInterval);
+    clearInterval(this.jumpInterval);
+    this.idleInterval = null;
+    this.longIdleInterval = null;
+    this.idleTimeout = null;
+    this.walkInterval = null;
+    this.jumpInterval = null;
   }
 
   stopAllSounds() {
@@ -359,14 +365,9 @@ export default class Character extends MoveableObject {
     this.hurtingSound.pause();
   }
 
-  clearIntervalAndTimeouts(intervals) {
-    intervals.forEach((interval) => clearInterval(interval));
-    intervals.forEach((interval) => (interval = null));
-  }
-
   resetMovementKeys() {
-    this.keyboard.left = false;
-    this.keyboard.right = false;
-    this.keyboard.up = false;
+    this.controls.left = false;
+    this.controls.right = false;
+    this.controls.up = false;
   }
 }
