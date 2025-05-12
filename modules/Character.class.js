@@ -44,6 +44,7 @@ export default class Character extends MoveableObject {
     this.isJumping = false;
     this.isSnoring = false;
     this.isHurting = false;
+    this.jumpAnimationPlayed = false;
     this.hurtSoundPlayed = false;
     this.jumpKeyPressed = false;
     this.deadSoundPlayed = false;
@@ -93,8 +94,12 @@ export default class Character extends MoveableObject {
       return;
     }
     this.isAboveGround() ? this.triggerJumpingState() : this.handleWalking();
+    // Hurt, Jump zurücksetzen
     if (!this.isHurt()) {
       this.hurtSoundPlayed = false;
+    }
+    if (!this.isAboveGround()) {
+      this.jumpAnimationPlayed = false;
     }
   }
 
@@ -114,12 +119,6 @@ export default class Character extends MoveableObject {
     }
   }
 
-  startAnimation() {
-    this.idleAnimation();
-    this.isAboveGround() ? this.jumpingAnimation() : this.walkingAnimation();
-    this.isWalking = true;
-  }
-
   // === Functions for Walking ===
   handleHorizontalMovement() {
     const speed = 5;
@@ -133,11 +132,31 @@ export default class Character extends MoveableObject {
     }
   }
 
+  triggerWalkingState() {
+    if (!this.isWalking) {
+      this.walkingAnimation();
+      this.isWalking = true;
+      this.isIdle = false;
+    }
+  }
+
+  walkingAnimation() {
+    clearInterval(this.walkInterval);
+    this.walkInterval = setInterval(() => {
+      if (!this.isAboveGround() && this.isWalking) {
+        this.playAnimation(this.IMAGES_WALKING);
+      } else {
+        clearInterval(this.walkInterval);
+        this.walkInterval = null;
+      }
+    }, 1000 / 15);
+  }
+
   /**
    * @returns {boolean} true, if moving right is possible
    */
   canMoveRight() {
-    return this.controls.right && this.posX < this.world.level.levelEndPosX;
+    return this.controls.right && this.posX < 5500;
   }
 
   /**
@@ -163,26 +182,6 @@ export default class Character extends MoveableObject {
     this.otherDirection = true;
   }
 
-  triggerWalkingState() {
-    if (!this.isWalking) {
-      this.walkingAnimation();
-      this.isWalking = true;
-      this.isIdle = false;
-    }
-  }
-
-  walkingAnimation() {
-    clearInterval(this.walkInterval);
-    this.walkInterval = setInterval(() => {
-      if (!this.isAboveGround() && this.isWalking) {
-        this.playAnimation(this.IMAGES_WALKING);
-      } else {
-        clearInterval(this.walkInterval);
-        this.walkInterval = null;
-      }
-    }, 1000 / 15);
-  }
-
   // === Functions for Jumping ===
   handleJumpInput() {
     if (this.world.characterFrozen) return;
@@ -204,27 +203,32 @@ export default class Character extends MoveableObject {
   }
 
   triggerJumpingState() {
-    if (!this.isJumping) {
-      this.jumpingAnimation();
+    if (!this.isJumping && !this.jumpAnimationPlayed) {
       this.isJumping = true;
+      this.jumpAnimationPlayed = true;
       this.isWalking = false;
       this.isIdle = false;
+      this.jumpingAnimation();
     }
   }
 
   jumpingAnimation() {
-    clearInterval(this.jumpInterval);
     this.clearIdleAnimation();
-    this.isJumping = true;
+    let frame = 0;
+    const totalFrames = this.IMAGES_JUMP.length;
+    const fps = 10;
+    const frameDuration = 1000 / fps;
 
     this.jumpInterval = setInterval(() => {
-      this.playAnimation(this.IMAGES_JUMP);
-      if (!this.isAboveGround()) {
+      this.playAnimation([this.IMAGES_JUMP[frame]]);
+      frame++;
+
+      if (frame >= totalFrames) {
         clearInterval(this.jumpInterval);
         this.jumpInterval = null;
         this.isJumping = false;
       }
-    }, 1000 / 15);
+    }, frameDuration);
   }
 
   // === Idle, Longidle States ===
@@ -307,9 +311,7 @@ export default class Character extends MoveableObject {
   freeze() {
     this.stopAllAnimationsAndSounds();
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
-    this.controls.left = false;
-    this.controls.right = false;
-    this.controls.up = false;
+    this.resetMovementKeys();
     this.isFrozen = true;
     this.world.characterFrozen = true;
   }
