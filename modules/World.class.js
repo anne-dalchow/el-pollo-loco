@@ -309,22 +309,25 @@ export default class World {
       ? (img2.src = "assets/img/You won, you lost/You won A.png")
       : (img2.src =
           "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png");
-
     this.showElement(endscreen);
     this.showElement(img2);
+
     setTimeout(() => {
       this.showElement(btnContainer);
-      document.getElementById("score").innerText = this.currentScore;
-      this.saveNewScore(this.currentScore);
-      const allScores = this.getSavedScores();
-      document.getElementById("latestScore").innerText = allScores.join(", ");
-
+      this.showScore();
       this.character.stopAllAnimationsAndSounds();
       this.endboss.stopAllAnimationsAndSounds();
     }, 9000);
     setTimeout(() => {
       this.soundManager.stopAndResetAllSounds();
     }, 10000);
+  }
+
+  showScore() {
+    document.getElementById("score").innerText = this.currentScore;
+    this.saveNewScore(this.currentScore);
+    const allScores = this.getSavedScores();
+    document.getElementById("latestScore").innerText = allScores.join(", ");
   }
 
   getSavedScores() {
@@ -344,12 +347,8 @@ export default class World {
   }
 
   draw() {
-    if (!this.gameRunning) return;
-
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
     this.character.move();
-
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
     this.addObjectsToMap(this.groundObjects);
@@ -359,7 +358,6 @@ export default class World {
     this.addObjectsToMap(this.level.enemies);
     this.addToMap(this.endboss);
     this.addObjectsToMap(this.throwableObjects);
-
     this.ctx.translate(-this.camera_x, 0);
     this.addToMap(this.healthBar);
     this.addToMap(this.coinBar);
@@ -368,10 +366,8 @@ export default class World {
       this.addToMap(this.endbossBar);
     }
     this.ctx.translate(this.camera_x, 0);
-
     this.addToMap(this.character);
     this.ctx.translate(-this.camera_x, 0);
-
     requestAnimationFrame(() => this.draw());
   }
 
