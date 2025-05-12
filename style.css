@@ -316,7 +316,11 @@ canvas {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 1);
+}
+
+#latestScore {
+  font-size: 1rem;
 }
 
 .fade-image {
@@ -382,7 +386,7 @@ canvas {
 .fullscreen-toggle .fa-solid,
 .sound .fa-solid {
   font-size: 24px;
-  color: #ce9822;
+  color: #4e4e4e;
 }
 
 /* .sound button:focus-visible,

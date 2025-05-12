@@ -57,8 +57,8 @@ window.addEventListener("load", () => {
           .classList.contains("display-none") === false;
 
       soundOnVisible
-        ? window.world.unmuteAllSounds()
-        : window.world.muteAllSounds();
+        ? window.world.soundManager.unmuteAll()
+        : window.world.soundManager.muteAll();
     });
   });
 

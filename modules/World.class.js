@@ -25,7 +25,6 @@ export default class World {
 
   constructor(canvas, controls) {
     this.soundManager = new SoundManager();
-    this.level = level1(this.soundManager);
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.controls = controls;
@@ -70,14 +69,6 @@ export default class World {
     this.loseSound = this.soundManager.prepare(this.loseSoundPath, 0.5);
     this.winSoundPath = "assets/audio/win_endscreen.wav";
     this.winSound = this.soundManager.prepare(this.winSoundPath, 0.5);
-  }
-
-  muteAllSounds() {
-    this.soundManager.muteAll();
-  }
-
-  unmuteAllSounds() {
-    this.soundManager.unmuteAll();
   }
 
   startGame() {
@@ -170,6 +161,7 @@ export default class World {
     this.level.enemies.forEach((enemy) => {
       if (this.character.isColliding(enemy, 40, 60) && !enemy.isDead) {
         if (this.isTopHit(this.character, enemy)) {
+          this.currentScore += 100;
           enemy.die();
           this.markForRemovalLater(enemy, 2000);
           this.character.speedY = -10;
@@ -199,6 +191,7 @@ export default class World {
           !bottle.isBroken &&
           this.isTopHit(bottle, enemy)
         ) {
+          this.currentScore += 100;
           this.handleBrokenBottle(bottle);
           enemy.die();
           this.markForRemovalLater(enemy, 2000);
@@ -221,7 +214,6 @@ export default class World {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.isColliding(this.endboss, 80, 80) && !this.endboss.isDead) {
         this.handleBrokenBottle(bottle);
-
         this.endboss.hit(20);
         this.endbossBar.setPercentage(this.endboss.energy);
         if (this.endboss.energy <= 0) {
@@ -242,7 +234,7 @@ export default class World {
       if (this.character.isColliding(coin, 40, 60)) {
         this.level.coins.splice(index, 1);
         this.currentCoins++;
-        this.currentScore = this.currentCoins * 100;
+        this.currentScore += 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
         this.coinSound.play();
       }
@@ -294,6 +286,7 @@ export default class World {
 
   isEndbossDead() {
     if (this.endboss.isDead && this.endbossTriggerd) {
+      this.currentScore += 500;
       this.handleGameOver();
       setTimeout(() => {
         this.winSound.play();
@@ -321,12 +314,28 @@ export default class World {
     this.showElement(img2);
     setTimeout(() => {
       this.showElement(btnContainer);
+      document.getElementById("score").innerText = this.currentScore;
+      this.saveNewScore(this.currentScore);
+      const allScores = this.getSavedScores();
+      document.getElementById("latestScore").innerText = allScores.join(", ");
+
       this.character.stopAllAnimationsAndSounds();
       this.endboss.stopAllAnimationsAndSounds();
     }, 9000);
     setTimeout(() => {
       this.soundManager.stopAndResetAllSounds();
     }, 10000);
+  }
+
+  getSavedScores() {
+    const saved = localStorage.getItem("allScores");
+    return saved ? JSON.parse(saved) : [];
+  }
+
+  saveNewScore(score) {
+    const scores = this.getSavedScores();
+    scores.push(score);
+    localStorage.setItem("allScores", JSON.stringify(scores));
   }
 
   showElement(el) {
@@ -338,9 +347,9 @@ export default class World {
     if (!this.gameRunning) return;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    if (this.gameRunning) {
-      this.character.move();
-    }
+
+    this.character.move();
+
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
     this.addObjectsToMap(this.groundObjects);
@@ -352,7 +361,6 @@ export default class World {
     this.addObjectsToMap(this.throwableObjects);
 
     this.ctx.translate(-this.camera_x, 0);
-    // ---------- Space for fixed Objects ----------
     this.addToMap(this.healthBar);
     this.addToMap(this.coinBar);
     this.addToMap(this.bottleBar);
@@ -360,12 +368,11 @@ export default class World {
       this.addToMap(this.endbossBar);
     }
     this.ctx.translate(this.camera_x, 0);
+
     this.addToMap(this.character);
     this.ctx.translate(-this.camera_x, 0);
 
-    if (this.gameRunning) {
-      requestAnimationFrame(() => this.draw());
-    }
+    requestAnimationFrame(() => this.draw());
   }
 
   addObjectsToMap(objects) {
