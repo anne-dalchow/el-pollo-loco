@@ -56,11 +56,10 @@ h3 {
 
 button {
   width: 200px;
-  height: 50px;
   border-radius: 8px;
   border: none;
   background-color: #ce9822;
-
+  padding: 16px 24px;
   font-size: 1rem;
   filter: drop-shadow(1px 2px 4px rgba(0, 0, 0, 0.541));
   cursor: pointer;
@@ -76,9 +75,6 @@ button a {
 }
 
 .back-to-menu {
-  /* position: fixed;
-  bottom: 20px;
-  left: 20px; */
   align-self: flex-start;
   width: max-content;
   height: max-content;
@@ -228,7 +224,7 @@ canvas {
 }
 .setting-menu {
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   align-items: flex-start;
   justify-content: space-between;
   width: 100%;
@@ -416,13 +412,12 @@ canvas {
 }
 
 .hint-text {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: white;
   opacity: 0.8;
   margin-top: 4px;
 }
 
-/* einfache Aufmerksamkeits-Animation */
 @keyframes bounce {
   0%,
   100% {
@@ -453,4 +448,29 @@ canvas {
   z-index: 1000;
   display: flex;
   gap: 20px;
+}
+
+#impressum-bg {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #ffffff;
+  background: linear-gradient(
+    0deg,
+    rgb(255, 255, 255) 0%,
+    rgba(255, 255, 255, 0.5) 100%
+  );
+  padding: 32px;
+  width: 100%;
+}
+
+.wrapper {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.impressum-section {
+  margin: 2rem;
 }
