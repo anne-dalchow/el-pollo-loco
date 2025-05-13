@@ -1,5 +1,9 @@
 import DrawableObject from "./DrawableObject.class.js";
 
+/**
+ * @class CoinBar - Represents a coin bar that visually displays the amount of coins.
+ * @extends DrawableObject - Inherits from the DrawableObject class.
+ */
 export default class CoinBar extends DrawableObject {
   IMAGES_COINS = [
     "assets/img/7_statusbars/1_statusbar/1_statusbar_coin/blue/0.png",
@@ -14,6 +18,9 @@ export default class CoinBar extends DrawableObject {
   width = 165;
   height = 45;
 
+  /**
+   * @constructor - Initializes the CoinBar with its images and default position.
+   */
   constructor() {
     super();
     this.loadImages(this.IMAGES_COINS);
@@ -22,12 +29,20 @@ export default class CoinBar extends DrawableObject {
     this.setPercentage(0);
   }
 
+  /**
+   * @method setPercentage - Sets the percentage of the coin bar and updates the displayed image.
+   * @param {number} percentage - The percentage to display (0 to 100).
+   */
   setPercentage(percentage) {
     this.percentage = percentage; // => 0 ... 5
     let path = this.IMAGES_COINS[this.resolveImageIndex()];
     this.img = this.imageCache[path];
   }
 
+  /**
+   * @method resolveImageIndex - Determines the appropriate image index based on the percentage.
+   * @returns {number} The index of the image to display.
+   */
   resolveImageIndex() {
     if (this.percentage == 100) {
       return 5;

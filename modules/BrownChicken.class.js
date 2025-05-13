@@ -1,6 +1,14 @@
 import Enemies from "./Enemies.class.js";
 
+/**
+ * @class BrownChicken - Represents a brown chicken enemy in the game.
+ * @extends Enemies - Inherits from the Enemies class.
+ */
 export default class BrownChicken extends Enemies {
+  /**
+   * @constructor - Initializes the BrownChicken with its images and sound manager.
+   * @param {Object} soundManager - The sound manager for playing sounds associated with the enemy.
+   */
   constructor(soundManager) {
     super(
       [

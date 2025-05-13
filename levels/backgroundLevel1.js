@@ -1,3 +1,8 @@
+/**
+ * @constant {Array} layers
+ * A list of background layers, each with its image path and horizontal offset.
+ * These layers are used to create a parallax-scrolling game world.
+ */
 export const layers = [
   { path: "assets/img/5_background/layers/air.png", offsetX: -799 },
   { path: "assets/img/5_background/layers/3_third_layer/2.png", offsetX: -799 },

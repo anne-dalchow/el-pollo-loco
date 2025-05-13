@@ -8,12 +8,24 @@ import {
 } from "../levels/characterImages.js";
 import MoveableObject from "./MoveableObject.class.js";
 
+/**
+ * @class Character
+ * @classdesc Represents the main controllable character in the game world. Inherits movement and image loading capabilities from MoveableObject.Handles animations, controls, sounds and character-specific behavior.
+ * @augments MoveableObject
+ * @exports Character
+ */
 export default class Character extends MoveableObject {
   height = 230;
   width = 150;
   posX = 80;
   posY = 210;
 
+  /**
+   * @constructs Character
+   * @param {Object} world - The current game world context.
+   * @param {Object} controls - The object containing player control states.
+   * @param {Object} soundManager - Manages all character-related sounds.
+   */
   constructor(world, controls, soundManager) {
     super();
     this.IMAGES_IDLE = IMAGES_IDLE;
@@ -38,6 +50,9 @@ export default class Character extends MoveableObject {
     this.preparingSounds(soundManager);
   }
 
+  /**
+   * @method initializeState - Initializes the character's state flags and control-related variables such as jumping, walking, idle, sound states, and animation timers.
+   */
   initializeState() {
     this.isIdle = false;
     this.isWalking = false;
@@ -50,6 +65,10 @@ export default class Character extends MoveableObject {
     this.deadSoundPlayed = false;
   }
 
+  /**
+   * @method preparingSounds - Prepares and assigns all relevant character sounds using the provided sound manager.
+   * @param {Object} soundManager - The sound manager providing sound assets.
+   */
   preparingSounds(soundManager) {
     this.walkingSoundPath = "assets/audio/walking.mp3";
     this.walkingSound = soundManager.prepare(this.walkingSoundPath, 1, true, 2);
@@ -63,46 +82,57 @@ export default class Character extends MoveableObject {
     this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
   }
 
-  // === Functions for Animation, Loop Functions to check Animation States ===
-  move() {
-    this.handleMovementInput();
-    this.handleAnimation();
+  /**
+   * @method startAnimationLoop - Updates movement and animation states each frame.
+   */
+  startAnimationLoop() {
+    this.updateCharacterMovement();
+    this.updateCharacterAnimation();
   }
 
-  handleMovementInput() {
+  /**
+   * @method updateCharacterMovement - Handles jumping, walking, step sounds, and updates the camera position.
+   */
+  updateCharacterMovement() {
     if (this.world.characterFrozen) {
-      this.resetMovementKeys();
+      this.controls.resetControls();
       return;
     }
-    this.movingHorizontally = false;
     this.handleJumpInput();
     this.handleHorizontalMovement();
     this.playStepSounds();
     this.world.camera_x = -this.posX + 100;
   }
 
-  handleAnimation() {
+  /**
+   * @method updateCharacterAnimation - Switches between death, hurt, jumping, and walking animations.
+   */
+  updateCharacterAnimation() {
     if (this.world.characterFrozen) return;
     if (this.isDead()) {
       this.handleDeath();
       return;
     }
+    this.handleIfHurt();
+    this.isAboveGround() ? this.triggerJumpingState() : this.handleWalking();
+    this.resetJumpAndHurt();
+  }
+
+  /**
+   * @method handleIfHurt - Plays hurt animation and sound if character is hurt.
+   */
+  handleIfHurt() {
     if (this.isHurt()) {
       this.clearIdleAnimation();
       this.playAnimation(this.IMAGES_HURT);
       this.playHurtSound();
       return;
     }
-    this.isAboveGround() ? this.triggerJumpingState() : this.handleWalking();
-    // Hurt, Jump zurücksetzen
-    if (!this.isHurt()) {
-      this.hurtSoundPlayed = false;
-    }
-    if (!this.isAboveGround()) {
-      this.jumpAnimationPlayed = false;
-    }
   }
 
+  /**
+   * @method handleWalking - Switches between walking and idle states based on input.
+   */
   handleWalking() {
     this.controls.right || this.controls.left
       ? this.triggerWalkingState()
@@ -110,6 +140,9 @@ export default class Character extends MoveableObject {
     this.isJumping = false;
   }
 
+  /**
+   * @method handleDeath - Plays death sound and animation if character is dead.
+   */
   handleDeath() {
     if (!this.deadSoundPlayed) {
       this.deadSound.play();
@@ -119,19 +152,21 @@ export default class Character extends MoveableObject {
     }
   }
 
-  // === Functions for Walking ===
+  /**
+   * @method handleHorizontalMovement - Moves character left or right based on input.
+   */
   handleHorizontalMovement() {
     const speed = 5;
-
     if (this.canMoveRight()) {
       this.moveRight(speed);
-      this.movingHorizontally = true;
     } else if (this.canMoveLeft()) {
       this.moveLeft(speed);
-      this.movingHorizontally = true;
     }
   }
 
+  /**
+   * @method triggerWalkingState - Starts walking animation if character begins walking.
+   */
   triggerWalkingState() {
     if (!this.isWalking) {
       this.walkingAnimation();
@@ -140,6 +175,9 @@ export default class Character extends MoveableObject {
     }
   }
 
+  /**
+   * @method walkingAnimation - Plays walking animation in a timed interval.
+   */
   walkingAnimation() {
     clearInterval(this.walkInterval);
     this.walkInterval = setInterval(() => {
@@ -153,36 +191,8 @@ export default class Character extends MoveableObject {
   }
 
   /**
-   * @returns {boolean} true, if moving right is possible
+   * @method handleJumpInput - Handles jump input and plays the jump sound.
    */
-  canMoveRight() {
-    return this.controls.right && this.posX < 5500;
-  }
-
-  /**
-   * @returns {boolean} true, if moving left is possible
-   */
-  canMoveLeft() {
-    return this.controls.left && this.posX > 0;
-  }
-
-  /**
-   * @param {number} speed - The distance to move right
-   */
-  moveRight(speed) {
-    this.posX += speed;
-    this.otherDirection = false;
-  }
-
-  /**
-   * @param {number} speed - The distance to move left
-   */
-  moveLeft(speed) {
-    this.posX -= speed;
-    this.otherDirection = true;
-  }
-
-  // === Functions for Jumping ===
   handleJumpInput() {
     if (this.world.characterFrozen) return;
 
@@ -192,16 +202,14 @@ export default class Character extends MoveableObject {
       this.jumpingSound.play();
       this.jumpKeyPressed = true;
     }
-
     if (!this.controls.up) {
       this.jumpKeyPressed = false;
     }
   }
 
-  canJump() {
-    return this.controls.up && !this.isAboveGround() && !this.jumpKeyPressed;
-  }
-
+  /**
+   * @method triggerJumpingState - Triggers the jumping state and starts jump animation.
+   */
   triggerJumpingState() {
     if (!this.isJumping && !this.jumpAnimationPlayed) {
       this.isJumping = true;
@@ -212,6 +220,9 @@ export default class Character extends MoveableObject {
     }
   }
 
+  /**
+   * @method jumpingAnimation - Plays the jumping animation in intervals.
+   */
   jumpingAnimation() {
     this.clearIdleAnimation();
     let frame = 0;
@@ -231,17 +242,9 @@ export default class Character extends MoveableObject {
     }, frameDuration);
   }
 
-  // === Idle, Longidle States ===
-  isInactive() {
-    return (
-      !this.isAboveGround() &&
-      !this.isWalking &&
-      !this.isJumping &&
-      !this.isHurt() &&
-      !this.energy == 0
-    );
-  }
-
+  /**
+   * @method triggerIdleState - Triggers the idle state and starts idle animation.
+   */
   triggerIdleState() {
     if (!this.isIdle) {
       this.idleAnimation();
@@ -250,6 +253,9 @@ export default class Character extends MoveableObject {
     }
   }
 
+  /**
+   * @method idleAnimation - Plays the idle animation in intervals and checks if the character is inactive.
+   */
   idleAnimation() {
     if (
       this.idleInterval ||
@@ -269,9 +275,12 @@ export default class Character extends MoveableObject {
         this.isSnoring = true;
         this.startLongIdleAnimation();
       }
-    }, 15000);
+    }, 12000);
   }
 
+  /**
+   * @method startLongIdleAnimation - Starts the long idle animation and plays the snoring sound.
+   */
   startLongIdleAnimation() {
     if (this.longIdleInterval || this.world.characterFrozen) return;
     this.clearIdleAnimation();
@@ -285,6 +294,9 @@ export default class Character extends MoveableObject {
     }, 1000 / 5);
   }
 
+  /**
+   * @method clearIdleAnimation - Clears the idle animation and resets relevant properties.
+   */
   clearIdleAnimation() {
     clearInterval(this.idleInterval);
     this.idleInterval = null;
@@ -293,6 +305,9 @@ export default class Character extends MoveableObject {
     this.isIdle = false;
   }
 
+  /**
+   * @method clearLongIdleAnimation - Clears the long idle animation and stops the snoring sound.
+   */
   clearLongIdleAnimation() {
     this.isSnoring = false;
     this.snoringSound.pause();
@@ -300,7 +315,9 @@ export default class Character extends MoveableObject {
     this.longIdleInterval = null;
   }
 
-  // === Freeze/Unfreeze Helper Functions ===
+  /**
+   * @method freezeCharacter - Freezes the character for 10 seconds.
+   */
   freezeCharacter() {
     this.freeze();
     setTimeout(() => {
@@ -308,26 +325,51 @@ export default class Character extends MoveableObject {
     }, 10000);
   }
 
+  /**
+   * @method freeze - Stops all animations and sounds, and freezes the character.
+   */
   freeze() {
     this.stopAllAnimationsAndSounds();
     this.loadImg("assets/img/2_character_pepe/1_idle/idle/I-1.png");
-    this.resetMovementKeys();
+    this.controls.resetControls();
     this.isFrozen = true;
     this.world.characterFrozen = true;
   }
 
+  /**
+   * @method unfreeze - Unfreezes the character, allowing movement again.
+   */
   unfreeze() {
     this.isFrozen = false;
     this.world.characterFrozen = false;
   }
 
-  // === Sounds ===
+  /**
+   * @method isCharacterDead - Checks if the character is dead and triggers the game over sequence.
+   */
+  isCharacterDead() {
+    if (this.isDead()) {
+      this.world.handleGameOver();
+      this.world.backgroundSound.pause();
+      setTimeout(() => {
+        this.world.loseSound.play();
+        this.world.showEndscreen("lose");
+      }, 1500);
+    }
+  }
+
+  /**
+   * @method playStepSounds - Plays or pauses the walking sound based on the character's movement state.
+   */
   playStepSounds() {
-    this.movingHorizontally && !this.isAboveGround()
+    this.isWalking && !this.isAboveGround()
       ? this.walkingSound.play()
       : this.walkingSound.pause();
   }
 
+  /**
+   * @method playHurtSound - Plays the hurting sound once when the character is hurt.
+   */
   playHurtSound() {
     if (!this.hurtSoundPlayed) {
       this.hurtingSound.play();
@@ -335,12 +377,21 @@ export default class Character extends MoveableObject {
     }
   }
 
-  // === Stop Sounds and Animations ===
-  stopAllAnimationsAndSounds() {
-    this.stopAllAnimations();
-    this.stopAllSounds();
+  /**
+   * @method resetJumpAndHurt - Resets jump and hurt states after the character is no longer hurt or in the air.
+   */
+  resetJumpAndHurt() {
+    if (!this.isHurt()) {
+      this.hurtSoundPlayed = false;
+    }
+    if (!this.isAboveGround()) {
+      this.jumpAnimationPlayed = false;
+    }
   }
 
+  /**
+   * @method stopAllAnimations - Stops all currently running animations and resets related intervals and timeouts.
+   */
   stopAllAnimations() {
     clearInterval(this.idleInterval);
     clearInterval(this.longIdleInterval);
@@ -354,6 +405,9 @@ export default class Character extends MoveableObject {
     this.jumpInterval = null;
   }
 
+  /**
+   * @method stopAllSounds - Pauses all active sounds and resets character sound states.
+   */
   stopAllSounds() {
     this.isIdle = false;
     this.isWalking = false;
@@ -365,11 +419,5 @@ export default class Character extends MoveableObject {
     this.jumpingSound.pause();
     this.snoringSound.pause();
     this.hurtingSound.pause();
-  }
-
-  resetMovementKeys() {
-    this.controls.left = false;
-    this.controls.right = false;
-    this.controls.up = false;
   }
 }

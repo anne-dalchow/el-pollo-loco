@@ -3,9 +3,14 @@ const rightBtn = document.querySelector(".fa-circle-right");
 const upBtn = document.querySelector(".fa-circle-up");
 const throwBtn = document.querySelector(".fa-wine-bottle");
 
+/**
+ * @class Controls - Manages user input controls for the game, including keyboard and touch controls.
+ */
 export default class Controls {
+  /**
+   * @constructor - Initializes control states and sets up keyboard and touch controls.
+   */
   constructor() {
-    // Zustände für Steuerung
     this.left = false;
     this.right = false;
     this.up = false;
@@ -15,7 +20,19 @@ export default class Controls {
     this.setupTouchControls();
   }
 
-  // Setup der Tastatursteuerung
+  /**
+   * @method resetControls - Resets all control states to their default values (false).
+   */
+  resetControls() {
+    this.left = false;
+    this.right = false;
+    this.up = false;
+    this.d = false;
+  }
+
+  /**
+   * @method setupKeyboardControls - Sets up the event listeners for keyboard controls.
+   */
   setupKeyboardControls() {
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") this.left = true;
@@ -32,7 +49,9 @@ export default class Controls {
     });
   }
 
-  // Setup der Touchsteuerung (Mobilgeräte)
+  /**
+   * @method setupTouchControls - Sets up the event listeners for touch controls on screen buttons.
+   */
   setupTouchControls() {
     if (leftBtn) {
       leftBtn.addEventListener("touchstart", () => (this.left = true), {

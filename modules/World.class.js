@@ -8,6 +8,9 @@ import ThrowableObject from "./ThrowableObject.class.js";
 import Endboss from "./Endboss.class.js";
 import SoundManager from "./SoundManager.class.js";
 
+/**
+ * @class World - A class representing the game world, handling all the game objects, sounds, and level management.
+ */
 export default class World {
   canvas;
   ctx;
@@ -20,9 +23,13 @@ export default class World {
   currentCoins = 0;
   currentScore = 0;
   coins = [];
-
   gameRunning = false;
 
+  /**
+   * @constructor - Initializes the game world, including setting up the canvas, controls, level, bars, and sounds.
+   * @param {HTMLCanvasElement} canvas - The canvas element where the game will be rendered.
+   * @param {object} controls - The control bindings for the game (e.g., for player movement).
+   */
   constructor(canvas, controls) {
     this.soundManager = new SoundManager();
     this.ctx = canvas.getContext("2d");
@@ -33,17 +40,21 @@ export default class World {
     this.initSounds();
   }
 
+  /**
+   * @method initLevel - Initializes the level by setting up the game objects, including character and ground objects.
+   */
   initLevel() {
     this.level = level1(this.soundManager);
     this.character = new Character(this, this.controls, this.soundManager);
     this.endboss = new Endboss(this, this.character, this.soundManager);
     this.groundObjects = this.level.bottles;
     this.levelGround = 410;
-    this.endboss.visible = false;
-    this.endbossTriggerd = false;
     this.canThrow = true;
   }
 
+  /**
+   * @method initBars - Initializes the status bars for health, coins, bottles, and endboss health.
+   */
   initBars() {
     this.healthBar = new StatusBar();
     this.coinBar = new CoinBar();
@@ -51,6 +62,9 @@ export default class World {
     this.endbossBar = new EndbossBar();
   }
 
+  /**
+   * @method initSounds - Initializes the sounds for the game, including background music and effect sounds.
+   */
   initSounds() {
     this.backgroundSoundPath = "assets/audio/background.wav";
     this.backgroundSound = this.soundManager.prepare(
@@ -71,6 +85,9 @@ export default class World {
     this.winSound = this.soundManager.prepare(this.winSoundPath, 0.5);
   }
 
+  /**
+   * @method startGame - Starts the game, plays the background sound, and initiates the game loop.
+   */
   startGame() {
     this.gameRunning = true;
     this.backgroundSound.play();
@@ -89,6 +106,9 @@ export default class World {
     });
   }
 
+  /**
+   * @method runGameLoop - Runs the main game loop, updating game logic at regular intervals.
+   */
   runGameLoop() {
     if (this.runInterval) {
       clearInterval(this.runInterval);
@@ -106,22 +126,15 @@ export default class World {
         this.handleBottleCollection();
         this.handleCoinCollection();
       }
-      this.triggerEndboss();
+      this.endboss.triggerEndboss();
       this.removeObjects();
       this.checkGameOver();
     }, 50);
   }
 
-  triggerEndboss() {
-    if (!this.endbossTriggerd && this.character.posX > 3000) {
-      this.endboss.visible = true;
-      this.endbossTriggerd = true;
-    }
-    if (this.endboss.visible && !this.endboss.triggered) {
-      this.endboss.startAnimationEndboss(this, this.character);
-    }
-  }
-
+  /**
+   * @method checkThrowObjects - Checks if the character can throw a bottle, creates a new throwable object, and updates the bottle bar.
+   */
   checkThrowObjects() {
     if (this.canThrowBottle()) {
       this.canThrow = false;
@@ -145,10 +158,20 @@ export default class World {
     }
   }
 
+  /**
+   * @method canThrowBottle() checks if the player can throw a bottle based on certain conditions.
+   * @returns {boolean} - return `true` if the `d` key is pressed, `canThrow` is true, and `currentBottles` is greater than 0. Otherwise, it will return `false`
+   */
   canThrowBottle() {
     return this.controls.d && this.canThrow && this.currentBottles > 0;
   }
 
+  /**
+   * @method isTopHit checks if an object has impacted the top of a target object.
+   * @param {object} impactObject - this object has speedY, posY and height properties related to impact.
+   * @param {object} target - this target object has also posY and height properties.
+   * @returns {boolean}
+   */
   isTopHit(impactObject, target) {
     return (
       impactObject.speedY < 0 &&
@@ -157,6 +180,9 @@ export default class World {
     );
   }
 
+  /**
+   * @method checkCharacterCollision - Checks if the character collides with any enemies and handles the outcome based on the collision type.
+   */
   checkCaracterCollision() {
     this.level.enemies.forEach((enemy) => {
       if (this.character.isColliding(enemy, 40, 60) && !enemy.isDead) {
@@ -173,6 +199,9 @@ export default class World {
     });
   }
 
+  /**
+   * @method checkEndbossCollision - Checks if the character collides with the endboss and applies damage if not already hurt.
+   */
   checkEndbossCollision() {
     if (this.character.isColliding(this.endboss, 40, 60)) {
       if (!this.character.isHurt()) {
@@ -182,6 +211,9 @@ export default class World {
     }
   }
 
+  /**
+   * @method checkBottleHitsEnemy - Checks if any thrown bottles collide with enemies, and handles the outcome.
+   */
   checkBottleHitsEnemy() {
     this.throwableObjects.forEach((bottle) => {
       this.level.enemies.forEach((enemy) => {
@@ -200,6 +232,9 @@ export default class World {
     });
   }
 
+  /**
+   * @method checkBottleHitsGround - Checks if any thrown bottles hit the ground and handles their breaking.
+   */
   checkBottleHitsGround() {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.posY >= this.levelGround && !bottle.isBroken) {
@@ -210,6 +245,9 @@ export default class World {
     });
   }
 
+  /**
+   * @method checkBottleHitsEndboss - Checks if any thrown bottles collide with the endboss and applies damage.
+   */
   checkBottleHitsEndboss() {
     this.throwableObjects.forEach((bottle) => {
       if (bottle.isColliding(this.endboss, 80, 80) && !this.endboss.isDead) {
@@ -223,12 +261,19 @@ export default class World {
     });
   }
 
+  /**
+   * @method handleBrokenBottle triggers a broken bottle animation, sets the bottle as broken, and marks it for removal later.
+   * @param {object} bottle - The `bottle` parameter represent an object that has a method `brokenBottleAnimation()` and a property `isBroken`.
+   */
   handleBrokenBottle(bottle) {
     bottle.brokenBottleAnimation();
     bottle.isBroken = true;
     this.markForRemovalLater(bottle);
   }
 
+  /**
+   * @method handleCoinCollection - Checks if the character collides with any coin and collects it, updating the score and coin bar.
+   */
   handleCoinCollection() {
     this.level.coins.forEach((coin, index) => {
       if (this.character.isColliding(coin, 40, 60)) {
@@ -241,6 +286,9 @@ export default class World {
     });
   }
 
+  /**
+   * @method handleBottleCollection - Checks if the character collides with any bottle on the ground and collects it, updating the bottle count and bottle bar.
+   */
   handleBottleCollection() {
     this.groundObjects.forEach((bottle, index) => {
       if (this.character.isColliding(bottle, 40, 60)) {
@@ -254,10 +302,18 @@ export default class World {
     });
   }
 
+  /**
+   * @method markForRemovalLater sets a flag on an object to mark it for removal after a specified delay.
+   * @param {object} obj - This `obj` parameter represents an object (bottle, enemy).
+   * @param {number} delay - The `delay` parameter represents the amount of time, in milliseconds, to wait before marking the object for removal. By default it will wait for 500 milliseconds.
+   */
   markForRemovalLater(obj, delay = 500) {
     setTimeout(() => (obj.markForRemoval = true), delay);
   }
 
+  /**
+   * @method removeObjects - Removes enemies and throwable objects marked for removal from the level.
+   */
   removeObjects() {
     this.level.enemies = this.level.enemies.filter(
       (enemy) => !enemy.markForRemoval
@@ -267,40 +323,29 @@ export default class World {
     );
   }
 
+  /**
+   * @method checkGameOver checks if the game is over by determining if the character or end boss is dead.
+   * @returns {boolean} - If the `gameOver` property is true, then the function will return without executing the `isCharacterDead()` and `isEndbossDead()` functions.
+   */
   checkGameOver() {
     if (this.gameOver) return;
-    this.isCharacterDead();
-    this.isEndbossDead();
+    this.character.isCharacterDead();
+    this.endboss.handleIfDead();
   }
 
-  isCharacterDead() {
-    if (this.character.isDead()) {
-      this.handleGameOver();
-      this.backgroundSound.pause();
-      setTimeout(() => {
-        this.loseSound.play();
-        this.showEndscreen("lose");
-      }, 1500);
-    }
-  }
-
-  isEndbossDead() {
-    if (this.endboss.isDead && this.endbossTriggerd) {
-      this.currentScore += 500;
-      this.handleGameOver();
-      setTimeout(() => {
-        this.winSound.play();
-        this.showEndscreen("win");
-      }, 1500);
-    }
-  }
-
+  /**
+   * @method handleGameOver - Stops all animations and sounds for the character and endboss when the game is over.
+   */
   handleGameOver() {
     this.gameOver = true;
     this.character.stopAllAnimationsAndSounds();
     this.endboss.stopAllAnimationsAndSounds();
   }
 
+  /**
+   * @method showEndscreen displays an end screen with different outcomes based on the input parameter and stops animations and sounds after a certain delay.
+   * @param {string} outcome - The `outcome` parameter represents a string. Is used to determine the result of the game, whether it is a win or a loss.
+   */
   showEndscreen(outcome) {
     const endscreen = document.getElementById("endscreen");
     const img2 = document.getElementById("image2");
@@ -323,6 +368,9 @@ export default class World {
     }, 10000);
   }
 
+  /**
+   * @method showScore - Displays the current score on the screen, saves the new score, and updates the list of all saved scores.
+   */
   showScore() {
     document.getElementById("score").innerText = this.currentScore;
     this.saveNewScore(this.currentScore);
@@ -330,25 +378,40 @@ export default class World {
     document.getElementById("latestScore").innerText = allScores.join(", ");
   }
 
+  /**
+   * @method getSavedScores retrieves saved scores from local storage, returning an empty array if no scores are found.
+   * @returns {Array} - Returns an array of saved scores. If there are no saved scores in the localStorage, an empty array will be returned.
+   */
   getSavedScores() {
     const saved = localStorage.getItem("allScores");
     return saved ? JSON.parse(saved) : [];
   }
 
+  /**
+   * @method saveNewScore saves a new score to local storage.
+   * @param {number} score - The `score` parameter represents a number that is to save, or add tho the saved scores list.
+   */
   saveNewScore(score) {
     const scores = this.getSavedScores();
     scores.push(score);
     localStorage.setItem("allScores", JSON.stringify(scores));
   }
 
+  /**
+   * @method showElement removes the "hidden" class and adds the "visible" class to a specified element.
+   * @param {Element} el - The `el` parameter is a reference to a specified HTML element.
+   */
   showElement(el) {
     el.classList.remove("hidden");
     el.classList.add("visible");
   }
 
+  /**
+   * @method draw - Clears the canvas, draws all game objects (background, character, enemies, etc.), and updates the display in each frame.
+   */
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.character.move();
+    this.character.startAnimationLoop();
     this.ctx.translate(this.camera_x, 0);
     this.addObjectsToMap(this.level.backgroundObjects);
     this.addObjectsToMap(this.groundObjects);
@@ -371,12 +434,20 @@ export default class World {
     requestAnimationFrame(() => this.draw());
   }
 
+  /**
+   * @method addObjectsToMap iterates through an array of objects and adds each object to a map.
+   * @param {Array} objects - An array of objects that need to be added to a map.
+   */
   addObjectsToMap(objects) {
     objects.forEach((obj) => {
       this.addToMap(obj);
     });
   }
 
+  /**
+   * @method addToMap flips the image by checken `mo.otherDirection` is true, or false, then draws the image using the `draw` method of the object `mo`.
+   * @param {object} mo - The object `mo` have a property `otherDirection` which is used to determine whether to flip the image before drawing it on the canvas using the `draw` method.
+   */
   addToMap(mo) {
     if (mo.otherDirection) {
       this.flipImage(mo);
@@ -388,6 +459,10 @@ export default class World {
     }
   }
 
+  /**
+   * @method flipImage flips the given image horizontally by transforming the canvas context.
+   * @param {Object} mo - The image object to flip. Must have `posX` properties.
+   */
   flipImage(mo) {
     this.ctx.save();
     this.ctx.translate(mo.width, 0);
@@ -395,6 +470,10 @@ export default class World {
     mo.posX = mo.posX * -1;
   }
 
+  /**
+   * @method flipImageBack() restores the canvas context to its previous state and resets the flipped position.
+   * @param {Object} mo - The image object to revert flip on. Must have a `posX` property, because it inverts the `posX` value.
+   */
   flipImageBack(mo) {
     mo.posX = mo.posX * -1;
     this.ctx.restore();

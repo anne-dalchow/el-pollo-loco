@@ -1,17 +1,22 @@
+/**
+ * @fileoverview Main script to handle the start screen, game controls, fullscreen toggle, sound, and game state.
+ * The script sets up event listeners for user interactions and controls the flow of the game.
+ * It manages the visibility of the start screen, settings, and credits, as well as handles game start, restart, and sound functionalities.
+ */
+
 import World from "../modules/World.class.js";
 import Controls from "../modules/Controls.class.js";
 
 let canvas;
-let world;
-
 let gameStarted = false;
 
 window.addEventListener("load", () => {
+  // === Show start screen after 1 second ===
   setTimeout(() => {
     startscreen();
   }, 1000);
 
-  // === DOM-Zugriffe ===
+  // === DOM References ===
   canvas = document.getElementById("canvas");
   const startscreenMenu = document.getElementById("startscreen-menu");
   const settingMenu = document.getElementById("setting-menu-container");
@@ -33,21 +38,28 @@ window.addEventListener("load", () => {
   const reloadBtn = document.getElementById("back-to-menu-endscreen-btn");
   let gameControlsBtns = document.getElementById("game-controls-below");
 
+  // === Initialize World and Controls ===
   window.controls = new Controls();
   window.world = new World(canvas, window.controls);
 
+  // === Open credit links in new tab ===
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener noreferrer");
   });
 
-  // === Show Game Controler for Mobile ===
+  /**
+   * Listen to click event on toggle controls button
+   * @listens toggleControls#click - toggles visibility of game controls buttons
+   */
   toggleControls.addEventListener("click", () => {
     gameControlsBtns.classList.toggle("display-none");
     toggleControls.classList.toggle("display-none");
   });
 
-  // === Spielstartfunktion ===
+  /**
+   * @function handleStartGame - Starts the game if it hasn't started yet.
+   */
   function handleStartGame() {
     if (!gameStarted) {
       gameStarted = true;
@@ -56,7 +68,10 @@ window.addEventListener("load", () => {
     }
   }
 
-  // === Sound-Toggle ===
+  /**
+   * Listen to click event on sound icon
+   * @listens soundIcon#click - toggles sound icon on or off
+   */
   soundIcons.forEach((icon) => {
     icon.addEventListener("click", () => {
       soundIcons.forEach((i) => i.classList.toggle("display-none"));
@@ -65,13 +80,20 @@ window.addEventListener("load", () => {
           .querySelector(".fa-volume-high")
           .classList.contains("display-none") === false;
 
-      soundOnVisible
-        ? window.world.soundManager.unmuteAll()
-        : window.world.soundManager.muteAll();
+      if (soundOnVisible) {
+        window.world.soundManager.unmuteAll();
+        localStorage.setItem("soundMuted", "false");
+      } else {
+        window.world.soundManager.muteAll();
+        localStorage.setItem("soundMuted", "true");
+      }
     });
   });
 
-  // === Fullscreen-Toggle ===
+  /**
+   * Listen to click event on fullscreen icon
+   * @listens fullscreenIcon#click - toggles between fullscreen and normal mode
+   */
   fullscreenIcons.forEach((icon) => {
     icon.addEventListener("click", () => {
       fullscreenIcons.forEach((i) => i.classList.toggle("display-none"));
@@ -81,6 +103,10 @@ window.addEventListener("load", () => {
     });
   });
 
+  /**
+   * @function enterFullscreen - Puts the given element into fullscreen mode.
+   * @param {HTMLElement} el - The HTML element to display in fullscreen.
+   */
   function enterFullscreen(el) {
     if (el.requestFullscreen) {
       el.requestFullscreen();
@@ -91,6 +117,9 @@ window.addEventListener("load", () => {
     }
   }
 
+  /**
+   * @function exitFullscreen - Exits fullscreen mode.
+   */
   function exitFullscreen() {
     if (document.exitFullscreen) {
       document.exitFullscreen();
@@ -99,18 +128,27 @@ window.addEventListener("load", () => {
     }
   }
 
-  // === Toggle-Helferfunktionen ===
+  // === Toggle helper functions ===
+  /**
+   * @function showElement - Displays the specified element.
+   * @param {HTMLElement} el - The element to be shown.
+   */
   function showElement(el) {
     el.classList.remove("hidden");
     el.classList.add("visible");
   }
 
+  /**
+   * @function hideElement - Hides the specified element.
+   * @param {HTMLElement} el - The element to be hidden.
+   */
   function hideElement(el) {
     el.classList.remove("visible");
     el.classList.add("hidden");
   }
-
-  // === Startscreen-Logik ===
+  /**
+   * @function startscreen - Shows the start screen menu and animates the buttons.
+   */
   function startscreen() {
     showElement(startscreenMenu);
     const buttons = startscreenMenu.querySelectorAll("button");
@@ -122,7 +160,12 @@ window.addEventListener("load", () => {
     settingMenu.classList.add("hidden");
   }
 
-  // === Buttons EventListener ===
+  // === Buttons EventListener (startscreen) ===
+
+  /**
+   * Listen to click event on start game button
+   * @listens startGameBtn#click - starts the game when clicked
+   */
   startGameBtn.addEventListener("click", () => {
     buttons.forEach((btn, i) => {
       btn.style.animation = "slide-out-right 0.4s ease-in forwards";
@@ -136,18 +179,30 @@ window.addEventListener("load", () => {
     }, 600);
   });
 
+  /**
+   * Listen to click event on settings button
+   * @listens settingBtn#click - shows the settings menu
+   */
   settingBtn.addEventListener("click", () => {
     hideElement(startscreenMenu);
     showElement(settingMenu);
     toggleControls.style.display = "none";
   });
 
+  /**
+   * Listen to click event on credits button
+   * @listens creditsBtn#click - shows the credits menu
+   */
   creditsBtn.addEventListener("click", () => {
     hideElement(startscreenMenu);
     showElement(creditMenu);
     toggleControls.style.display = "none";
   });
 
+  /**
+   * Listen to click event on back to menu button
+   * @listens backToMenuBtn#click - navigates back to the start screen
+   */
   backToMenuBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       showElement(startscreenMenu);
@@ -157,13 +212,21 @@ window.addEventListener("load", () => {
     });
   });
 
-  // === Restart & Reload ===
+  /**
+   * Listen to click event on restart level button
+   * @listens restartLevelBtn#click - restarts the current level
+   * @description restart level on click event. Reset World, Enemies, Endboss, Sounds, Collectable Items
+   */
   restartLevelBtn.addEventListener("click", () => {
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
+
     window.world = null;
     canvas = document.getElementById("canvas");
     window.world = new World(canvas, window.controls);
+
+    getSavedSoundSettings();
+
     hideElement(endscreen);
     hideElement(img2);
     hideElement(btnContainer);
@@ -171,7 +234,28 @@ window.addEventListener("load", () => {
     window.world.startGame();
   });
 
+  /**
+   * Listen to click event on reload button
+   * @listens reloadBtn#click - reloads the page to reset the game
+   */
   reloadBtn.addEventListener("click", () => {
     location.reload();
   });
+
+  function getSavedSoundSettings() {
+    const soundMuted = localStorage.getItem("soundMuted") === "true";
+    if (soundMuted) {
+      window.world.soundManager.muteAll();
+      document.querySelector(".fa-volume-high").classList.add("display-none");
+      document
+        .querySelector(".fa-volume-xmark")
+        .classList.remove("display-none");
+    } else {
+      window.world.soundManager.unmuteAll();
+      document
+        .querySelector(".fa-volume-high")
+        .classList.remove("display-none");
+      document.querySelector(".fa-volume-xmark").classList.add("display-none");
+    }
+  }
 });

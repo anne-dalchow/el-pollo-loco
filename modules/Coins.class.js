@@ -1,6 +1,5 @@
 import MoveableObject from "./MoveableObject.class.js";
 
-// Mapping der Breiten für jedes Bild
 const COIN_FRAME_WIDTHS = {
   "Gold_21.png": 28,
   "Gold_22.png": 26,
@@ -14,6 +13,10 @@ const COIN_FRAME_WIDTHS = {
   "Gold_30.png": 28,
 };
 
+/**
+ * @class Coins - Represents a coin that moves and animates in the game.
+ * @extends MoveableObject - Inherits from the MoveableObject class.
+ */
 export default class Coins extends MoveableObject {
   IMAGES_COINS = [
     "assets/img/8_coin/Gold_21.png",
@@ -28,7 +31,10 @@ export default class Coins extends MoveableObject {
     "assets/img/8_coin/Gold_30.png",
   ];
 
-  constructor(soundManager) {
+  /**
+   * @constructor - Initializes the coin with a random position and starts the animation.
+   */
+  constructor() {
     super();
     this.posY = 80 + Math.random() * 300;
     this.posX = 50 + Math.random() * 3000;
@@ -39,17 +45,23 @@ export default class Coins extends MoveableObject {
     this.coinAnimation();
   }
 
+  /**
+   * @method adjustWidth - Adjusts the width of the coin based on the current image.
+   * @param {string} currentImage - The name of the current image file.
+   */
   adjustWidth(currentImage) {
-    const currentFile = currentImage.split("/").pop(); // Bildname extrahieren
-    this.width = COIN_FRAME_WIDTHS[currentFile] || 28; // Standardbreite, wenn nicht gefunden
+    const currentFile = currentImage.split("/").pop();
+    this.width = COIN_FRAME_WIDTHS[currentFile] || 28;
   }
 
+  /**
+   * @method coinAnimation - Starts the animation for the coin and adjusts its width after each frame.
+   */
   coinAnimation() {
     this.coinIntervall = setInterval(() => {
       this.playAnimation(this.IMAGES_COINS);
 
-      // Bild nach jedem Frame anpassen
-      const currentImage = this.img.src.split("/").pop(); // aktuelles Bild
+      const currentImage = this.img.src.split("/").pop();
       this.adjustWidth(currentImage);
     }, 1000 / 15);
   }

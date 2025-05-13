@@ -7,18 +7,20 @@ import {
 } from "../levels/endbossImages.js";
 import MoveableObject from "./MoveableObject.class.js";
 
+/**
+ * @class Endboss - Represents the end boss enemy in the game.
+ * @extends MoveableObject - Inherits from the MoveableObject class.
+ */
 export default class Endboss extends MoveableObject {
   posY = 50;
   width = 300;
   height = 400;
 
   /**
-   * Constructor for the Endboss.
-   * Loads all necessary images and initializes properties.
-   *
-   * @param {Object} world - The world where the Endboss appears.
-   * @param {Object} character - The character fighting against the Endboss.
-   * @param {Object} soundManager - A sound manager to play sounds.
+   * @constructor - Initializes the Endboss with images, sounds, and necessary settings.
+   * @param {Object} world - The game world to interact with.
+   * @param {Object} character - The player character that the endboss interacts with.
+   * @param {Object} soundManager - The sound manager to handle audio for the endboss.
    */
   constructor(world, character, soundManager) {
     super();
@@ -45,6 +47,9 @@ export default class Endboss extends MoveableObject {
     this.startAnimationLoop();
   }
 
+  /**
+   * @method initStatusFlags - Initializes the flags related to the endboss's status (e.g., whether it's dead, hurt, attacking, etc.).
+   */
   initStatusFlags() {
     this.inFightSequence = false;
     this.isDead = false;
@@ -53,8 +58,14 @@ export default class Endboss extends MoveableObject {
     this.isWalking = false;
     this.isCharacterFrozen = false;
     this.inputLocked = false;
+    this.visible = false;
+    this.endbossTriggerd = false;
   }
 
+  /**
+   * @method initSounds - Initializes the sounds related to the endboss.
+   * @param {Object} soundManager - The sound manager responsible for preparing and managing sounds.
+   */
   initSounds(soundManager) {
     this.endbossBackgroundSoundPath = "assets/audio/endboss.wav";
     this.endbossBackgroundSound = soundManager.prepare(
@@ -70,9 +81,9 @@ export default class Endboss extends MoveableObject {
       1.5
     );
   }
+
   /**
-   * Starts the animation loop for the Endboss.
-   * Chooses the appropriate animation based on the Endboss's state.
+   * @method startAnimationLoop - Starts the animation loop for the endboss and checks current status (e.g., dead, hurt, attacking, etc.) and updates the animation.
    */
   startAnimationLoop() {
     this.animationInterval = setInterval(() => {
@@ -91,11 +102,22 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Starts the animation for the Endboss when triggered.
-   * Moves the Endboss to the starting position and freezes the character if in range.
-   *
-   * @param {Object} world - The world where the Endboss operates.
-   * @param {Object} character - The character fighting the Endboss.
+   * @method triggerEndboss - Triggers the endboss when the character crosses a specific X-position. Makes the endboss visible and starts its animation.
+   */
+  triggerEndboss() {
+    if (!this.endbossTriggerd && this.character.posX > 3000) {
+      this.visible = true;
+      this.endbossTriggerd = true;
+    }
+    if (this.visible && !this.triggered) {
+      this.startAnimationEndboss(this.world, this.character);
+    }
+  }
+
+  /**
+   * @method startAnimationEndboss - Starts the endboss's animation and movement to its starting position. Ensures the endboss is triggered and visible before starting the movement.
+   * @param {Object} world - The game world instance.
+   * @param {Object} character - The player character.
    */
   startAnimationEndboss(world, character) {
     if (this.shouldSkipEndboss()) return;
@@ -106,19 +128,16 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Checks whether the Endboss should be skipped.
-   *
-   * @returns {boolean} - Returns `true` if the Endboss should not be triggered.
+   * @method shouldSkipEndboss - Checks if the endboss's animation should be skipped. Returns true if the endboss is already triggered or not visible.
    */
   shouldSkipEndboss() {
     return this.isEndbossTriggered || !this.visible;
   }
 
   /**
-   * Moves the Endboss to the starting position.
-   *
-   * @param {Object} world - The world where the Endboss operates.
-   * @param {Object} character - The character fighting the Endboss.
+   * @method startMovingToStartPosition - Moves the endboss towards its target position. Starts the movement at regular intervals and checks the character's status.
+   * @param {Object} world - The game world.
+   * @param {Object} character - The player character.
    */
   startMovingToStartPosition(world, character) {
     const END_BOSS_TARGET_X = 4700;
@@ -131,9 +150,8 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Moves the Endboss towards a specific target.
-   *
-   * @param {number} targetX - The target X position the Endboss is moving towards.
+   * @method moveTowardsTarget - Moves the endboss left until it reaches the target X-position and stops walking afterwards.
+   * @param {number} targetX - The X-position to move toward.
    */
   moveTowardsTarget(targetX) {
     if (this.posX > targetX) {
@@ -146,10 +164,9 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Checks if the character should be frozen.
-   *
-   * @param {Object} world - The world where the Endboss operates.
-   * @param {Object} character - The character that may be frozen.
+   * @method checkCharacterFreeze - Freezes character interaction when the character reaches a certain X-position.
+   * @param {Object} world - The game world.
+   * @param {Object} character - The player character.
    */
   checkCharacterFreeze(world, character) {
     if (character.posX >= 4350 && !this.isCharacterFrozen) {
@@ -158,10 +175,9 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Freezes the character and plays the Endboss sound.
-   *
-   * @param {Object} world - The world where the Endboss operates.
-   * @param {Object} character - The character to be frozen.
+   * @method freezeCharacterInteraction - Freezes the character, stops background sounds and starts the endboss sound before initiating the fight.
+   * @param {Object} world - The game world.
+   * @param {Object} character - The player character.
    */
   freezeCharacterInteraction(world, character) {
     character.freezeCharacter();
@@ -178,18 +194,23 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Stops the background sound of the world.
-   *
-   * @param {Object} world - The world where the background sound should be stopped.
+   * @method stopBackgroundSound - Pauses the current background sound from the world.
+   * @param {Object} world - The game world containing the background sound.
    */
   stopBackgroundSound(world) {
     world.backgroundSound.pause();
   }
 
+  /**
+   * @method playEndbossSound - Plays the endboss background music.
+   */
   playEndbossSound() {
     this.endbossBackgroundSound.play();
   }
 
+  /**
+   * @method startFight - Displays the endboss health bar and starts the fight sequence after a short delay.
+   */
   startFight() {
     this.world.endbossBar.isVisible = true;
     this.showFightBanner();
@@ -199,6 +220,9 @@ export default class Endboss extends MoveableObject {
     }, 1000);
   }
 
+  /**
+   * @method showFightBanner - Animates and briefly displays the fight banner on screen.
+   */
   showFightBanner() {
     const fightBanner = document.getElementById("fight-banner");
     fightBanner.style.animation = "fight-blink 1s ease-in-out";
@@ -209,24 +233,8 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Checks if the Endboss is dead.
-   *
-   * @param {Object} interval - The interval to be stopped if the Endboss is dead.
-   * @returns {boolean} - Returns `true` if the Endboss is dead.
-   */
-  handleIfDead(interval) {
-    if (this.isDead) {
-      clearInterval(interval);
-      this.die();
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Checks if the Endboss has reached the target.
-   *
-   * @param {Object} interval - The interval to be stopped when the target is reached.
+   * @method handleReachedTarget - Stops movement and switches to alert animation when target is reached.
+   * @param {NodeJS.Timeout} interval - The interval to clear.
    */
   handleReachedTarget(interval) {
     clearInterval(interval);
@@ -234,6 +242,9 @@ export default class Endboss extends MoveableObject {
     this.playAnimation(this.IMAGES_ALERT);
   }
 
+  /**
+   * @method startFightSequence - Initializes the fight sequence by setting start position and walking toward the player.
+   */
   startFightSequence() {
     const walkSpeed = 25;
     const startX = 4750;
@@ -244,11 +255,10 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Moves the Endboss towards the target/character during the fight sequence.
-   *
-   * @param {number} startX - The starting point of the movement.
-   * @param {number} targetX - The target point of the movement.
-   * @param {number} walkSpeed - The speed at which the Endboss moves.
+   * @method walkToTarget - Moves the endboss from the start to the target position and triggers an attack after arrival.
+   * @param {number} startX - Starting X-position.
+   * @param {number} targetX - Target X-position.
+   * @param {number} walkSpeed - Speed of movement.
    */
   walkToTarget(startX, targetX, walkSpeed) {
     if (this.isDead) return this.die();
@@ -256,22 +266,21 @@ export default class Endboss extends MoveableObject {
 
     const interval = setInterval(() => {
       if (this.handleIfDead(interval)) return;
-
       if (this.posX > targetX) {
         this.posX -= walkSpeed;
       } else {
         this.handleReachedTarget(interval);
+
         setTimeout(() => this.startAttack(startX, targetX, walkSpeed), 1000);
       }
     }, 1000 / 25);
   }
 
   /**
-   * Starts the Endboss's attack.
-   *
-   * @param {number} startX - The starting point of the movement.
-   * @param {number} targetX - The target point of the movement.
-   * @param {number} walkSpeed - The speed at which the Endboss moves.
+   * @method startAttack - Plays attack animation and triggers walk back after delay.
+   * @param {number} startX - Starting X-position.
+   * @param {number} targetX - Target X-position.
+   * @param {number} walkSpeed - Speed for returning after attack.
    */
   startAttack(startX, targetX, walkSpeed) {
     if (this.isDead) return this.die();
@@ -286,11 +295,10 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Moves the Endboss back to the starting position after an attack.
-   *
-   * @param {number} startX - The starting point of the movement.
-   * @param {number} targetX - The target point of the movement.
-   * @param {number} walkSpeed - The speed at which the Endboss moves.
+   * @method walkBack - Moves the endboss back to the starting position and restarts the fight loop if alive.
+   * @param {number} startX - Original X-position to return to.
+   * @param {number} targetX - Target X-position before return.
+   * @param {number} walkSpeed - Walking speed.
    */
   walkBack(startX, targetX, walkSpeed) {
     if (this.isDead) return this.die();
@@ -298,11 +306,11 @@ export default class Endboss extends MoveableObject {
 
     const interval = setInterval(() => {
       if (this.handleIfDead(interval)) return;
-
       if (this.posX < startX) {
         this.posX += walkSpeed;
       } else {
         this.handleReachedTarget(interval);
+
         setTimeout(() => {
           if (!this.isDead) this.walkToTarget(startX, targetX, walkSpeed);
         }, 1000);
@@ -311,38 +319,56 @@ export default class Endboss extends MoveableObject {
   }
 
   /**
-   * Processes a hit on the Endboss.
-   * Reduces the Endboss's health points.
-   *
-   * @param {number} damage - The damage dealt to the Endboss. Default is 20.
+   * @method hit - Triggers hurt animation and plays sound when the endboss takes damage.
+   * @param {number} [damage=20] - Damage taken by the endboss.
    */
   hit(damage = 20) {
     super.hit(damage);
     this.isAttacking = false;
     this.isHurtAnimation = true;
     this.endbossHurtSound.play();
+
     setTimeout(() => {
       this.isHurtAnimation = false;
       this.isAttacking = true;
     }, 600);
   }
 
+  /**
+   * @method handleIfDead - Handles the endboss's death sequence and game win logic.
+   * @param {NodeJS.Timeout} interval - The interval to clear.
+   */
+  handleIfDead(interval) {
+    if (!this.isDead || !this.endbossTriggerd) return false;
+    clearInterval(interval);
+    this.die();
+    this.world.currentScore += 500;
+    this.world.handleGameOver();
+
+    setTimeout(() => {
+      this.world.winSound.play();
+      this.world.showEndscreen("win");
+    }, 1500);
+
+    return true;
+  }
+
+  /**
+   * @method die - Stops all actions and sounds and starts death animation.
+   */
   die() {
     this.isDead = true;
     this.isWalking = false;
     this.isAttacking = false;
     this.isHurt = false;
-
     this.stopAllSounds();
     this.character.stopAllAnimationsAndSounds();
     this.playDeathAnimationOnce();
   }
 
-  stopAllAnimationsAndSounds() {
-    this.stopAllAnimations();
-    this.stopAllSounds();
-  }
-
+  /**
+   * @method stopAllAnimations - Clears all movement and animation intervals.
+   */
   stopAllAnimations() {
     clearInterval(this.walkInterval);
     clearInterval(this.animationInterval);
@@ -352,6 +378,9 @@ export default class Endboss extends MoveableObject {
     this.deadInterval = null;
   }
 
+  /**
+   * @method stopAllSounds - Pauses the endboss's background sound.
+   */
   stopAllSounds() {
     this.endbossBackgroundSound.pause();
   }

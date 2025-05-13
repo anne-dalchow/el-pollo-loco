@@ -1,6 +1,14 @@
 import Enemies from "./Enemies.class.js";
 
+/**
+ * @class Chicken - Represents a small chicken enemy in the game.
+ * @extends Enemies - Inherits from the Enemies class.
+ */
 export default class Chicken extends Enemies {
+  /**
+   * @constructor - Initializes the Chicken with its images and sound manager.
+   * @param {Object} soundManager - The sound manager for playing sounds associated with the enemy.
+   */
   constructor(soundManager) {
     super(
       [
