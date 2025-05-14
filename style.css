@@ -22,14 +22,13 @@
 
 html,
 body {
-  -webkit-user-select: none;
-  user-select: none;
+  touch-action: auto;
 }
 
 .game-wrapper,
 #impressum-bg {
   padding: 8px;
-  background-image: url("assets/img/5_background/backgroundFullScreen.jpg");
+  background-image: url("assets/img/5_background/backgroundFullScreenLight.jpg");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -39,7 +38,8 @@ body {
   min-height: 100vh;
 }
 
-h1 {
+.imprint-title,
+.game-title {
   font-family: "RioGrande";
   font-size: 4.5rem;
   color: var(--main-color-darker);
@@ -48,7 +48,7 @@ h1 {
   margin-bottom: 16px;
 }
 
-h1:fullscreen {
+.game-title:fullscreen {
   display: none;
 }
 
@@ -108,6 +108,51 @@ li {
 a {
   color: var(--main-color);
   text-decoration: none;
+}
+
+nav,
+footer {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 20px;
+  background-color: #b38459;
+  padding: 8px 32px;
+  color: white;
+}
+
+nav {
+  justify-content: space-between;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+footer {
+  justify-content: flex-end;
+}
+
+nav a,
+footer a {
+  color: white;
+  padding: 8px 16px;
+  transition: color 0.3s ease;
+}
+nav a {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+footer a {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+nav a:hover,
+footer a:hover {
+  color: #ffd665;
+}
+
+.nav-logo a {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 canvas {
@@ -474,7 +519,7 @@ canvas {
     rgba(255, 255, 255, 0.5) 100%
   );
   border-radius: var(--border-radius-16);
-  margin: 0 auto;
+  margin: 100px auto;
   max-width: 1200px;
   padding: 16px;
 }
@@ -484,5 +529,5 @@ canvas {
 }
 
 .impressum-section {
-  margin: 2rem;
+  margin: 32px;
 }
