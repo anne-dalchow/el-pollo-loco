@@ -52,7 +52,7 @@ window.addEventListener("load", () => {
    * Listen to click event on toggle controls button
    * @listens toggleControls#click - toggles visibility of game controls buttons
    */
-  toggleControls.addEventListener("click", () => {
+  gamepadIcon.addEventListener("click", () => {
     gameControlsBtns.classList.toggle("display-none");
     toggleControls.classList.toggle("display-none");
   });
@@ -146,6 +146,7 @@ window.addEventListener("load", () => {
     el.classList.remove("visible");
     el.classList.add("hidden");
   }
+
   /**
    * @function startscreen - Shows the start screen menu and animates the buttons.
    */

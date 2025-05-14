@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,304 +25,323 @@
   </head>
 
   <body>
-    <div id="rotate-notice">
+    <div class="game-wrapper">
+      <h1 class="game-title">(El pollo loco)</h1>
+
+      <div id="fullscreen">
+        <div class="game-container">
+          <!-- Container for sound & fullscreen settings -->
+          <div id="hud">
+            <div class="sound">
+              <i class="fa-solid fa-volume-high"></i>
+              <i class="fa-solid fa-volume-xmark display-none"></i>
+            </div>
+            <div class="fullscreen-toggle">
+              <i class="fa-solid fa-expand"></i>
+              <i class="fa-solid fa-compress display-none"></i>
+            </div>
+          </div>
+          <!-- Icon to show Mobile Controls -->
+          <div id="toggle-controls">
+            <span class="hint-text visible">Press for mobile controls</span>
+            <i class="fa-solid fa-gamepad bouncing"></i>
+          </div>
+          <!-- Mobile Controls -->
+          <div id="game-controls-below" class="display-none">
+            <div class="game-controls-left-right">
+              <i class="fa-solid fa-circle-left"></i>
+              <i class="fa-solid fa-circle-right"></i>
+            </div>
+            <div class="game-controls-jump-bottle">
+              <i class="fa-solid fa-circle-up"></i>
+              <i class="fa-solid fa-wine-bottle"></i>
+            </div>
+          </div>
+          <!-- Startscreen -->
+          <section id="startscreen">
+            <div class="startscreen-content visible">
+              <img
+                src="./assets/img/9_intro_outro_screens/start/startscreen_2.png"
+                alt="Startscreen"
+              />
+            </div>
+            <!-- Startscreen Menu -->
+            <div id="startscreen-menu" class="hidden">
+              <button id="start-game">Start Game</button>
+              <button id="settings">Controls</button>
+              <button id="credits">Credits</button>
+              <button id="imprint">
+                <a href="imprint.html" target="_blank">Imprint</a>
+              </button>
+            </div>
+            <!-- Controls -->
+            <section id="setting-menu-container" class="hidden">
+              <div>
+                <h2>Controls</h2>
+                <hr />
+              </div>
+              <section class="setting-menu">
+                <div class="keyboard-keys">
+                  <h3>Keyboard</h3>
+                  <hr />
+                  <div>
+                    <img
+                      src="assets/img/keyboard/keyboard keys-01.png"
+                      alt="Right arrow key"
+                    />
+                    <p>Move right</p>
+                  </div>
+                  <div>
+                    <img
+                      src="assets/img/keyboard/keyboard keys-03.png"
+                      alt="Left arrow key"
+                    />
+                    <p>Move left</p>
+                  </div>
+                  <div>
+                    <img
+                      id="space-key"
+                      src="assets/img/keyboard/keyboard keys-02.png"
+                      alt="Jump with space key"
+                    />
+                    <p>Jump</p>
+                  </div>
+                  <div>
+                    <img
+                      src="assets/img/keyboard/keyboard keys-04.png"
+                      alt="Throw Bottle with d key"
+                    />
+                    <p>Throw Bottle</p>
+                  </div>
+                  <div><button class="back-to-menu">Back</button></div>
+                </div>
+                <div class="mobil-keys">
+                  <h3>Mobile</h3>
+                  <hr />
+                  <div>
+                    <i class="fa-solid fa-circle-right"></i>
+                    <p>Move right</p>
+                  </div>
+                  <div>
+                    <i class="fa-solid fa-circle-left"></i>
+                    <p>Move left</p>
+                  </div>
+                  <div>
+                    <i class="fa-solid fa-circle-up"></i>
+                    <p>Jump</p>
+                  </div>
+                  <div>
+                    <i class="fa-solid fa-wine-bottle"></i>
+                    <p>Throw Bottle</p>
+                  </div>
+                </div>
+              </section>
+            </section>
+            <!-- Credit Links -->
+            <section id="credit-menu" class="hidden">
+              <h2>Thanks to all these amazing people</h2>
+              <ul>
+                <li>
+                  <a href="https://www.vecteezy.com/free-vector/desert"
+                    >Desert Vectors</a
+                  >
+                  by Vecteezy
+                </li>
+                <li>
+                  "Sand walk" by
+                  <a
+                    href="https://pixabay.com/users/freesound_community-46691455/"
+                    >freesound_community</a
+                  >
+                  from
+                  <a href="https://pixabay.com/sound-effects/">Pixabay</a>
+                </li>
+                <li>
+                  Sound Effect by
+                  <a
+                    href="https://pixabay.com/users/vinodadora-30315691/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=128357"
+                    >Hiran Vinodya</a
+                  >
+                  from
+                  <a
+                    href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=128357"
+                    >Pixabay</a
+                  >
+                </li>
+                <li>
+                  Sound effect by
+                  <a href="https://pixabay.com/users/alex_jauk-16800354/"
+                    >Alexander Jauk</a
+                  >
+                  from <a href="https://pixabay.com/">Pixabay</a>
+                </li>
+                <li>
+                  <a href="https://freesound.org/people/micahlg/sounds/413183/"
+                    >male_hurt7.ogg</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/micahlg/">micahlg</a> –
+                  <a href="http://creativecommons.org/publicdomain/zero/1.0/"
+                    >CC0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/happyalready/sounds/789761/"
+                    >Asuka (8-bit)</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/happyalready/"
+                    >happyalready</a
+                  >
+                  –
+                  <a href="https://creativecommons.org/licenses/by/4.0/"
+                    >CC BY 4.0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/Mrthenoronha/sounds/518308/"
+                    >World Clear 8 Bit.wav</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/Mrthenoronha/"
+                    >Mrthenoronha</a
+                  >
+                  -
+                  <a href="https://creativecommons.org/licenses/by-nc/4.0/"
+                    >CC BY-NC 4.0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/Mrthenoronha/sounds/653436/"
+                    >8 Bit Game Over.wav</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/Mrthenoronha/"
+                    >Mrthenoronha</a
+                  >
+                  -
+                  <a href="https://creativecommons.org/licenses/by-nc/4.0/"
+                    >CC BY-NC 4.0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/SieuAmThanh/sounds/532438/"
+                    >Liệng 1</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/SieuAmThanh/"
+                    >SieuAmThanh</a
+                  >
+                  –
+                  <a href="http://creativecommons.org/publicdomain/zero/1.0/"
+                    >CC0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/J1cr0wav3/sounds/770169/"
+                    >Itemcollect</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/J1cr0wav3/"
+                    >J1cr0wav3</a
+                  >
+                  –
+                  <a href="https://creativecommons.org/licenses/by/4.0/"
+                    >CC BY 4.0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/bradwesson/sounds/135936/"
+                    >CollectCoin.wav</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/bradwesson/"
+                    >bradwesson</a
+                  >
+                  –
+                  <a href="https://creativecommons.org/licenses/by-nc/4.0/"
+                    >CC BY-NC 4.0</a
+                  >
+                </li>
+                <li>
+                  <a href="https://freesound.org/people/Tetoszka/sounds/621233/"
+                    >Snoring woman</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/Tetoszka/">Tetoszka</a>
+                  –
+                  <a href="http://creativecommons.org/publicdomain/zero/1.0/"
+                    >CC0</a
+                  >
+                </li>
+                <li>
+                  <a href="https://freesound.org/people/Volvion/sounds/324088/"
+                    >8-Bit - End Level</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/Volvion/">Volvion</a> –
+                  <a href="http://creativecommons.org/publicdomain/zero/1.0/"
+                    >CC0</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://freesound.org/people/pekena_larva/sounds/667293/"
+                    >VOC_Male_Jump_01.wav</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/pekena_larva/"
+                    >pekena_larva</a
+                  >
+                  –
+                  <a href="https://creativecommons.org/licenses/by/4.0/"
+                    >CC BY 4.0</a
+                  >
+                </li>
+                <li>
+                  <a href="https://freesound.org/people/Raclure/sounds/458867/"
+                    >Damage sound effect</a
+                  >
+                  by
+                  <a href="https://freesound.org/people/Raclure/">Raclure</a> –
+                  <a href="http://creativecommons.org/publicdomain/zero/1.0/"
+                    >CC0</a
+                  >
+                </li>
+              </ul>
+              <button class="back-to-menu">Back</button>
+            </section>
+          </section>
+          <!-- Canvas -->
+          <canvas id="canvas" width="800" height="480"></canvas>
+          <!-- Banner Endboss Fight -->
+          <div id="fight-banner">FIGHT</div>
+          <!-- Endscreen -->
+          <section id="endscreen" class="hidden">
+            <img id="image2" src="" class="fade-image hidden" />
+            <div class="endscreen-btn-container hidden">
+              <p>Your Score: <span id="score"></span></p>
+              <p>Score list:</p>
+              <p id="latestScore"></p>
+              <button id="restart-btn">Retry?</button>
+              <button id="back-to-menu-endscreen-btn">Back to Menu</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+    <!-- Notice for Mobile with max-width: 545px -->
+    <div class="rotate-notice">
       <video autoplay loop muted playsinline>
         <source src="assets/video/rotate-your-phone.mp4" type="video/mp4" />
         Please rotate your mobile device
       </video>
-    </div>
-    <h1 class="game-title">El pollo loco</h1>
-    <div id="fullscreen">
-      <div class="game-container">
-        <div id="hud">
-          <div class="sound">
-            <i class="fa-solid fa-volume-high"></i>
-            <i class="fa-solid fa-volume-xmark display-none"></i>
-          </div>
-          <div class="fullscreen-toggle">
-            <i class="fa-solid fa-expand"></i>
-            <i class="fa-solid fa-compress display-none"></i>
-          </div>
-        </div>
-        <div id="toggle-controls">
-          <span class="hint-text visible">Press for mobile controls</span>
-          <i class="fa-solid fa-gamepad bouncing"></i>
-        </div>
-
-        <div id="game-controls-below" class="display-none">
-          <div class="game-controls-left-right">
-            <i class="fa-solid fa-circle-left"></i>
-            <i class="fa-solid fa-circle-right"></i>
-          </div>
-
-          <div class="game-controls-jump-bottle">
-            <i class="fa-solid fa-circle-up"></i>
-            <i class="fa-solid fa-wine-bottle"></i>
-          </div>
-        </div>
-
-        <section id="startscreen">
-          <div class="startscreen-content visible">
-            <img
-              src="./assets/img/9_intro_outro_screens/start/startscreen_2.png"
-              alt="Startscreen"
-            />
-          </div>
-          <div id="startscreen-menu" class="hidden">
-            <button id="start-game">Start Game</button>
-            <button id="settings">Controls</button>
-            <button id="credits">Credits</button>
-            <button id="imprint">
-              <a href="imprint.html" target="_blank">Imprint</a>
-            </button>
-          </div>
-          <section id="setting-menu-container" class="hidden">
-            <div>
-              <h2>Controls</h2>
-              <hr />
-            </div>
-            <section class="setting-menu">
-              <div class="keyboard-keys">
-                <h3>Keyboard</h3>
-                <hr />
-                <div>
-                  <img
-                    src="assets/img/keyboard/keyboard keys-01.png"
-                    alt="Right arrow key"
-                  />
-                  <p>Move right</p>
-                </div>
-                <div>
-                  <img
-                    src="assets/img/keyboard/keyboard keys-03.png"
-                    alt="Left arrow key"
-                  />
-                  <p>Move left</p>
-                </div>
-                <div>
-                  <img
-                    src="assets/img/keyboard/keyboard keys-02.png"
-                    alt="Jump with space key"
-                  />
-                  <p>Jump</p>
-                </div>
-                <div>
-                  <img
-                    src="assets/img/keyboard/keyboard keys-04.png"
-                    alt="Throw Bottle with d key"
-                  />
-                  <p>Throw Bottle</p>
-                </div>
-                <div><button class="back-to-menu">Back</button></div>
-              </div>
-
-              <div class="mobil-keys">
-                <h3>Mobile</h3>
-                <hr />
-                <div>
-                  <i class="fa-solid fa-circle-right"></i>
-                  <p>Move right</p>
-                </div>
-                <div>
-                  <i class="fa-solid fa-circle-left"></i>
-                  <p>Move left</p>
-                </div>
-                <div>
-                  <i class="fa-solid fa-circle-up"></i>
-                  <p>Jump</p>
-                </div>
-                <div>
-                  <i class="fa-solid fa-wine-bottle"></i>
-                  <p>Throw Bottle</p>
-                </div>
-              </div>
-            </section>
-          </section>
-          <section id="credit-menu" class="hidden">
-            <h2>Thanks to all these amazing people</h2>
-            <ul>
-              <li>
-                <a href="https://www.vecteezy.com/free-vector/desert"
-                  >Desert Vectors</a
-                >
-                by Vecteezy
-              </li>
-              <li>
-                "Sand walk" by
-                <a
-                  href="https://pixabay.com/users/freesound_community-46691455/"
-                  >freesound_community</a
-                >
-                from
-                <a href="https://pixabay.com/sound-effects/">Pixabay</a>
-              </li>
-              <li>
-                Sound Effect by
-                <a
-                  href="https://pixabay.com/users/vinodadora-30315691/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=128357"
-                  >Hiran Vinodya</a
-                >
-                from
-                <a
-                  href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=128357"
-                  >Pixabay</a
-                >
-              </li>
-              <li>
-                Sound effect by
-                <a href="https://pixabay.com/users/alex_jauk-16800354/"
-                  >Alexander Jauk</a
-                >
-                from <a href="https://pixabay.com/">Pixabay</a>
-              </li>
-              <li>
-                <a href="https://freesound.org/people/micahlg/sounds/413183/"
-                  >male_hurt7.ogg</a
-                >
-                by <a href="https://freesound.org/people/micahlg/">micahlg</a> –
-                <a href="http://creativecommons.org/publicdomain/zero/1.0/"
-                  >CC0</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://freesound.org/people/happyalready/sounds/789761/"
-                  >Asuka (8-bit)</a
-                >
-                by
-                <a href="https://freesound.org/people/happyalready/"
-                  >happyalready</a
-                >
-                –
-                <a href="https://creativecommons.org/licenses/by/4.0/"
-                  >CC BY 4.0</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://freesound.org/people/Mrthenoronha/sounds/518308/"
-                  >World Clear 8 Bit.wav</a
-                >
-                by
-                <a href="https://freesound.org/people/Mrthenoronha/"
-                  >Mrthenoronha</a
-                >
-                -
-                <a href="https://creativecommons.org/licenses/by-nc/4.0/"
-                  >CC BY-NC 4.0</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://freesound.org/people/Mrthenoronha/sounds/653436/"
-                  >8 Bit Game Over.wav</a
-                >
-                by
-                <a href="https://freesound.org/people/Mrthenoronha/"
-                  >Mrthenoronha</a
-                >
-                -
-                <a href="https://creativecommons.org/licenses/by-nc/4.0/"
-                  >CC BY-NC 4.0</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://freesound.org/people/SieuAmThanh/sounds/532438/"
-                  >Liệng 1</a
-                >
-                by
-                <a href="https://freesound.org/people/SieuAmThanh/"
-                  >SieuAmThanh</a
-                >
-                –
-                <a href="http://creativecommons.org/publicdomain/zero/1.0/"
-                  >CC0</a
-                >
-              </li>
-              <li>
-                <a href="https://freesound.org/people/J1cr0wav3/sounds/770169/"
-                  >Itemcollect</a
-                >
-                by
-                <a href="https://freesound.org/people/J1cr0wav3/">J1cr0wav3</a>
-                –
-                <a href="https://creativecommons.org/licenses/by/4.0/"
-                  >CC BY 4.0</a
-                >
-              </li>
-              <li>
-                <a href="https://freesound.org/people/bradwesson/sounds/135936/"
-                  >CollectCoin.wav</a
-                >
-                by
-                <a href="https://freesound.org/people/bradwesson/"
-                  >bradwesson</a
-                >
-                –
-                <a href="https://creativecommons.org/licenses/by-nc/4.0/"
-                  >CC BY-NC 4.0</a
-                >
-              </li>
-              <li>
-                <a href="https://freesound.org/people/Tetoszka/sounds/621233/"
-                  >Snoring woman</a
-                >
-                by
-                <a href="https://freesound.org/people/Tetoszka/">Tetoszka</a> –
-                <a href="http://creativecommons.org/publicdomain/zero/1.0/"
-                  >CC0</a
-                >
-              </li>
-              <li>
-                <a href="https://freesound.org/people/Volvion/sounds/324088/"
-                  >8-Bit - End Level</a
-                >
-                by <a href="https://freesound.org/people/Volvion/">Volvion</a> –
-                <a href="http://creativecommons.org/publicdomain/zero/1.0/"
-                  >CC0</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://freesound.org/people/pekena_larva/sounds/667293/"
-                  >VOC_Male_Jump_01.wav</a
-                >
-                by
-                <a href="https://freesound.org/people/pekena_larva/"
-                  >pekena_larva</a
-                >
-                –
-                <a href="https://creativecommons.org/licenses/by/4.0/"
-                  >CC BY 4.0</a
-                >
-              </li>
-              <li>
-                <a href="https://freesound.org/people/Raclure/sounds/458867/"
-                  >Damage sound effect</a
-                >
-                by <a href="https://freesound.org/people/Raclure/">Raclure</a> –
-                <a href="http://creativecommons.org/publicdomain/zero/1.0/"
-                  >CC0</a
-                >
-              </li>
-            </ul>
-            <button class="back-to-menu">Back</button>
-          </section>
-        </section>
-        <canvas id="canvas" width="800" height="480"></canvas>
-        <div id="fight-banner">FIGHT</div>
-        <section id="endscreen" class="hidden">
-          <img id="image2" src="" class="fade-image hidden" />
-          <div class="endscreen-btn-container hidden">
-            <p>Your Score: <span id="score"></span></p>
-            <p>Score list:</p>
-            <p id="latestScore"></p>
-            <button id="restart-btn">Retry?</button>
-            <button id="back-to-menu-endscreen-btn">Back to Menu</button>
-          </div>
-        </section>
-      </div>
     </div>
   </body>
 </html>
