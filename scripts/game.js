@@ -6,6 +6,7 @@
 
 import World from "../modules/World.class.js";
 import Controls from "../modules/Controls.class.js";
+import SoundManager from "../modules/SoundManager.class.js";
 
 let canvas;
 let gameStarted = false;
@@ -40,7 +41,8 @@ window.addEventListener("load", () => {
 
   // === Initialize World and Controls ===
   window.controls = new Controls();
-  window.world = new World(canvas, window.controls);
+  window.soundManager = new SoundManager();
+  window.world = new World(canvas, window.controls, window.soundManager);
 
   // === Open credit links in new tab ===
   creditLinks.forEach((link) => {
@@ -221,13 +223,12 @@ window.addEventListener("load", () => {
   restartLevelBtn.addEventListener("click", () => {
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
-
-    window.world = null;
     canvas = document.getElementById("canvas");
-    window.world = new World(canvas, window.controls);
-
+    window.soundManager = null;
+    window.soundManager = new SoundManager();
+    window.world = null;
+    window.world = new World(canvas, window.controls, window.soundManager);
     getSavedSoundSettings();
-
     hideElement(endscreen);
     hideElement(img2);
     hideElement(btnContainer);

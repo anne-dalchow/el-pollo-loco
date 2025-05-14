@@ -68,7 +68,7 @@ export default class ThrowableObject extends MoveableObject {
    * @method throwBottleAnimation - Plays the animation of the bottle rotating during the throwing action. Starts the sound effect for throwing and stops the animation when the bottle hits the ground.
    */
   throwBottleAnimation() {
-    this.throwSound.play();
+    this.soundManager.play(this.throwSoundPath);
     this.speed = 0;
     this.bottleInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_BOTTLE);
@@ -113,6 +113,6 @@ export default class ThrowableObject extends MoveableObject {
   stopAllSounds() {
     clearInterval(this.bottleInterval);
     clearInterval(this.brokenBottleInterval);
-    this.throwSound.pause();
+    this.soundManager.pause(this.throwSoundPath);
   }
 }

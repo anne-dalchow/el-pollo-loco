@@ -45,9 +45,10 @@ export default class Character extends MoveableObject {
 
     this.controls = controls;
     this.world = world;
+    this.soundManager = soundManager;
     this.applyGravity();
     this.initializeState();
-    this.preparingSounds(soundManager);
+    this.preparingSounds();
   }
 
   /**
@@ -69,17 +70,21 @@ export default class Character extends MoveableObject {
    * @method preparingSounds - Prepares and assigns all relevant character sounds using the provided sound manager.
    * @param {Object} soundManager - The sound manager providing sound assets.
    */
-  preparingSounds(soundManager) {
+  preparingSounds() {
     this.walkingSoundPath = "assets/audio/walking.mp3";
-    this.walkingSound = soundManager.prepare(this.walkingSoundPath, 1, true, 2);
+    this.soundManager.prepare(this.walkingSoundPath, 1, true, 2);
+
     this.jumpingSoundPath = "assets/audio/jump.wav";
-    this.jumpingSound = soundManager.prepare(this.jumpingSoundPath);
-    this.hurtingPath = "assets/audio/hurt.ogg";
-    this.hurtingSound = soundManager.prepare(this.hurtingPath);
-    this.snoringPath = "assets/audio/snoring.wav";
-    this.snoringSound = soundManager.prepare(this.snoringPath, 0.8, true, 1.5);
+    this.soundManager.prepare(this.jumpingSoundPath);
+
+    this.hurtingSoundPath = "assets/audio/hurt.ogg";
+    this.soundManager.prepare(this.hurtingSoundPath);
+
+    this.snoringSoundPath = "assets/audio/snoring.wav";
+    this.soundManager.prepare(this.snoringSoundPath, 0.8, true, 1.5);
+
     this.deadSoundPath = "assets/audio/character_die.mp3";
-    this.deadSound = soundManager.prepare(this.deadSoundPath, 0.5);
+    this.soundManager.prepare(this.deadSoundPath, 0.5);
   }
 
   /**
@@ -145,7 +150,7 @@ export default class Character extends MoveableObject {
    */
   handleDeath() {
     if (!this.deadSoundPlayed) {
-      this.deadSound.play();
+      this.soundManager.play(this.deadSoundPath);
       this.deadSoundPlayed = true;
       this.stopAllAnimations();
       this.playDeathAnimationOnce();
@@ -198,8 +203,7 @@ export default class Character extends MoveableObject {
 
     if (this.canJump()) {
       this.speedY = 30;
-      this.jumpingSound.currentTime = 0;
-      this.jumpingSound.play();
+      this.soundManager.play(this.jumpingSoundPath);
       this.jumpKeyPressed = true;
     }
     if (!this.controls.up) {
@@ -275,7 +279,7 @@ export default class Character extends MoveableObject {
         this.isSnoring = true;
         this.startLongIdleAnimation();
       }
-    }, 12000);
+    }, 8000);
   }
 
   /**
@@ -286,7 +290,7 @@ export default class Character extends MoveableObject {
     this.clearIdleAnimation();
     clearTimeout(this.idleTimeout);
 
-    this.snoringSound.play();
+    this.soundManager.play(this.snoringSoundPath);
     this.longIdleInterval = setInterval(() => {
       this.isInactive()
         ? this.playAnimation(this.IMAGES_LONG_IDLE)
@@ -310,7 +314,7 @@ export default class Character extends MoveableObject {
    */
   clearLongIdleAnimation() {
     this.isSnoring = false;
-    this.snoringSound.pause();
+    this.soundManager.pause(this.snoringSoundPath);
     clearInterval(this.longIdleInterval);
     this.longIdleInterval = null;
   }
@@ -362,9 +366,10 @@ export default class Character extends MoveableObject {
    * @method playStepSounds - Plays or pauses the walking sound based on the character's movement state.
    */
   playStepSounds() {
+    if (!this.soundManager?.sounds?.[this.walkingSoundPath]) return;
     this.isWalking && !this.isAboveGround()
-      ? this.walkingSound.play()
-      : this.walkingSound.pause();
+      ? this.soundManager.play(this.walkingSoundPath)
+      : this.soundManager.pause(this.walkingSoundPath);
   }
 
   /**
@@ -372,7 +377,7 @@ export default class Character extends MoveableObject {
    */
   playHurtSound() {
     if (!this.hurtSoundPlayed) {
-      this.hurtingSound.play();
+      this.soundManager.play(this.hurtingSoundPath);
       this.hurtSoundPlayed = true;
     }
   }
@@ -415,9 +420,9 @@ export default class Character extends MoveableObject {
     this.isSnoring = false;
     this.isHurting = false;
     this.jumpKeyPressed = false;
-    this.walkingSound.pause();
-    this.jumpingSound.pause();
-    this.snoringSound.pause();
-    this.hurtingSound.pause();
+    this.soundManager.pause(this.walkingSoundPath);
+    this.soundManager.pause(this.jumpingSoundPath);
+    this.soundManager.pause(this.snoringSoundPath);
+    this.soundManager.pause(this.hurtingSoundPath);
   }
 }

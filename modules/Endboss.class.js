@@ -39,11 +39,12 @@ export default class Endboss extends MoveableObject {
 
     this.world = world;
     this.character = character;
+    this.soundManager = soundManager;
     this.isEndbossTriggered = false;
     this.posX = 5500;
 
     this.initStatusFlags();
-    this.initSounds(soundManager);
+    this.initSounds();
     this.startAnimationLoop();
   }
 
@@ -66,15 +67,15 @@ export default class Endboss extends MoveableObject {
    * @method initSounds - Initializes the sounds related to the endboss.
    * @param {Object} soundManager - The sound manager responsible for preparing and managing sounds.
    */
-  initSounds(soundManager) {
+  initSounds() {
     this.endbossBackgroundSoundPath = "assets/audio/endboss.wav";
-    this.endbossBackgroundSound = soundManager.prepare(
+    this.endbossBackgroundSound = this.soundManager.prepare(
       this.endbossBackgroundSoundPath,
       0.2,
       true
     );
     this.endbossHurtSoundPath = "assets/audio/chicken sound.mp3";
-    this.endbossHurtSound = soundManager.prepare(
+    this.endbossHurtSound = this.soundManager.prepare(
       this.endbossHurtSoundPath,
       1,
       false,
@@ -185,7 +186,7 @@ export default class Endboss extends MoveableObject {
     if (world.backgroundSound && !world.backgroundSound.paused) {
       this.stopBackgroundSound(world);
     }
-    this.playEndbossSound();
+    this.soundManager.play(this.endbossBackgroundSoundPath);
     character.stopAllAnimationsAndSounds();
 
     setTimeout(() => {
@@ -199,13 +200,6 @@ export default class Endboss extends MoveableObject {
    */
   stopBackgroundSound(world) {
     world.backgroundSound.pause();
-  }
-
-  /**
-   * @method playEndbossSound - Plays the endboss background music.
-   */
-  playEndbossSound() {
-    this.endbossBackgroundSound.play();
   }
 
   /**
@@ -326,7 +320,7 @@ export default class Endboss extends MoveableObject {
     super.hit(damage);
     this.isAttacking = false;
     this.isHurtAnimation = true;
-    this.endbossHurtSound.play();
+    this.soundManager.play(this.endbossHurtSoundPath);
 
     setTimeout(() => {
       this.isHurtAnimation = false;
@@ -382,6 +376,6 @@ export default class Endboss extends MoveableObject {
    * @method stopAllSounds - Pauses the endboss's background sound.
    */
   stopAllSounds() {
-    this.endbossBackgroundSound.pause();
+    this.soundManager.pause(this.endbossBackgroundSoundPath);
   }
 }

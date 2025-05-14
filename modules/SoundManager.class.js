@@ -26,6 +26,7 @@ export default class SoundManager {
     sound.loop = loop;
     sound.volume = this.muted ? 0 : volume;
     sound.playbackRate = playbackRate;
+    sound.path = path;
     sound.dataset.originalVolume = volume;
     sound.dataset.originalPlaybackRate = playbackRate;
     this.sounds[path] = sound;
@@ -47,7 +48,10 @@ export default class SoundManager {
    * @param {string} path - The path to the audio file to pause.
    */
   pause(path) {
-    return this.sounds[path].pause();
+    const sound = this.sounds[path];
+    if (sound) {
+      sound.pause();
+    }
   }
 
   /**
@@ -80,10 +84,13 @@ export default class SoundManager {
    */
   stopAndResetAllSounds() {
     Object.values(this.sounds).forEach((sound) => {
-      sound.pause();
-      sound.volume = 0;
-      sound.currentTime = 0;
+      try {
+        sound.currentTime = 0;
+      } catch (e) {
+        console.warn("Sound konnte nicht gestoppt werden:", e);
+      }
     });
+
     this.sounds = {};
   }
 }

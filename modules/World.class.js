@@ -30,8 +30,8 @@ export default class World {
    * @param {HTMLCanvasElement} canvas - The canvas element where the game will be rendered.
    * @param {object} controls - The control bindings for the game (e.g., for player movement).
    */
-  constructor(canvas, controls) {
-    this.soundManager = new SoundManager();
+  constructor(canvas, controls, soundManager) {
+    this.soundManager = soundManager;
     this.ctx = canvas.getContext("2d");
     this.canvas = canvas;
     this.controls = controls;
@@ -74,6 +74,7 @@ export default class World {
     );
     this.coinSoundPath = "assets/audio/coin.wav";
     this.coinSound = this.soundManager.prepare(this.coinSoundPath, 0.2);
+
     this.collectingSoundPath = "assets/audio/collect.wav";
     this.collectingSound = this.soundManager.prepare(
       this.collectingSoundPath,
@@ -81,6 +82,7 @@ export default class World {
     );
     this.loseSoundPath = "assets/audio/lose_endscreen.wav";
     this.loseSound = this.soundManager.prepare(this.loseSoundPath, 0.5);
+
     this.winSoundPath = "assets/audio/win_endscreen.wav";
     this.winSound = this.soundManager.prepare(this.winSoundPath, 0.5);
   }
@@ -90,7 +92,7 @@ export default class World {
    */
   startGame() {
     this.gameRunning = true;
-    this.backgroundSound.play();
+    this.soundManager.play(this.backgroundSoundPath);
     this.runGameLoop();
     this.draw();
 
@@ -281,7 +283,7 @@ export default class World {
         this.currentCoins++;
         this.currentScore += 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
-        this.coinSound.play();
+        this.soundManager.play(this.coinSoundPath);
       }
     });
   }
@@ -297,7 +299,7 @@ export default class World {
         this.bottleBar.setPercentage(
           (this.currentBottles / this.maxBottles) * 100
         );
-        this.collectingSound.play();
+        this.soundManager.play(this.collectingSoundPath);
       }
     });
   }
@@ -356,16 +358,12 @@ export default class World {
           "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png");
     this.showElement(endscreen);
     this.showElement(img2);
+    this.character.freezeCharacter();
 
     setTimeout(() => {
       this.showElement(btnContainer);
       this.showScore();
-      this.character.stopAllAnimationsAndSounds();
-      this.endboss.stopAllAnimationsAndSounds();
     }, 9000);
-    setTimeout(() => {
-      this.soundManager.stopAndResetAllSounds();
-    }, 10000);
   }
 
   /**
@@ -394,6 +392,9 @@ export default class World {
   saveNewScore(score) {
     const scores = this.getSavedScores();
     scores.push(score);
+    if (scores.length > 5) {
+      scores.shift();
+    }
     localStorage.setItem("allScores", JSON.stringify(scores));
   }
 
