@@ -373,7 +373,14 @@ export default class World {
     document.getElementById("score").innerText = this.currentScore;
     this.saveNewScore(this.currentScore);
     const allScores = this.getSavedScores();
-    document.getElementById("latestScore").innerText = allScores.join(", ");
+    const latestScoreList = document.getElementById("latestScore");
+    latestScoreList.innerHTML = "";
+
+    allScores.forEach((score) => {
+      const li = document.createElement("li");
+      li.innerText = score;
+      latestScoreList.appendChild(li);
+    });
   }
 
   /**

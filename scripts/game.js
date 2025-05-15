@@ -12,6 +12,8 @@ let canvas;
 let gameStarted = false;
 
 window.addEventListener("load", () => {
+  localStorage.removeItem("allScores");
+  localStorage.removeItem("soundMuted");
   // === Show start screen after 1 second ===
   setTimeout(() => {
     startscreen();
@@ -71,7 +73,7 @@ window.addEventListener("load", () => {
   }
 
   /**
-   * Listen to click event on sound icon
+   * Listen to click event on sound icon, and sound settings saved on localStorage for level restart
    * @listens soundIcon#click - toggles sound icon on or off
    */
   soundIcons.forEach((icon) => {
