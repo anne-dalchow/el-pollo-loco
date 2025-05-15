@@ -42,13 +42,13 @@ export default class Character extends MoveableObject {
     this.loadImages(this.IMAGES_JUMP);
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
-
     this.controls = controls;
     this.world = world;
     this.soundManager = soundManager;
-    this.applyGravity();
-    this.initializeState();
     this.preparingSounds();
+    this.initializeState();
+
+    this.applyGravity();
   }
 
   /**
