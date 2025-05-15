@@ -24,7 +24,7 @@ export default class Clouds extends MoveableObject {
    */
   startMoving() {
     let randomSpeed = 0.15 + Math.random() * 0.15;
-    this.moveLeft(randomSpeed, -60);
+    this.moveLeft(randomSpeed, -799);
   }
 
   /**
