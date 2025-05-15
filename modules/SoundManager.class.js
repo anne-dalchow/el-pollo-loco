@@ -51,6 +51,7 @@ export default class SoundManager {
     const sound = this.sounds[path];
     if (sound) {
       sound.pause();
+      sound.currentTime = 0;
     }
   }
 
