@@ -12,10 +12,9 @@ let canvas;
 let gameStarted = false;
 
 window.addEventListener("load", () => {
-  localStorage.removeItem("allScores");
-  localStorage.removeItem("soundMuted");
   // === Show start screen after 1 second ===
   setTimeout(() => {
+    getSavedSoundSettings();
     startscreen();
   }, 1000);
 
@@ -41,7 +40,7 @@ window.addEventListener("load", () => {
   const reloadBtn = document.getElementById("back-to-menu-endscreen-btn");
   let gameControlsBtns = document.getElementById("game-controls-below");
 
-  // === Initialize World and Controls ===
+  // === Initialize World, Soundmanager, Controls ===
   window.controls = new Controls();
   window.soundManager = new SoundManager();
   window.world = new World(canvas, window.controls, window.soundManager);
@@ -57,8 +56,8 @@ window.addEventListener("load", () => {
    * @listens toggleControls#click - toggles visibility of game controls buttons
    */
   gamepadIcon.addEventListener("click", () => {
-    gameControlsBtns.classList.toggle("display-none");
-    toggleControls.classList.toggle("display-none");
+    gameControlsBtns.classList.remove("display-none");
+    toggleControls.classList.add("display-none");
   });
 
   /**
@@ -94,16 +93,39 @@ window.addEventListener("load", () => {
     });
   });
 
+  function getSavedSoundSettings() {
+    const soundMuted = localStorage.getItem("soundMuted") === "true";
+    if (soundMuted) {
+      window.world.soundManager.muteAll();
+      document.querySelector(".fa-volume-high").classList.add("display-none");
+      document
+        .querySelector(".fa-volume-xmark")
+        .classList.remove("display-none");
+    } else {
+      window.world.soundManager.unmuteAll();
+      document
+        .querySelector(".fa-volume-high")
+        .classList.remove("display-none");
+      document.querySelector(".fa-volume-xmark").classList.add("display-none");
+    }
+  }
+
   /**
    * Listen to click event on fullscreen icon
    * @listens fullscreenIcon#click - toggles between fullscreen and normal mode
    */
   fullscreenIcons.forEach((icon) => {
     icon.addEventListener("click", () => {
-      fullscreenIcons.forEach((i) => i.classList.toggle("display-none"));
-      const isFullscreen = document.fullscreenElement === fullscreen;
+      const isEntering = icon.classList.contains("fa-expand");
+      fullscreenIcons.forEach((i) => i.classList.add("display-none"));
 
-      isFullscreen ? exitFullscreen() : enterFullscreen(fullscreen);
+      if (isEntering) {
+        document.querySelector(".fa-compress").classList.remove("display-none");
+        enterFullscreen(fullscreen);
+      } else {
+        document.querySelector(".fa-expand").classList.remove("display-none");
+        exitFullscreen();
+      }
     });
   });
 
@@ -245,21 +267,4 @@ window.addEventListener("load", () => {
   reloadBtn.addEventListener("click", () => {
     location.reload();
   });
-
-  function getSavedSoundSettings() {
-    const soundMuted = localStorage.getItem("soundMuted") === "true";
-    if (soundMuted) {
-      window.world.soundManager.muteAll();
-      document.querySelector(".fa-volume-high").classList.add("display-none");
-      document
-        .querySelector(".fa-volume-xmark")
-        .classList.remove("display-none");
-    } else {
-      window.world.soundManager.unmuteAll();
-      document
-        .querySelector(".fa-volume-high")
-        .classList.remove("display-none");
-      document.querySelector(".fa-volume-xmark").classList.add("display-none");
-    }
-  }
 });

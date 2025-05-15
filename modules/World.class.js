@@ -358,7 +358,9 @@ export default class World {
           "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png");
     this.showElement(endscreen);
     this.showElement(img2);
-    this.character.freezeCharacter();
+    this.character.stopAllSounds();
+    this.character.stopAllAnimations();
+    this.soundManager.stopAndResetAllSounds();
 
     setTimeout(() => {
       this.showElement(btnContainer);
