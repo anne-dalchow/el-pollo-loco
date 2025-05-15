@@ -81,7 +81,7 @@
 /* === Devices: between 300px - 650px height === */
 @media screen and (min-height: 300px) and (max-height: 650px) {
   .game-wrapper {
-    padding-top: 0;
+    padding: 0;
   }
 
   .game-title {
@@ -183,12 +183,6 @@
 #fullscreen:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
-}
-
-#fullscreen > * {
-  width: 100% !important;
-  height: 100% !important;
-  box-sizing: border-box;
 }
 
 .game-title:fullscreen {

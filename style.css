@@ -57,7 +57,8 @@ h3 {
   letter-spacing: normal;
 }
 
-button {
+button,
+.button-link {
   width: 200px;
   border-radius: var(--border-radius-8);
   border: none;
@@ -69,13 +70,14 @@ button {
 }
 
 button:hover,
-button a:hover {
+.button-link:hover {
   filter: drop-shadow(0px 0px 6px var(--dop-shadow-main-color));
   color: white;
 }
 
-button a {
+.button-link {
   color: var(--black-100);
+  text-align: center;
 }
 
 .back-to-menu {
