@@ -403,9 +403,10 @@ export default class Character extends MoveableObject {
     clearTimeout(this.idleTimeout);
     clearInterval(this.walkInterval);
     clearInterval(this.jumpInterval);
+    clearTimeout(this.idleTimeout);
     this.idleInterval = null;
-    this.longIdleInterval = null;
     this.idleTimeout = null;
+    this.longIdleInterval = null;
     this.walkInterval = null;
     this.jumpInterval = null;
   }
