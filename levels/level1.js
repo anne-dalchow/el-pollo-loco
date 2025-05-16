@@ -16,9 +16,9 @@ import ThrowableObject from "../modules/ThrowableObject.class.js";
 // --- Configuration Constants ---
 const levelWidthTotal = 799 * 6;
 const levelWidthSingle = 799;
-const numberOfChickens = 6;
+const numberOfChickens = 7;
 const numberOfCoins = 15;
-const numberOfBottles = 10;
+const numberOfBottles = 12;
 
 // --- Spawn Distribution Distances ---
 const distancePerChicken = levelWidthTotal / numberOfChickens;
@@ -80,6 +80,7 @@ export const level1 = (soundManager) => {
   return new Level(
     [...chickens],
     [
+      new Clouds(),
       new Clouds(),
       new Clouds(),
       new Clouds(),
