@@ -5,7 +5,6 @@ import MoveableObject from "./MoveableObject.class.js";
  * @extends MoveableObject - Inherits from the MoveableObject class.
  */
 export default class Clouds extends MoveableObject {
-  posY = 50;
   width = 400;
   height = 300;
 
@@ -15,7 +14,8 @@ export default class Clouds extends MoveableObject {
   constructor() {
     super();
     this.loadImg("assets/img/5_background/layers/4_clouds/1.png");
-    this.posX = Math.random() * 5593;
+    this.posX = Math.random() * 4794;
+    this.posY = 30 + Math.random() * 60;
   }
 
   /**
