@@ -6,7 +6,7 @@ import EndbossBar from "./EndbossBar.class.js";
 import BottleBar from "./BottleBar.class.js";
 import ThrowableObject from "./ThrowableObject.class.js";
 import Endboss from "./Endboss.class.js";
-import SoundManager from "./SoundManager.class.js";
+import { showElement } from "../scripts/helperFunctions.js";
 
 /**
  * @class World - A class representing the game world, handling all the game objects, sounds, and level management.
@@ -356,15 +356,13 @@ export default class World {
       ? (img2.src = "assets/img/You won, you lost/You won A.png")
       : (img2.src =
           "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png");
-    this.showElement(endscreen);
-    this.showElement(img2);
-    this.character.stopAllSounds();
-    this.character.stopAllAnimations();
-    this.soundManager.stopAndResetAllSounds();
-
+    showElement(endscreen);
+    showElement(img2);
+    this.character.freezeCharacter();
     setTimeout(() => {
-      this.showElement(btnContainer);
+      showElement(btnContainer);
       this.showScore();
+      this.character.stopAllAnimationsAndSounds();
     }, 9000);
   }
 
@@ -405,15 +403,6 @@ export default class World {
       scores.shift();
     }
     localStorage.setItem("allScores", JSON.stringify(scores));
-  }
-
-  /**
-   * @method showElement removes the "hidden" class and adds the "visible" class to a specified element.
-   * @param {Element} el - The `el` parameter is a reference to a specified HTML element.
-   */
-  showElement(el) {
-    el.classList.remove("hidden");
-    el.classList.add("visible");
   }
 
   /**
