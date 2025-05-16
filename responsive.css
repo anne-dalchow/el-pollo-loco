@@ -170,11 +170,11 @@
 /* === Devices: max-width 545px === */
 @media screen and (max-width: 545px) {
   body > *:not(.rotate-notice) {
-    display: none !important;
+    display: none;
   }
 
   .rotate-notice {
-    display: flex !important;
+    display: flex;
   }
 }
 
