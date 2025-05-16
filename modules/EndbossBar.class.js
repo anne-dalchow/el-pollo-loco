@@ -28,8 +28,8 @@ export default class EndbossBar extends DrawableObject {
   constructor() {
     super();
     this.loadImages(this.IMAGES_EndbossBar);
-    this.posX = 620;
-    this.posY = 50;
+    this.posX = 560;
+    this.posY = 10;
     this.setPercentage(100);
   }
 
