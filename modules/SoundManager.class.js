@@ -79,19 +79,4 @@ export default class SoundManager {
       sound.volume = 0;
     });
   }
-
-  /**
-   * @method stopAndResetAllSounds - Stops and resets all sounds. Pauses all sounds, sets their volume to 0, and resets their playback position and finally clears the sound collection.
-   */
-  stopAndResetAllSounds() {
-    Object.values(this.sounds).forEach((sound) => {
-      try {
-        sound.currentTime = 0;
-      } catch (e) {
-        console.warn("Sound konnte nicht gestoppt werden:", e);
-      }
-    });
-
-    this.sounds = {};
-  }
 }
