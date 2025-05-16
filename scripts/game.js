@@ -1,5 +1,5 @@
 /**
- * @fileoverview Main script to handle the start screen, game controls, fullscreen toggle, sound, and game state.
+ * @fileoverview Main script to handle the start screen, game controls, sound, and game state.
  * The script sets up event listeners for user interactions and controls the flow of the game.
  * It manages the visibility of the start screen, settings, and credits, as well as handles game start, restart, and sound functionalities.
  */
@@ -33,23 +33,24 @@ window.addEventListener("load", () => {
   const creditsBtn = document.getElementById("credits");
   const creditLinks = document.querySelectorAll("#credit-menu a");
   const soundIcons = document.querySelectorAll(".sound i");
-  const fullscreen = document.getElementById("fullscreen");
-  const fullscreenIcons = document.querySelectorAll(".fullscreen-toggle i");
   const endscreen = document.getElementById("endscreen");
   const restartLevelBtn = document.getElementById("restart-btn");
   const reloadBtn = document.getElementById("back-to-menu-endscreen-btn");
   let gameControlsBtns = document.getElementById("game-controls-below");
-
-  // === Initialize World, Soundmanager, Controls ===
-  window.controls = new Controls();
-  window.soundManager = new SoundManager();
-  window.world = new World(canvas, window.controls, window.soundManager);
+  const closeMobileControlsBtn = document.getElementById(
+    "close-mobile-controls-btn"
+  );
 
   // === Open credit links in new tab ===
   creditLinks.forEach((link) => {
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener noreferrer");
   });
+
+  // === Initialize World, Soundmanager, Controls ===
+  window.controls = new Controls();
+  window.soundManager = new SoundManager();
+  window.world = new World(canvas, window.controls, window.soundManager);
 
   /**
    * Listen to click event on toggle controls button
@@ -58,18 +59,14 @@ window.addEventListener("load", () => {
   gamepadIcon.addEventListener("click", () => {
     gameControlsBtns.classList.remove("display-none");
     toggleControls.classList.add("display-none");
+    closeMobileControlsBtn.classList.remove("display-none");
   });
 
-  /**
-   * @function handleStartGame - Starts the game if it hasn't started yet.
-   */
-  function handleStartGame() {
-    if (!gameStarted) {
-      gameStarted = true;
-      document.getElementById("startscreen").style.display = "none";
-      window.world.startGame();
-    }
-  }
+  closeMobileControlsBtn.addEventListener("click", () => {
+    gameControlsBtns.classList.add("display-none");
+    toggleControls.classList.remove("display-none");
+    closeMobileControlsBtn.classList.add("display-none");
+  });
 
   /**
    * Listen to click event on sound icon, and sound settings saved on localStorage for level restart
@@ -111,46 +108,13 @@ window.addEventListener("load", () => {
   }
 
   /**
-   * Listen to click event on fullscreen icon
-   * @listens fullscreenIcon#click - toggles between fullscreen and normal mode
+   * @function handleStartGame - Starts the game if it hasn't started yet.
    */
-  fullscreenIcons.forEach((icon) => {
-    icon.addEventListener("click", () => {
-      const isEntering = icon.classList.contains("fa-expand");
-      fullscreenIcons.forEach((i) => i.classList.add("display-none"));
-
-      if (isEntering) {
-        document.querySelector(".fa-compress").classList.remove("display-none");
-        enterFullscreen(fullscreen);
-      } else {
-        document.querySelector(".fa-expand").classList.remove("display-none");
-        exitFullscreen();
-      }
-    });
-  });
-
-  /**
-   * @function enterFullscreen - Puts the given element into fullscreen mode.
-   * @param {HTMLElement} el - The HTML element to display in fullscreen.
-   */
-  function enterFullscreen(el) {
-    if (el.requestFullscreen) {
-      el.requestFullscreen();
-    } else if (el.msRequestFullscreen) {
-      el.msRequestFullscreen();
-    } else if (el.webkitRequestFullscreen) {
-      el.webkitRequestFullscreen();
-    }
-  }
-
-  /**
-   * @function exitFullscreen - Exits fullscreen mode.
-   */
-  function exitFullscreen() {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
+  function handleStartGame() {
+    if (!gameStarted) {
+      gameStarted = true;
+      document.getElementById("startscreen").style.display = "none";
+      window.world.startGame();
     }
   }
 
@@ -248,8 +212,8 @@ window.addEventListener("load", () => {
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
     canvas = document.getElementById("canvas");
-    window.soundManager = null;
-    window.soundManager = new SoundManager();
+    // window.soundManager = null;
+    // window.soundManager = new SoundManager();
     window.world = null;
     window.world = new World(canvas, window.controls, window.soundManager);
     getSavedSoundSettings();
