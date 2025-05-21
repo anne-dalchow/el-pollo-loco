@@ -45,9 +45,8 @@ export default class Character extends MoveableObject {
     this.controls = controls;
     this.world = world;
     this.soundManager = soundManager;
-    this.preparingSounds();
+    this.soundManager.prepareCharacterSounds();
     this.initializeState();
-
     this.applyGravity();
   }
 
@@ -64,27 +63,6 @@ export default class Character extends MoveableObject {
     this.hurtSoundPlayed = false;
     this.jumpKeyPressed = false;
     this.deadSoundPlayed = false;
-  }
-
-  /**
-   * @method preparingSounds - Prepares and assigns all relevant character sounds using the provided sound manager.
-   * @param {Object} soundManager - The sound manager providing sound assets.
-   */
-  preparingSounds() {
-    this.walkingSoundPath = "assets/audio/walking.mp3";
-    this.soundManager.prepare(this.walkingSoundPath, 1, true, 2);
-
-    this.jumpingSoundPath = "assets/audio/jump.wav";
-    this.soundManager.prepare(this.jumpingSoundPath);
-
-    this.hurtingSoundPath = "assets/audio/hurt.ogg";
-    this.soundManager.prepare(this.hurtingSoundPath);
-
-    this.snoringSoundPath = "assets/audio/snoring.wav";
-    this.soundManager.prepare(this.snoringSoundPath, 0.8, true, 1.5);
-
-    this.deadSoundPath = "assets/audio/character_die.mp3";
-    this.soundManager.prepare(this.deadSoundPath, 0.5);
   }
 
   /**
@@ -150,7 +128,7 @@ export default class Character extends MoveableObject {
    */
   handleDeath() {
     if (!this.deadSoundPlayed) {
-      this.soundManager.play(this.deadSoundPath);
+      this.soundManager.playByKey("dead");
       this.deadSoundPlayed = true;
       this.stopAllAnimations();
       this.playDeathAnimationOnce();
@@ -203,7 +181,7 @@ export default class Character extends MoveableObject {
 
     if (this.canJump()) {
       this.speedY = 30;
-      this.soundManager.play(this.jumpingSoundPath);
+      this.soundManager.playByKey("jumping");
       this.jumpKeyPressed = true;
     }
     if (!this.controls.up) {
@@ -264,10 +242,14 @@ export default class Character extends MoveableObject {
     if (
       this.idleInterval ||
       this.longIdleInterval ||
-      this.world.characterFrozen
+      this.world.characterFrozen ||
+      this.isDead() ||
+      this.world.endboss?.isDead
     )
       return;
+
     this.isIdle = true;
+
     this.idleInterval = setInterval(() => {
       this.isInactive()
         ? this.playAnimation(this.IMAGES_IDLE)
@@ -275,7 +257,12 @@ export default class Character extends MoveableObject {
     }, 1000 / 5);
 
     this.idleTimeout = setTimeout(() => {
-      if (this.isInactive()) {
+      if (
+        this.isInactive() &&
+        !this.world.characterFrozen &&
+        !this.isDead() &&
+        !this.world.endboss?.isDead
+      ) {
         this.isSnoring = true;
         this.startLongIdleAnimation();
       }
@@ -290,7 +277,7 @@ export default class Character extends MoveableObject {
     this.clearIdleAnimation();
     clearTimeout(this.idleTimeout);
 
-    this.soundManager.play(this.snoringSoundPath);
+    this.soundManager.playByKey("snoring");
     this.longIdleInterval = setInterval(() => {
       this.isInactive()
         ? this.playAnimation(this.IMAGES_LONG_IDLE)
@@ -314,19 +301,19 @@ export default class Character extends MoveableObject {
    */
   clearLongIdleAnimation() {
     this.isSnoring = false;
-    this.soundManager.pause(this.snoringSoundPath);
+    this.soundManager.pauseByKey("snoring");
     clearInterval(this.longIdleInterval);
     this.longIdleInterval = null;
   }
 
   /**
-   * @method freezeCharacter - Freezes the character for 10 seconds.
+   * @method freezeCharacter - Freezes the character for 5 seconds.
    */
   freezeCharacter() {
     this.freeze();
     setTimeout(() => {
       this.unfreeze();
-    }, 10000);
+    }, 5000);
   }
 
   /**
@@ -354,9 +341,8 @@ export default class Character extends MoveableObject {
   isCharacterDead() {
     if (this.isDead()) {
       this.world.handleGameOver();
-      this.world.backgroundSound.pause();
       setTimeout(() => {
-        this.world.loseSound.play();
+        this.world.soundManager.playByKey("lose");
         this.world.showEndscreen("lose");
       }, 1500);
     }
@@ -366,10 +352,9 @@ export default class Character extends MoveableObject {
    * @method playStepSounds - Plays or pauses the walking sound based on the character's movement state.
    */
   playStepSounds() {
-    if (!this.soundManager?.sounds?.[this.walkingSoundPath]) return;
     this.isWalking && !this.isAboveGround()
-      ? this.soundManager.play(this.walkingSoundPath)
-      : this.soundManager.pause(this.walkingSoundPath);
+      ? this.soundManager.playByKey("walking")
+      : this.soundManager.pauseByKey("walking");
   }
 
   /**
@@ -377,7 +362,7 @@ export default class Character extends MoveableObject {
    */
   playHurtSound() {
     if (!this.hurtSoundPlayed) {
-      this.soundManager.play(this.hurtingSoundPath);
+      this.soundManager.playByKey("hurting");
       this.hurtSoundPlayed = true;
     }
   }
@@ -395,23 +380,6 @@ export default class Character extends MoveableObject {
   }
 
   /**
-   * @method stopAllAnimations - Stops all currently running animations and resets related intervals and timeouts.
-   */
-  stopAllAnimations() {
-    clearInterval(this.idleInterval);
-    clearInterval(this.longIdleInterval);
-    clearTimeout(this.idleTimeout);
-    clearInterval(this.walkInterval);
-    clearInterval(this.jumpInterval);
-    clearTimeout(this.idleTimeout);
-    this.idleInterval = null;
-    this.idleTimeout = null;
-    this.longIdleInterval = null;
-    this.walkInterval = null;
-    this.jumpInterval = null;
-  }
-
-  /**
    * @method stopAllSounds - Pauses all active sounds and resets character sound states.
    */
   stopAllSounds() {
@@ -421,9 +389,29 @@ export default class Character extends MoveableObject {
     this.isSnoring = false;
     this.isHurting = false;
     this.jumpKeyPressed = false;
-    this.soundManager.pause(this.walkingSoundPath);
-    this.soundManager.pause(this.jumpingSoundPath);
-    this.soundManager.pause(this.snoringSoundPath);
-    this.soundManager.pause(this.hurtingSoundPath);
+    this.soundManager.pauseByKey("walking");
+    this.soundManager.pauseByKey("jumping");
+    this.soundManager.pauseByKey("hurting");
+    this.soundManager.pauseByKey("snoring");
+  }
+
+  stopAllAnimations() {
+    clearTimeout(this.idleTimeout);
+    clearInterval(this.idleInterval);
+    clearInterval(this.longIdleInterval);
+    clearInterval(this.jumpInterval);
+    clearInterval(this.walkInterval);
+    this.idleTimeout = null;
+    this.idleInterval = null;
+    this.longIdleInterval = null;
+    this.jumpInterval = null;
+    this.walkInterval = null;
+  }
+
+  cleanup() {
+    this.stopAllSounds();
+    this.stopAllAnimations();
+    this.controls?.resetControls();
+    this.world.characterFrozen = false;
   }
 }

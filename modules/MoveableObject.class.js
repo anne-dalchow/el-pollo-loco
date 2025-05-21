@@ -10,10 +10,16 @@ export default class MoveableObject extends DrawableObject {
   acceleration = 2.5;
   energy = 100;
   lastHit = 0;
-  imageCache = {};
-  currentImage = 0;
   walkInterval = null;
   gravityInterval = null;
+
+  constructor(x, y, width, height) {
+    super();
+    this.posX = x;
+    this.posY = y;
+    this.width = width;
+    this.height = height;
+  }
 
   /**
    * @method isColliding - Checks if the object is colliding with another object.
@@ -183,7 +189,7 @@ export default class MoveableObject extends DrawableObject {
       !this.isWalking &&
       !this.isJumping &&
       !this.isHurt() &&
-      !this.energy == 0
+      !this.isDead()
     );
   }
 

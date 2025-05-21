@@ -24,9 +24,7 @@ export default class Enemies extends MoveableObject {
     this.isDead = false;
     this.soundManager = soundManager;
 
-    this.dieingSoundPath = "assets/audio/damage.mp3";
-    this.soundManager.prepare(this.dieingSoundPath, 0.4);
-
+    this.soundManager.prepareEnemySounds();
     this.loadImg(imagesWalking[0]);
     this.loadImages(imagesWalking);
   }
@@ -70,7 +68,7 @@ export default class Enemies extends MoveableObject {
   die() {
     this.isDead = true;
     this.loadImg(this.IMAGE_DEAD);
-    this.soundManager.play(this.dieingSoundPath);
+    this.soundManager.playByKey("chicken_dead");
     this.speed = 0;
   }
 }

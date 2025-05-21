@@ -41,10 +41,9 @@ export default class Endboss extends MoveableObject {
     this.character = character;
     this.soundManager = soundManager;
     this.isEndbossTriggered = false;
-    this.posX = 5500;
-
+    this.posX = 5200;
+    this.soundManager.prepareEndbossSounds();
     this.initStatusFlags();
-    this.initSounds();
     this.startAnimationLoop();
   }
 
@@ -61,26 +60,6 @@ export default class Endboss extends MoveableObject {
     this.inputLocked = false;
     this.visible = false;
     this.endbossTriggerd = false;
-  }
-
-  /**
-   * @method initSounds - Initializes the sounds related to the endboss.
-   * @param {Object} soundManager - The sound manager responsible for preparing and managing sounds.
-   */
-  initSounds() {
-    this.endbossBackgroundSoundPath = "assets/audio/endboss.wav";
-    this.endbossBackgroundSound = this.soundManager.prepare(
-      this.endbossBackgroundSoundPath,
-      0.2,
-      true
-    );
-    this.endbossHurtSoundPath = "assets/audio/chicken sound.mp3";
-    this.endbossHurtSound = this.soundManager.prepare(
-      this.endbossHurtSoundPath,
-      1,
-      false,
-      1.5
-    );
   }
 
   /**
@@ -106,7 +85,7 @@ export default class Endboss extends MoveableObject {
    * @method triggerEndboss - Triggers the endboss when the character crosses a specific X-position. Makes the endboss visible and starts its animation.
    */
   triggerEndboss() {
-    if (!this.endbossTriggerd && this.character.posX > 3000) {
+    if (!this.endbossTriggerd && this.character.posX > 4350) {
       this.visible = true;
       this.endbossTriggerd = true;
     }
@@ -156,7 +135,7 @@ export default class Endboss extends MoveableObject {
    */
   moveTowardsTarget(targetX) {
     if (this.posX > targetX) {
-      this.posX -= 5;
+      this.posX -= 10;
       this.isWalking = true;
     } else {
       clearInterval(this.walkInterval);
@@ -183,23 +162,13 @@ export default class Endboss extends MoveableObject {
   freezeCharacterInteraction(world, character) {
     character.freezeCharacter();
     this.isCharacterFrozen = true;
-    if (world.backgroundSound && !world.backgroundSound.paused) {
-      this.stopBackgroundSound(world);
-    }
-    this.soundManager.play(this.endbossBackgroundSoundPath);
+    world.soundManager.pauseByKey("background");
+    this.soundManager.playByKey("endfight");
     character.stopAllAnimationsAndSounds();
 
     setTimeout(() => {
       this.startFight();
-    }, 10000);
-  }
-
-  /**
-   * @method stopBackgroundSound - Pauses the current background sound from the world.
-   * @param {Object} world - The game world containing the background sound.
-   */
-  stopBackgroundSound(world) {
-    world.backgroundSound.pause();
+    }, 5000);
   }
 
   /**
@@ -320,7 +289,7 @@ export default class Endboss extends MoveableObject {
     super.hit(damage);
     this.isAttacking = false;
     this.isHurtAnimation = true;
-    this.soundManager.play(this.endbossHurtSoundPath);
+    this.soundManager.playByKey("endboss_hurting");
 
     setTimeout(() => {
       this.isHurtAnimation = false;
@@ -340,7 +309,7 @@ export default class Endboss extends MoveableObject {
     this.world.handleGameOver();
 
     setTimeout(() => {
-      this.world.winSound.play();
+      this.world.soundManager.playByKey("win");
       this.world.showEndscreen("win");
     }, 1500);
 
@@ -376,6 +345,6 @@ export default class Endboss extends MoveableObject {
    * @method stopAllSounds - Pauses the endboss's background sound.
    */
   stopAllSounds() {
-    this.soundManager.pause(this.endbossBackgroundSoundPath);
+    this.soundManager.pauseByKey("endfight");
   }
 }

@@ -36,8 +36,8 @@ export default class World {
     this.canvas = canvas;
     this.controls = controls;
     this.initLevel();
+    this.soundManager.prepareWorldSounds();
     this.initBars();
-    this.initSounds();
   }
 
   /**
@@ -63,36 +63,11 @@ export default class World {
   }
 
   /**
-   * @method initSounds - Initializes the sounds for the game, including background music and effect sounds.
-   */
-  initSounds() {
-    this.backgroundSoundPath = "assets/audio/background.wav";
-    this.backgroundSound = this.soundManager.prepare(
-      this.backgroundSoundPath,
-      0.2,
-      true
-    );
-    this.coinSoundPath = "assets/audio/coin.wav";
-    this.coinSound = this.soundManager.prepare(this.coinSoundPath, 0.2);
-
-    this.collectingSoundPath = "assets/audio/collect.wav";
-    this.collectingSound = this.soundManager.prepare(
-      this.collectingSoundPath,
-      0.1
-    );
-    this.loseSoundPath = "assets/audio/lose_endscreen.wav";
-    this.loseSound = this.soundManager.prepare(this.loseSoundPath, 0.5);
-
-    this.winSoundPath = "assets/audio/win_endscreen.wav";
-    this.winSound = this.soundManager.prepare(this.winSoundPath, 0.5);
-  }
-
-  /**
    * @method startGame - Starts the game, plays the background sound, and initiates the game loop.
    */
   startGame() {
     this.gameRunning = true;
-    this.soundManager.play(this.backgroundSoundPath);
+    this.soundManager.playByKey("background");
     this.runGameLoop();
     this.draw();
 
@@ -283,7 +258,7 @@ export default class World {
         this.currentCoins++;
         this.currentScore += 100;
         this.coinBar.setPercentage((this.currentCoins / this.maxCoins) * 100);
-        this.soundManager.play(this.coinSoundPath);
+        this.soundManager.playByKey("coin");
       }
     });
   }
@@ -299,7 +274,7 @@ export default class World {
         this.bottleBar.setPercentage(
           (this.currentBottles / this.maxBottles) * 100
         );
-        this.soundManager.play(this.collectingSoundPath);
+        this.soundManager.playByKey("collecting");
       }
     });
   }
@@ -340,6 +315,7 @@ export default class World {
    */
   handleGameOver() {
     this.gameOver = true;
+    this.soundManager.pauseByKey("background");
     this.character.stopAllAnimationsAndSounds();
     this.endboss.stopAllAnimationsAndSounds();
   }
@@ -362,7 +338,7 @@ export default class World {
     setTimeout(() => {
       showElement(btnContainer);
       this.showScore();
-      this.character.stopAllAnimationsAndSounds();
+      this.character.cleanup();
     }, 9000);
   }
 
@@ -409,6 +385,7 @@ export default class World {
    * @method draw - Clears the canvas, draws all game objects (background, character, enemies, etc.), and updates the display in each frame.
    */
   draw() {
+    if (!this.gameRunning) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.character.startAnimationLoop();
     this.ctx.translate(this.camera_x, 0);
@@ -476,5 +453,15 @@ export default class World {
   flipImageBack(mo) {
     mo.posX = mo.posX * -1;
     this.ctx.restore();
+  }
+
+  cleanup() {
+    clearInterval(this.runInterval);
+    this.runInterval = null;
+    this.character?.stopAllAnimationsAndSounds();
+    this.character?.cleanup?.();
+    this.endboss?.stopAllAnimationsAndSounds?.();
+    this.soundManager?.pauseByKey("background");
+    this.gameRunning = false;
   }
 }

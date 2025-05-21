@@ -50,6 +50,7 @@ window.addEventListener("load", () => {
   // === Initialize World, Soundmanager, Controls ===
   window.controls = new Controls();
   window.soundManager = new SoundManager();
+  window.soundManager.prepareAll();
   window.world = new World(canvas, window.controls, window.soundManager);
 
   /**
@@ -212,10 +213,8 @@ window.addEventListener("load", () => {
     const img2 = document.getElementById("image2");
     const btnContainer = document.querySelector(".endscreen-btn-container");
     canvas = document.getElementById("canvas");
-    // window.soundManager = null;
-    // window.soundManager = new SoundManager();
-    window.world = null;
-    window.world = new World(canvas, window.controls, window.soundManager);
+
+    cleanupWorld();
     getSavedSoundSettings();
     hideElement(endscreen);
     hideElement(img2);
@@ -223,6 +222,12 @@ window.addEventListener("load", () => {
     gameStarted = true;
     window.world.startGame();
   });
+
+  function cleanupWorld() {
+    window.world?.cleanup();
+    window.world = null;
+    window.world = new World(canvas, window.controls, window.soundManager);
+  }
 
   /**
    * Listen to click event on reload button
