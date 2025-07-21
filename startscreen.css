@@ -39,7 +39,8 @@
     z-index: 3;
 }
 
-#startscreen-menu button {
+#startscreen-menu button,
+#startscreen-menu .button-link {
     animation: slide-in-left 0.5s ease-out forwards;
     opacity: 0;
 }

@@ -24,7 +24,7 @@ window.addEventListener("load", () => {
   const settingMenu = document.getElementById("setting-menu-container");
   const creditMenu = document.getElementById("credit-menu");
   const backToMenuBtns = document.querySelectorAll(".back-to-menu");
-  const buttons = startscreenMenu.querySelectorAll("button");
+  const buttons = startscreenMenu.querySelectorAll("button, .button-link");
   const startGameBtn = document.getElementById("start-game");
   const toggleControls = document.getElementById("toggle-controls");
   const gamepadIcon = toggleControls.querySelector(".fa-gamepad");
@@ -143,7 +143,6 @@ window.addEventListener("load", () => {
    */
   function startscreen() {
     showElement(startscreenMenu);
-    const buttons = startscreenMenu.querySelectorAll("button");
     buttons.forEach((btn, i) => {
       btn.style.animation = "none";
       void btn.offsetWidth; // Reflow
